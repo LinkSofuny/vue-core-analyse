@@ -27,9 +27,13 @@ const weexFactoryPlugin = {
 const aliases = require('./alias')
 const resolve = p => {
   const base = p.split('/')[0]
+  // 拿到参数的前缀 web-runtime-cjs 拿到 web (文件夹)
+  // aliases 对象用户获取对应的绝对路径
   if (aliases[base]) {
+    // aliases[base] 为绝对路径, 这一步是拿到某个对应的文件
     return path.resolve(aliases[base], p.slice(base.length + 1))
   } else {
+    // 出口
     return path.resolve(__dirname, '../', p)
   }
 }
@@ -169,7 +173,9 @@ const builds = {
 }
 
 function genConfig (name) {
+  // 获取构建配置
   const opts = builds[name]
+  // rollup 实际需要的配置结构
   const config = {
     input: opts.entry,
     external: opts.external,
@@ -204,7 +210,7 @@ function genConfig (name) {
 
   return config
 }
-
+// 向外暴露了一个方法, 该方法用来获取获取对应配置
 if (process.env.TARGET) {
   module.exports = genConfig(process.env.TARGET)
 } else {

@@ -12,7 +12,6 @@ let builds = require('./config').getAllBuilds()
 
 // filter builds via command line arg
 if (process.argv[2]) {
-  console.log('process.argv', process.argv);
   const filters = process.argv[2].split(',')
   builds = builds.filter(b => {
     return filters.some(f => b.output.file.indexOf(f) > -1 || b._name.indexOf(f) > -1)
@@ -40,7 +39,7 @@ function build (builds) {
 
   next()
 }
-
+// 这个函数基于配置构建了一个符合 rollup需要的配置
 function buildEntry (config) {
   const output = config.output
   const { file, banner } = output

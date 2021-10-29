@@ -1,41 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8">
-    <title>Vue.js wrapper component example (jquery plugin: select2)</title>
-    <!-- Delete ".min" for console warnings in development -->
-    <script src="../../dist/vue.js"></script>
-    <style>
-      html, body {
-        font: 13px/18px sans-serif;
-      }
-      select {
-        min-width: 300px;
-      }
-    </style>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>demo</title>
   </head>
   <body>
-
-    <div id="el">
+    <div id="app">
+      {{ message }}
     </div>
-
-    <!-- using string template here to work around HTML <option> placement restriction -->
-    <script type="text/x-template" id="demo-template">
-      <div>
-        <p>Selected: {{ selected }}</p>
-      </div>
-    </script>
-
-    <script>
-    debugger
-    var vm = new Vue({
-      el: '#el',
-      template: '#demo-template',
-      data: {
-        selected: 0,
-      }
-    })
-    console.log('vm.selected', vm.selected);
-    </script>
+    <!-- built files will be auto injected -->
   </body>
 </html>

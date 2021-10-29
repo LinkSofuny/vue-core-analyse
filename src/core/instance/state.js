@@ -42,12 +42,20 @@ export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.set = function proxySetter (val) {
     this[sourceKey][key] = val
   }
+  /**
+   * 为什么 在其他属性里, 可以直接通过 this.message 就能拿到 data 中的值?
+   *  答案就在这里, vue 在 初始化 data 的时候会通过这个代理函数
+   *  将 data 中的 key 值直接放到 vm 实例上进行监控,然后基于上面的对象进行监控
+   *  访问 this.message 相当于访问了 this._data.message
+  */
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
+// 初始化状态
 export function initState (vm: Component) {
   vm._watchers = []
   const opts = vm.$options
+  // 基于我们options中存在的属性进行初始化
   if (opts.props) initProps(vm, opts.props)
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
@@ -127,6 +135,9 @@ function initData (vm: Component) {
   let i = keys.length
   while (i--) {
     const key = keys[i]
+    /**
+     * 对data中的key与 props 和 method 做对比, 要求不能够 key 重复
+     */
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
         warn(
@@ -142,6 +153,7 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+      // 代理
       proxy(vm, `_data`, key)
     }
   }

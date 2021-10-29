@@ -139,13 +139,16 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
   }
 }
-
+// mount的函数 最后执行的
 export function mountComponent (
   vm: Component,
   el: ?Element,
   hydrating?: boolean
 ): Component {
+  // 挂载 dom
   vm.$el = el
+  // vue 初始化的时候, 无论是template还是 render 最终都会转化为 render函数进行渲染
+  // 这里有两种模式的问题 runtime-only 和 complier
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {

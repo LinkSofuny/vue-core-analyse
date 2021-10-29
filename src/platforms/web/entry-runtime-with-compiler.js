@@ -13,12 +13,14 @@ const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
 })
-
+// 将原先的 mount 拿出来
 const mount = Vue.prototype.$mount
+// 定义一个新的
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // 将 el 属性 转化为 dom 对象
   el = el && query(el)
 
   /* istanbul ignore if */
@@ -31,7 +33,9 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+  // 不存在 render 的话
   if (!options.render) {
+    // 是否存在 template
     let template = options.template
     if (template) {
       if (typeof template === 'string') {
@@ -86,8 +90,10 @@ Vue.prototype.$mount = function (
  */
 function getOuterHTML (el: Element): string {
   if (el.outerHTML) {
+    // 当前 dom 的树
     return el.outerHTML
   } else {
+    // 创建一个 dom 树 相当于 outerHTML 的 polyfill
     const container = document.createElement('div')
     container.appendChild(el.cloneNode(true))
     return container.innerHTML

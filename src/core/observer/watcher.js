@@ -40,7 +40,7 @@ export default class Watcher {
   value: any;
 
   constructor (
-    vm: Component,
+    vm: Component, // this
     expOrFn: string | Function,
     cb: Function,
     options?: Object
@@ -95,6 +95,7 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
+      // 在这里调用 getter => updateComponent
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {

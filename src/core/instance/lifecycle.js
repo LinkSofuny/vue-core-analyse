@@ -173,6 +173,7 @@ export function mountComponent (
 
   let updateComponent
   /* istanbul ignore if */
+  // 性能埋点, 用于 性能上的监控
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
       const name = vm._name
@@ -191,6 +192,7 @@ export function mountComponent (
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    // 创建 updateComponent 函数, 之后更新数据 updateComponent 会被反复执行
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }

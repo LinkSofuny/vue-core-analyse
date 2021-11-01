@@ -38,7 +38,7 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
-  // 判断 是不是 dom  这个似乎 跟 complier 和 runtime only 有关
+  // 判断 是不是 dom
   el = el && inBrowser ? query(el) : undefined
   return mountComponent(this, el, hydrating)
 }

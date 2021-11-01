@@ -15,7 +15,7 @@ const idToTemplate = cached(id => {
 })
 // 将原先的 mount 拿出来
 const mount = Vue.prototype.$mount
-// 定义一个新的
+// 定义一个新的, 由于在 runtime-compiler 版本我们需要做额外的处理
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
@@ -24,6 +24,7 @@ Vue.prototype.$mount = function (
   el = el && query(el)
 
   /* istanbul ignore if */
+  // 不允许是 body 或者 文档对象
   if (el === document.body || el === document.documentElement) {
     process.env.NODE_ENV !== 'production' && warn(
       `Do not mount Vue to <html> or <body> - mount to normal elements instead.`
@@ -37,6 +38,7 @@ Vue.prototype.$mount = function (
   if (!options.render) {
     // 是否存在 template
     let template = options.template
+    // 构造一个合适的 dom 对象
     if (template) {
       if (typeof template === 'string') {
         if (template.charAt(0) === '#') {

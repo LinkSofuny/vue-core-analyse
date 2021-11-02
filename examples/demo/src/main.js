@@ -2,10 +2,19 @@ import Vue from 'vue'
 
 new Vue({
   el: '#app',
-  data: {
-    message: 'Hello Vue'
+  data () {
+    return {
+      message: 'Hello Vue'
+    }
   },
-  mounted () {
-    const message = this.message
+  render(creatElement) {
+    return creatElement('div', {
+      attrs: {
+        id: '#app1'
+      }
+    }, this.message)
+  },
+  mounted() {
+    console.log('this', this)
   }
 })

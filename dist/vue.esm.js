@@ -1069,7 +1069,7 @@ function copyAugment (target, src, keys) {
 }
 
 /**
- * @description: 
+ * @description:
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
@@ -1138,7 +1138,7 @@ function defineReactive (
   var setter = property && property.set;
   // 递归，拿到属性的观察者对象
   var childOb = !shallow && observe(val);
-  
+
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,

@@ -82,6 +82,7 @@ export function renderMixin (Vue: Class<Component>) {
     let vnode
     try {
       // 如果 $options 的 render 存在, 尝试执行他
+      // 这里将createElement 函数传给了render 所以 我们自行定义 render 函数得时候 可以接收到这个函数
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)
@@ -89,7 +90,7 @@ export function renderMixin (Vue: Class<Component>) {
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
       if (process.env.NODE_ENV !== 'production') {
-        if (vm.$options.renderError) { 
+        if (vm.$options.renderError) {
           try {
             vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e)
           } catch (e) {
@@ -105,6 +106,7 @@ export function renderMixin (Vue: Class<Component>) {
     }
     // return empty vnode in case the render function errored out
     if (!(vnode instanceof VNode)) {
+      // 存在多个 vnode 所以是数组
       if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
         warn(
           'Multiple root nodes returned from render function. Render function ' +

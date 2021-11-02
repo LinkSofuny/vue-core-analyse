@@ -41,7 +41,7 @@ export default class Watcher {
 
   constructor (
     vm: Component, // this
-    expOrFn: string | Function,
+    expOrFn: string | Function, // updateComponent 更新组件
     cb: Function,
     options?: Object
   ) {

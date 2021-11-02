@@ -29,6 +29,7 @@ export function initRender (vm: Component) {
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
+  // initRender 执行的时候, 会挂在这个函数
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
   // $attrs & $listeners are exposed for easier HOC creation.
@@ -80,6 +81,7 @@ export function renderMixin (Vue: Class<Component>) {
     // render self
     let vnode
     try {
+      // 如果 $options 的 render 存在, 尝试执行他
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)
@@ -87,7 +89,7 @@ export function renderMixin (Vue: Class<Component>) {
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
       if (process.env.NODE_ENV !== 'production') {
-        if (vm.$options.renderError) {
+        if (vm.$options.renderError) { 
           try {
             vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e)
           } catch (e) {

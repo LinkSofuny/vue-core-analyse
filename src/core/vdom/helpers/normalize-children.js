@@ -6,15 +6,17 @@ import { isFalse, isTrue, isDef, isUndef, isPrimitive } from 'shared/util'
 // The template compiler attempts to minimize the need for normalization by
 // statically analyzing the template at compile time.
 //
-// For plain HTML markup, normalization can be completely skipped because the
-// generated render function is guaranteed to return Array<VNode>. There are
-// two cases where extra normalization is needed:
+// For plain HTML markup(html元素), normalization can be completely skipped because the
+// generated render function is guaranteed to return Array<VNode>.
+// 扁平的 html 元素
+// There are two cases where extra normalization is needed:
 
 // 1. When the children contains components - because a functional component
 // may return an Array instead of a single root. In this case, just a simple
 // normalization is needed - if any child is an Array, we flatten the whole
 // thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
 // because functional components already normalize their own children.
+// 数组扁平化
 export function simpleNormalizeChildren (children: any) {
   for (let i = 0; i < children.length; i++) {
     if (Array.isArray(children[i])) {
@@ -29,7 +31,7 @@ export function simpleNormalizeChildren (children: any) {
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
 export function normalizeChildren (children: any): ?Array<VNode> {
-  return isPrimitive(children)
+  return isPrimitive(children) // 是否为原始值类型
     ? [createTextVNode(children)]
     : Array.isArray(children)
       ? normalizeArrayChildren(children)

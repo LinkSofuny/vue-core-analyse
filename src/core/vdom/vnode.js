@@ -1,5 +1,5 @@
 /* @flow */
-
+// Virtual Dom
 export default class VNode {
   tag: string | void;
   data: VNodeData | void;
@@ -29,11 +29,11 @@ export default class VNode {
   functionalScopeId: ?string; // functioanl scope id support
 
   constructor (
-    tag?: string,
-    data?: VNodeData,
-    children?: ?Array<VNode>,
-    text?: string,
-    elm?: Node,
+    tag?: string, // 标签
+    data?: VNodeData, // 数据?
+    children?: ?Array<VNode>, // 子节点
+    text?: string,  // 文本
+    elm?: Node,  // 节点
     context?: Component,
     componentOptions?: VNodeComponentOptions,
     asyncFactory?: Function

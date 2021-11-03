@@ -5,7 +5,7 @@
 export function isUndef (v: any): boolean %checks {
   return v === undefined || v === null
 }
-
+// 数据是定义的
 export function isDef (v: any): boolean %checks {
   return v !== undefined && v !== null
 }
@@ -19,7 +19,7 @@ export function isFalse (v: any): boolean %checks {
 }
 
 /**
- * Check if value is primitive
+ * Check if value is primitive 基本类型
  */
 export function isPrimitive (value: any): boolean %checks {
   return (

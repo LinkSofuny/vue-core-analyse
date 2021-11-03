@@ -18,25 +18,28 @@ import {
   simpleNormalizeChildren
 } from './helpers/index'
 
-const SIMPLE_NORMALIZE = 1
-const ALWAYS_NORMALIZE = 2
+const SIMPLE_NORMALIZE = 1 // 简单标准化
+const ALWAYS_NORMALIZE = 2 // 常规标准化
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
+// 包装函数给 参数 提供一个更佳的灵活性
 export function createElement (
-  context: Component,
-  tag: any,
-  data: any,
+  context: Component, // 实例
+  tag: any, // 标签
+  data: any, //
   children: any,
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode {
+  // 参数重载
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children
     children = data
     data = undefined
   }
   if (isTrue(alwaysNormalize)) {
+    // 根据传入的 alwaysNormalize 判断 children 走 哪种处理方式
     normalizationType = ALWAYS_NORMALIZE
   }
   return _createElement(context, tag, data, children, normalizationType)
@@ -47,15 +50,16 @@ export function _createElement (
   tag?: string | Class<Component> | Function | Object,
   data?: VNodeData,
   children?: any,
-  normalizationType?: number
+  normalizationType?: number // 标准化类型
 ): VNode {
+  // data 不可以是 响应式 的
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
       `Avoid using observed data object as vnode data: ${JSON.stringify(data)}\n` +
       'Always create fresh vnode data objects in each render!',
       context
     )
-    return createEmptyVNode()
+    return crea teEmptyVNode()
   }
   // object syntax in v-bind
   if (isDef(data) && isDef(data.is)) {

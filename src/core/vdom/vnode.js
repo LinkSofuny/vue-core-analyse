@@ -76,7 +76,7 @@ export const createEmptyVNode = (text: string = '') => {
   node.isComment = true
   return node
 }
-
+// 创建一个文本节点
 export function createTextVNode (val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val))
 }

@@ -59,7 +59,7 @@ export function _createElement (
       'Always create fresh vnode data objects in each render!',
       context
     )
-    return crea teEmptyVNode()
+    return createEmptyVNode()
   }
   // object syntax in v-bind
   if (isDef(data) && isDef(data.is)) {
@@ -96,9 +96,11 @@ export function _createElement (
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
+    // html 原生保留标签
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       vnode = new VNode(
+        // 创建平台保留标签
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       )

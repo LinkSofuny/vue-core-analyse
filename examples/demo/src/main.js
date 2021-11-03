@@ -15,6 +15,5 @@ new Vue({
     }, this.message)
   },
   mounted() {
-    console.log('this', this)
   }
 })

@@ -16,6 +16,7 @@ import { isFalse, isTrue, isDef, isUndef, isPrimitive } from 'shared/util'
 // normalization is needed - if any child is an Array, we flatten the whole
 // thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
 // because functional components already normalize their own children.
+// 函数时组件的children总是规范化的， 所以只需要规范第一层就好了
 // 数组扁平化
 export function simpleNormalizeChildren (children: any) {
   for (let i = 0; i < children.length; i++) {
@@ -30,9 +31,10 @@ export function simpleNormalizeChildren (children: any) {
 // e.g. <template>, <slot>, v-for, or when the children is provided by user
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
+// 用于深度遍历所有 children 中可能的类型
 export function normalizeChildren (children: any): ?Array<VNode> {
-  return isPrimitive(children) // 是否为原始值类型
-    ? [createTextVNode(children)]
+  return isPrimitive(children) // 是否为原始值类型 如 this.message
+    ? [createTextVNode(children)] // 创建一个文本虚拟节点
     : Array.isArray(children)
       ? normalizeArrayChildren(children)
       : undefined
@@ -48,12 +50,16 @@ function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNo
   for (i = 0; i < children.length; i++) {
     c = children[i]
     if (isUndef(c) || typeof c === 'boolean') continue
+
     lastIndex = res.length - 1
     last = res[lastIndex]
     //  nested
     if (Array.isArray(c) && c.length > 0) {
+      // 递归
+      // 此时 c 是规范后的 子节点数组
       c = normalizeArrayChildren(c, `${nestedIndex || ''}_${i}`)
       // merge adjacent text nodes
+      // 优化： 如果 规范后的首个子节点 和 父节点数组中的最后一个节点 都是 文本节点 则合并
       if (isTextNode(c[0]) && isTextNode(last)) {
         res[lastIndex] = createTextVNode(last.text + (c[0]: any).text)
         c.shift()

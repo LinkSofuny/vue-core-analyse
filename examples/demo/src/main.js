@@ -13,7 +13,5 @@ new Vue({
         id: '#app1'
       }
     }, this.message)
-  },
-  mounted() {
   }
 })

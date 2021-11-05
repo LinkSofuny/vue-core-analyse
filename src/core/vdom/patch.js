@@ -164,6 +164,7 @@ export function createPatchFunction (backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
+        // 创建子节点, 内部递归调用了 createElm
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -259,6 +260,7 @@ export function createPatchFunction (backend) {
   function createChildren (vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
       for (let i = 0; i < children.length; ++i) {
+        // 创建所有子节点
         createElm(children[i], insertedVnodeQueue, vnode.elm, null, true)
       }
     } else if (isPrimitive(vnode.text)) {
@@ -639,6 +641,7 @@ export function createPatchFunction (backend) {
 
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
+      // mount 阶段
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue, parentElm, refElm)
     } else {
@@ -675,7 +678,9 @@ export function createPatchFunction (backend) {
           oldVnode = emptyNodeAt(oldVnode)
         }
         // replacing existing element
+        // oldElm 是一个真实几点
         const oldElm = oldVnode.elm
+
         const parentElm = nodeOps.parentNode(oldElm)
         createElm(
           vnode,

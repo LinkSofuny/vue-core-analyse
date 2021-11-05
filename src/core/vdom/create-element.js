@@ -48,6 +48,7 @@ export function createElement (
 export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,
+  // 这里的data 是 key id 这种定义在标签里的属性
   data?: VNodeData,
   children?: any,
   normalizationType?: number // 标准化类型
@@ -63,13 +64,16 @@ export function _createElement (
   }
   // object syntax in v-bind
   if (isDef(data) && isDef(data.is)) {
+    // 存在 is 属性 则证明要将某个标签指定为 is 中的这个标签
     tag = data.is
   }
+  // ???
   if (!tag) {
     // in case of component :is set to falsy value
     return createEmptyVNode()
   }
   // warn against non-primitive key
+  // 预防 key 值不规范
   if (process.env.NODE_ENV !== 'production' &&
     isDef(data) && isDef(data.key) && !isPrimitive(data.key)
   ) {

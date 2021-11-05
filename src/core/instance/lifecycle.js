@@ -72,6 +72,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
       vm.$options._parentElm = vm.$options._refElm = null
     } else {
       // updates
+      // 这里最终会返回一个真实的根节点
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     activeInstance = prevActiveInstance

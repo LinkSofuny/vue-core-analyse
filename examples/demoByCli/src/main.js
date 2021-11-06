@@ -1,17 +1,9 @@
-import Vue from 'vue'
-
+import Vue from '../../../dist/vue.js'
+import App from './App'
 new Vue({
   el: '#app',
-  data () {
-    return {
-      message: 'Hello Vue'
-    }
+  beforeCreate () {
+    console.log('1')
   },
-  render(creatElement) {
-    return creatElement('div', {
-      attrs: {
-        id: '#app1'
-      }
-    }, this.message)
-  }
+  render: h => h(App)
 })

@@ -2699,6 +2699,7 @@ function mountComponent (
       }
     }
   }
+  // 周期钩子
   callHook(vm, 'beforeMount');
 
   var updateComponent;
@@ -2727,7 +2728,7 @@ function mountComponent (
       vm._update(vm._render(), hydrating);
     };
   }
-
+  // 创建一个观察者实例
   vm._watcher = new Watcher(vm, updateComponent, noop);
   hydrating = false;
 
@@ -2847,6 +2848,7 @@ function deactivateChildComponent (vm, direct) {
 }
 
 function callHook (vm, hook) {
+  debugger
   var handlers = vm.$options[hook];
   if (handlers) {
     for (var i = 0, j = handlers.length; i < j; i++) {
@@ -10595,6 +10597,8 @@ Vue$3.prototype.$mount = function (
       }, this);
       var render = ref.render;
       var staticRenderFns = ref.staticRenderFns;
+      // 在runtime-comcplier 版本最终也会实现一个 render 函数 挂载到 options 中
+      // 最终都会基于 render 去做渲染
       options.render = render;
       options.staticRenderFns = staticRenderFns;
 

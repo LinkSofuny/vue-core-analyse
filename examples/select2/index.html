@@ -23,7 +23,42 @@
           }
         },
         render(creatElement) {
+          return creatE<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Vue.js wrapper component example (jquery plugin: select2)</title>
+    <!-- Delete ".min" for console warnings in development -->
+    <script src="../../dist/vue.js"></script>
+    <style>
+    </style>
+  </head>
+  <body>
+    <div id="el">
+      {{ message }}
+    </div>
+    <script>
+      debugger
+      var vm = new Vue({
+        el: '#el',
+        template: '#demo-template',
+        data () {
+          return {
+            message: 'Hello Vue'
+          }
+        },
+        render(creatElement) {
           return creatElement('div', {
+            attr: {
+              id: '#app'
+            }
+          }, this.message)
+        }
+      })
+    </script>
+  </body>
+</html>
+lement('div', {
             attr: {
               id: '#app'
             }

@@ -2695,6 +2695,7 @@ function mountComponent (
       }
     }
   }
+  // 周期钩子
   callHook(vm, 'beforeMount');
 
   var updateComponent;
@@ -2723,7 +2724,7 @@ function mountComponent (
       vm._update(vm._render(), hydrating);
     };
   }
-
+  // 创建一个观察者实例
   vm._watcher = new Watcher(vm, updateComponent, noop);
   hydrating = false;
 
@@ -2843,6 +2844,7 @@ function deactivateChildComponent (vm, direct) {
 }
 
 function callHook (vm, hook) {
+  debugger
   var handlers = vm.$options[hook];
   if (handlers) {
     for (var i = 0, j = handlers.length; i < j; i++) {

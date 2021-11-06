@@ -12,7 +12,7 @@ var he = _interopDefault(require('he'));
 // these helpers produces better vm code in JS engines due to their
 // explicitness and function inlining
 
-
+// 数据是定义的
 
 
 
@@ -20,7 +20,7 @@ var he = _interopDefault(require('he'));
 
 
 /**
- * Check if value is primitive
+ * Check if value is primitive 基本类型
  */
 
 
@@ -1151,13 +1151,13 @@ Dep.prototype.notify = function notify () {
 Dep.target = null;
 
 /*  */
-
+// Virtual Dom
 var VNode = function VNode (
-  tag,
-  data,
-  children,
-  text,
-  elm,
+  tag, // 标签
+  data, // 数据?
+  children, // 子节点
+  text,// 文本
+  elm,// 节点
   context,
   componentOptions,
   asyncFactory
@@ -1198,7 +1198,7 @@ prototypeAccessors.child.get = function () {
 Object.defineProperties( VNode.prototype, prototypeAccessors );
 
 
-
+// 创建一个文本节点
 
 
 // optimized shallow clone

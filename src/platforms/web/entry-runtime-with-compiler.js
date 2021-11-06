@@ -73,6 +73,8 @@ Vue.prototype.$mount = function (
         delimiters: options.delimiters,
         comments: options.comments
       }, this)
+      // 在runtime-comcplier 版本最终也会实现一个 render 函数 挂载到 options 中
+      // 最终都会基于 render 去做渲染
       options.render = render
       options.staticRenderFns = staticRenderFns
 

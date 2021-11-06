@@ -10,7 +10,7 @@
 function isUndef (v) {
   return v === undefined || v === null
 }
-
+// 数据是定义的
 function isDef (v) {
   return v !== undefined && v !== null
 }
@@ -24,7 +24,7 @@ function isFalse (v) {
 }
 
 /**
- * Check if value is primitive
+ * Check if value is primitive 基本类型
  */
 function isPrimitive (value) {
   return (
@@ -830,13 +830,13 @@ function popTarget () {
 }
 
 /*  */
-
+// Virtual Dom
 var VNode = function VNode (
-  tag,
-  data,
-  children,
-  text,
-  elm,
+  tag, // 标签
+  data, // 数据?
+  children, // 子节点
+  text,// 文本
+  elm,// 节点
   context,
   componentOptions,
   asyncFactory
@@ -884,7 +884,7 @@ var createEmptyVNode = function (text) {
   node.isComment = true;
   return node
 };
-
+// 创建一个文本节点
 function createTextVNode (val) {
   return new VNode(undefined, undefined, undefined, String(val))
 }
@@ -1886,6 +1886,7 @@ if (process.env.NODE_ENV !== 'production') {
   };
 
   initProxy = function initProxy (vm) {
+    // 是否支持 proxy
     if (hasProxy) {
       // determine which proxy handler to use
       var options = vm.$options;
@@ -2098,15 +2099,18 @@ function checkProp (
 // The template compiler attempts to minimize the need for normalization by
 // statically analyzing the template at compile time.
 //
-// For plain HTML markup, normalization can be completely skipped because the
-// generated render function is guaranteed to return Array<VNode>. There are
-// two cases where extra normalization is needed:
+// For plain HTML markup(html元素), normalization can be completely skipped because the
+// generated render function is guaranteed to return Array<VNode>.
+// 扁平的 html 元素
+// There are two cases where extra normalization is needed:
 
 // 1. When the children contains components - because a functional component
 // may return an Array instead of a single root. In this case, just a simple
 // normalization is needed - if any child is an Array, we flatten the whole
 // thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
 // because functional components already normalize their own children.
+// 函数时组件的children总是规范化的， 所以只需要规范第一层就好了
+// 数组扁平化
 function simpleNormalizeChildren (children) {
   for (var i = 0; i < children.length; i++) {
     if (Array.isArray(children[i])) {
@@ -2120,9 +2124,10 @@ function simpleNormalizeChildren (children) {
 // e.g. <template>, <slot>, v-for, or when the children is provided by user
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
+// 用于深度遍历所有 children 中可能的类型
 function normalizeChildren (children) {
-  return isPrimitive(children)
-    ? [createTextVNode(children)]
+  return isPrimitive(children) // 是否为原始值类型 如 this.message
+    ? [createTextVNode(children)] // 创建一个文本虚拟节点
     : Array.isArray(children)
       ? normalizeArrayChildren(children)
       : undefined
@@ -2138,12 +2143,16 @@ function normalizeArrayChildren (children, nestedIndex) {
   for (i = 0; i < children.length; i++) {
     c = children[i];
     if (isUndef(c) || typeof c === 'boolean') { continue }
+
     lastIndex = res.length - 1;
     last = res[lastIndex];
     //  nested
     if (Array.isArray(c) && c.length > 0) {
+      // 递归
+      // 此时 c 是规范后的 子节点数组
       c = normalizeArrayChildren(c, ((nestedIndex || '') + "_" + i));
       // merge adjacent text nodes
+      // 优化： 如果 规范后的首个子节点 和 父节点数组中的最后一个节点 都是 文本节点 则合并
       if (isTextNode(c[0]) && isTextNode(last)) {
         res[lastIndex] = createTextVNode(last.text + (c[0]).text);
         c.shift();
@@ -2572,6 +2581,7 @@ function lifecycleMixin (Vue) {
     vm._vnode = vnode;
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    // rendering 阶段
     if (!prevVnode) {
       // initial render
       vm.$el = vm.__patch__(
@@ -2584,6 +2594,7 @@ function lifecycleMixin (Vue) {
       vm.$options._parentElm = vm.$options._refElm = null;
     } else {
       // updates
+      // 这里最终会返回一个真实的根节点
       vm.$el = vm.__patch__(prevVnode, vnode);
     }
     activeInstance = prevActiveInstance;
@@ -2652,13 +2663,16 @@ function lifecycleMixin (Vue) {
     }
   };
 }
-
+// mount的函数 最后执行的
 function mountComponent (
   vm,
   el,
   hydrating
 ) {
+  // 挂载 dom
   vm.$el = el;
+  // vue 初始化的时候, 无论是template还是 render 最终都会转化为 render函数进行渲染
+  // 这里有两种模式的问题 runtime-only 和 complier
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode;
     if (process.env.NODE_ENV !== 'production') {
@@ -2683,6 +2697,7 @@ function mountComponent (
 
   var updateComponent;
   /* istanbul ignore if */
+  // 性能埋点, 用于 性能上的监控
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = function () {
       var name = vm._name;
@@ -2701,6 +2716,7 @@ function mountComponent (
       measure(("vue " + name + " patch"), startTag, endTag);
     };
   } else {
+    // 创建 updateComponent 函数, 之后更新数据 updateComponent 会被反复执行
     updateComponent = function () {
       vm._update(vm._render(), hydrating);
     };
@@ -2990,8 +3006,8 @@ var uid$2 = 0;
  * This is used for both the $watch() api and directives.
  */
 var Watcher = function Watcher (
-  vm,
-  expOrFn,
+  vm, // this
+  expOrFn, // updateComponent 更新组件
   cb,
   options
 ) {
@@ -3045,6 +3061,7 @@ Watcher.prototype.get = function get () {
   var value;
   var vm = this.vm;
   try {
+    // 在这里调用 getter => updateComponent
     value = this.getter.call(vm, vm);
   } catch (e) {
     if (this.user) {
@@ -3239,15 +3256,24 @@ function proxy (target, sourceKey, key) {
   sharedPropertyDefinition.set = function proxySetter (val) {
     this[sourceKey][key] = val;
   };
+  /**
+   * 为什么 在其他属性里, 可以直接通过 this.message 就能拿到 data 中的值?
+   *  答案就在这里, vue 在 初始化 data 的时候会通过这个代理函数
+   *  将 data 中的 key 值直接放到 vm 实例上进行监控,然后基于上面的对象进行监控
+   *  访问 this.message 相当于访问了 this._data.message
+  */
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
+// 初始化状态
 function initState (vm) {
   vm._watchers = [];
   var opts = vm.$options;
+  // 基于我们options中存在的属性进行初始化
   if (opts.props) { initProps(vm, opts.props); }
   if (opts.methods) { initMethods(vm, opts.methods); }
   if (opts.data) {
+    // 初始化数据
     initData(vm);
   } else {
     observe(vm._data = {}, true /* asRootData */);
@@ -3326,6 +3352,9 @@ function initData (vm) {
   var i = keys.length;
   while (i--) {
     var key = keys[i];
+    /**
+     * 对data中的key与 props 和 method 做对比, 要求不能够 key 重复
+     */
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
         warn(
@@ -3341,6 +3370,7 @@ function initData (vm) {
         vm
       );
     } else if (!isReserved(key)) {
+      // 代理
       proxy(vm, "_data", key);
     }
   }
@@ -4212,25 +4242,28 @@ function transformModel (options, data) {
 
 /*  */
 
-var SIMPLE_NORMALIZE = 1;
-var ALWAYS_NORMALIZE = 2;
+var SIMPLE_NORMALIZE = 1; // 简单标准化
+var ALWAYS_NORMALIZE = 2; // 常规标准化
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
+// 包装函数给 参数 提供一个更佳的灵活性
 function createElement (
-  context,
-  tag,
-  data,
+  context, // 实例
+  tag, // 标签
+  data, //
   children,
   normalizationType,
   alwaysNormalize
 ) {
+  // 参数重载
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children;
     children = data;
     data = undefined;
   }
   if (isTrue(alwaysNormalize)) {
+    // 根据传入的 alwaysNormalize 判断 children 走 哪种处理方式
     normalizationType = ALWAYS_NORMALIZE;
   }
   return _createElement(context, tag, data, children, normalizationType)
@@ -4239,10 +4272,12 @@ function createElement (
 function _createElement (
   context,
   tag,
+  // 这里的data 是 key id 这种定义在标签里的属性
   data,
   children,
-  normalizationType
+  normalizationType // 标准化类型
 ) {
+  // data 不可以是 响应式 的
   if (isDef(data) && isDef((data).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
       "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
@@ -4253,13 +4288,16 @@ function _createElement (
   }
   // object syntax in v-bind
   if (isDef(data) && isDef(data.is)) {
+    // 存在 is 属性 则证明要将某个标签指定为 is 中的这个标签
     tag = data.is;
   }
+  // ???
   if (!tag) {
     // in case of component :is set to falsy value
     return createEmptyVNode()
   }
   // warn against non-primitive key
+  // 预防 key 值不规范
   if (process.env.NODE_ENV !== 'production' &&
     isDef(data) && isDef(data.key) && !isPrimitive(data.key)
   ) {
@@ -4286,9 +4324,11 @@ function _createElement (
   if (typeof tag === 'string') {
     var Ctor;
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
+    // html 原生保留标签
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       vnode = new VNode(
+        // 创建平台保留标签
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       );
@@ -4346,9 +4386,11 @@ function initRender (vm) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
+  // 这个方法用于 由 template 模板编译而成的 render函数
   vm._c = function (a, b, c, d) { return createElement(vm, a, b, c, d, false); };
   // normalization is always applied for the public version, used in
   // user-written render functions.
+  // 挂载
   vm.$createElement = function (a, b, c, d) { return createElement(vm, a, b, c, d, true); };
 
   // $attrs & $listeners are exposed for easier HOC creation.
@@ -4402,6 +4444,8 @@ function renderMixin (Vue) {
     // render self
     var vnode;
     try {
+      // 如果 $options 的 render 存在, 尝试执行他
+      // 这里将createElement 函数传给了render 所以 我们自行定义 render 函数得时候 可以接收到这个函数
       vnode = render.call(vm._renderProxy, vm.$createElement);
     } catch (e) {
       handleError(e, vm, "render");
@@ -4425,6 +4469,7 @@ function renderMixin (Vue) {
     }
     // return empty vnode in case the render function errored out
     if (!(vnode instanceof VNode)) {
+      // 存在多个 vnode 所以是数组
       if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
         warn(
           'Multiple root nodes returned from render function. Render function ' +
@@ -4475,6 +4520,7 @@ function initMixin (Vue) {
     }
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
+      // 开发阶段
       initProxy(vm);
     } else {
       vm._renderProxy = vm;
@@ -4486,6 +4532,7 @@ function initMixin (Vue) {
     initRender(vm);
     callHook(vm, 'beforeCreate');
     initInjections(vm); // resolve injections before data/props
+    // 初始化状态
     initState(vm);
     initProvide(vm); // resolve provide after data/props
     callHook(vm, 'created');
@@ -4577,15 +4624,17 @@ function dedupe (latest, extended, sealed) {
   }
 }
 
+// Vue 的定义处
 function Vue$3 (options) {
   if (process.env.NODE_ENV !== 'production' &&
+    // 要求 new 执行
     !(this instanceof Vue$3)
   ) {
     warn('Vue is a constructor and should be called with the `new` keyword');
   }
   this._init(options);
 }
-
+// vue 传教每个函数后, 会往原型上挂在各种各样的功能
 initMixin(Vue$3);
 stateMixin(Vue$3);
 eventsMixin(Vue$3);
@@ -5338,7 +5387,7 @@ function createPatchFunction (backend) {
 
   var modules = backend.modules;
   var nodeOps = backend.nodeOps;
-
+  // 钩子初始化
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = [];
     for (j = 0; j < modules.length; ++j) {
@@ -5413,6 +5462,7 @@ function createPatchFunction (backend) {
 
       /* istanbul ignore if */
       {
+        // 创建子节点, 内部递归调用了 createElm
         createChildren(vnode, children, insertedVnodeQueue);
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue);
@@ -5508,6 +5558,7 @@ function createPatchFunction (backend) {
   function createChildren (vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
       for (var i = 0; i < children.length; ++i) {
+        // 创建所有子节点
         createElm(children[i], insertedVnodeQueue, vnode.elm, null, true);
       }
     } else if (isPrimitive(vnode.text)) {
@@ -5878,7 +5929,7 @@ function createPatchFunction (backend) {
       return node.nodeType === (vnode.isComment ? 8 : 3)
     }
   }
-
+  // vm.__patch__()
   return function patch (oldVnode, vnode, hydrating, removeOnly, parentElm, refElm) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }
@@ -5890,6 +5941,7 @@ function createPatchFunction (backend) {
 
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
+      // mount 阶段
       isInitialPatch = true;
       createElm(vnode, insertedVnodeQueue, parentElm, refElm);
     } else {
@@ -5922,10 +5974,13 @@ function createPatchFunction (backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
+          // 将真实 dom 转化为 VNode
           oldVnode = emptyNodeAt(oldVnode);
         }
         // replacing existing element
+        // oldElm 是一个真实几点
         var oldElm = oldVnode.elm;
+
         var parentElm$1 = nodeOps.parentNode(oldElm);
         createElm(
           vnode,
@@ -7145,7 +7200,8 @@ var platformModules = [
 // the directive module should be applied last, after all
 // built-in modules have been applied.
 var modules = platformModules.concat(baseModules);
-
+// nodeOps 操作 Dom 的方法
+// modules 对应属性的钩子
 var patch = createPatchFunction({ nodeOps: nodeOps, modules: modules });
 
 /**
@@ -7728,6 +7784,7 @@ Vue$3.prototype.$mount = function (
   el,
   hydrating
 ) {
+  // 判断 是不是 dom
   el = el && inBrowser ? query(el) : undefined;
   return mountComponent(this, el, hydrating)
 };

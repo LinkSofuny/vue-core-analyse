@@ -171,6 +171,7 @@ export function mountComponent (
       }
     }
   }
+  // 周期钩子
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -199,7 +200,7 @@ export function mountComponent (
       vm._update(vm._render(), hydrating)
     }
   }
-
+  // 创建一个观察者实例
   vm._watcher = new Watcher(vm, updateComponent, noop)
   hydrating = false
 

@@ -13,7 +13,7 @@ var he = _interopDefault(require('he'));
 function isUndef (v) {
   return v === undefined || v === null
 }
-
+// 数据是定义的
 function isDef (v) {
   return v !== undefined && v !== null
 }
@@ -27,7 +27,7 @@ function isFalse (v) {
 }
 
 /**
- * Check if value is primitive
+ * Check if value is primitive 基本类型
  */
 function isPrimitive (value) {
   return (
@@ -422,13 +422,13 @@ function renderAttr (key, value) {
 }
 
 /*  */
-
+// Virtual Dom
 var VNode = function VNode (
-  tag,
-  data,
-  children,
-  text,
-  elm,
+  tag, // 标签
+  data, // 数据?
+  children, // 子节点
+  text,// 文本
+  elm,// 节点
   context,
   componentOptions,
   asyncFactory
@@ -476,7 +476,7 @@ var createEmptyVNode = function (text) {
   node.isComment = true;
   return node
 };
-
+// 创建一个文本节点
 function createTextVNode (val) {
   return new VNode(undefined, undefined, undefined, String(val))
 }
@@ -5496,15 +5496,18 @@ var compileToFunctions = ref.compileToFunctions;
 // The template compiler attempts to minimize the need for normalization by
 // statically analyzing the template at compile time.
 //
-// For plain HTML markup, normalization can be completely skipped because the
-// generated render function is guaranteed to return Array<VNode>. There are
-// two cases where extra normalization is needed:
+// For plain HTML markup(html元素), normalization can be completely skipped because the
+// generated render function is guaranteed to return Array<VNode>.
+// 扁平的 html 元素
+// There are two cases where extra normalization is needed:
 
 // 1. When the children contains components - because a functional component
 // may return an Array instead of a single root. In this case, just a simple
 // normalization is needed - if any child is an Array, we flatten the whole
 // thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
 // because functional components already normalize their own children.
+// 函数时组件的children总是规范化的， 所以只需要规范第一层就好了
+// 数组扁平化
 function simpleNormalizeChildren (children) {
   for (var i = 0; i < children.length; i++) {
     if (Array.isArray(children[i])) {
@@ -5518,9 +5521,10 @@ function simpleNormalizeChildren (children) {
 // e.g. <template>, <slot>, v-for, or when the children is provided by user
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
+// 用于深度遍历所有 children 中可能的类型
 function normalizeChildren (children) {
-  return isPrimitive(children)
-    ? [createTextVNode(children)]
+  return isPrimitive(children) // 是否为原始值类型 如 this.message
+    ? [createTextVNode(children)] // 创建一个文本虚拟节点
     : Array.isArray(children)
       ? normalizeArrayChildren(children)
       : undefined
@@ -5536,12 +5540,16 @@ function normalizeArrayChildren (children, nestedIndex) {
   for (i = 0; i < children.length; i++) {
     c = children[i];
     if (isUndef(c) || typeof c === 'boolean') { continue }
+
     lastIndex = res.length - 1;
     last = res[lastIndex];
     //  nested
     if (Array.isArray(c) && c.length > 0) {
+      // 递归
+      // 此时 c 是规范后的 子节点数组
       c = normalizeArrayChildren(c, ((nestedIndex || '') + "_" + i));
       // merge adjacent text nodes
+      // 优化： 如果 规范后的首个子节点 和 父节点数组中的最后一个节点 都是 文本节点 则合并
       if (isTextNode(c[0]) && isTextNode(last)) {
         res[lastIndex] = createTextVNode(last.text + (c[0]).text);
         c.shift();
@@ -6095,7 +6103,7 @@ var activeInstance = null;
 
 
 
-
+// mount的函数 最后执行的
 
 
 function updateChildComponent (
@@ -6362,8 +6370,8 @@ var uid$2 = 0;
  * This is used for both the $watch() api and directives.
  */
 var Watcher = function Watcher (
-  vm,
-  expOrFn,
+  vm, // this
+  expOrFn, // updateComponent 更新组件
   cb,
   options
 ) {
@@ -6417,6 +6425,7 @@ Watcher.prototype.get = function get () {
   var value;
   var vm = this.vm;
   try {
+    // 在这里调用 getter => updateComponent
     value = this.getter.call(vm, vm);
   } catch (e) {
     if (this.user) {
@@ -6597,27 +6606,34 @@ function _traverse (val, seen) {
 
 /*  */
 
+
+
+// 初始化状态
+
 /*  */
 
-var SIMPLE_NORMALIZE = 1;
-var ALWAYS_NORMALIZE = 2;
+var SIMPLE_NORMALIZE = 1; // 简单标准化
+var ALWAYS_NORMALIZE = 2; // 常规标准化
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
+// 包装函数给 参数 提供一个更佳的灵活性
 function createElement (
-  context,
-  tag,
-  data,
+  context, // 实例
+  tag, // 标签
+  data, //
   children,
   normalizationType,
   alwaysNormalize
 ) {
+  // 参数重载
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children;
     children = data;
     data = undefined;
   }
   if (isTrue(alwaysNormalize)) {
+    // 根据传入的 alwaysNormalize 判断 children 走 哪种处理方式
     normalizationType = ALWAYS_NORMALIZE;
   }
   return _createElement(context, tag, data, children, normalizationType)
@@ -6626,10 +6642,12 @@ function createElement (
 function _createElement (
   context,
   tag,
+  // 这里的data 是 key id 这种定义在标签里的属性
   data,
   children,
-  normalizationType
+  normalizationType // 标准化类型
 ) {
+  // data 不可以是 响应式 的
   if (isDef(data) && isDef((data).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
       "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
@@ -6640,13 +6658,16 @@ function _createElement (
   }
   // object syntax in v-bind
   if (isDef(data) && isDef(data.is)) {
+    // 存在 is 属性 则证明要将某个标签指定为 is 中的这个标签
     tag = data.is;
   }
+  // ???
   if (!tag) {
     // in case of component :is set to falsy value
     return createEmptyVNode()
   }
   // warn against non-primitive key
+  // 预防 key 值不规范
   if (process.env.NODE_ENV !== 'production' &&
     isDef(data) && isDef(data.key) && !isPrimitive(data.key)
   ) {
@@ -6673,9 +6694,11 @@ function _createElement (
   if (typeof tag === 'string') {
     var Ctor;
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
+    // html 原生保留标签
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       vnode = new VNode(
+        // 创建平台保留标签
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       );

@@ -100,17 +100,18 @@ export function createComponent (
   Ctor: Class<Component> | Function | Object | void,
   data: ?VNodeData,
   context: Component,
-  children: ?Array<VNode>,
+  children: ?Array<VNode>, // 子节点
   tag?: string
 ): VNode | void {
   if (isUndef(Ctor)) {
     return
   }
-
+  //  global-api 全局初始化的时候 _base 被赋值为 Vue 类
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
+    // Vue.extend
     Ctor = baseCtor.extend(Ctor)
   }
 

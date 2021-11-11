@@ -15,12 +15,14 @@ export function initExtend (Vue: GlobalAPI) {
 
   /**
    * Class inheritance
+   * 类继承方法
    */
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}
     const Super = this // Vue 非实例
     const SuperId = Super.cid
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
+    // 命中缓存
     if (cachedCtors[SuperId]) {
       return cachedCtors[SuperId]
     }

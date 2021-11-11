@@ -1069,7 +1069,7 @@ function copyAugment (target, src, keys) {
 }
 
 /**
- * @description: 
+ * @description:
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
@@ -1138,7 +1138,7 @@ function defineReactive (
   var setter = property && property.set;
   // 递归，拿到属性的观察者对象
   var childOb = !shallow && observe(val);
-  
+
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -2846,7 +2846,6 @@ function deactivateChildComponent (vm, direct) {
 }
 
 function callHook (vm, hook) {
-  debugger
   var handlers = vm.$options[hook];
   if (handlers) {
     for (var i = 0, j = handlers.length; i < j; i++) {
@@ -4088,14 +4087,14 @@ var componentVNodeHooks = {
 };
 
 var hooksToMerge = Object.keys(componentVNodeHooks);
-
 function createComponent (
   Ctor,
   data,
   context,
   children,
   tag
-) {
+  ) {
+  debugger
   if (isUndef(Ctor)) {
     return
   }

@@ -112,7 +112,7 @@ export function createPatchFunction (backend) {
 
     const data = vnode.data
     const children = vnode.children
-    const tag = vnode.tag
+    const tag = vnode.tag // tag 可能是一个组件对象
     if (isDef(tag)) {
       if (process.env.NODE_ENV !== 'production') {
         if (data && data.pre) {

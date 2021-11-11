@@ -1075,7 +1075,7 @@ function copyAugment (target, src, keys) {
 }
 
 /**
- * @description: 
+ * @description:
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
@@ -1144,7 +1144,7 @@ function defineReactive (
   var setter = property && property.set;
   // 递归，拿到属性的观察者对象
   var childOb = !shallow && observe(val);
-  
+
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -2850,7 +2850,6 @@ function deactivateChildComponent (vm, direct) {
 }
 
 function callHook (vm, hook) {
-  debugger
   var handlers = vm.$options[hook];
   if (handlers) {
     for (var i = 0, j = handlers.length; i < j; i++) {
@@ -4091,17 +4090,18 @@ function createComponent (
   Ctor,
   data,
   context,
-  children,
+  children, // 子节点
   tag
 ) {
   if (isUndef(Ctor)) {
     return
   }
-
+  //  global-api 全局初始化的时候 _base 被赋值为 Vue 类
   var baseCtor = context.$options._base;
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
+    // Vue.extend
     Ctor = baseCtor.extend(Ctor);
   }
 
@@ -4682,12 +4682,14 @@ function initExtend (Vue) {
 
   /**
    * Class inheritance
+   * 类继承方法
    */
   Vue.extend = function (extendOptions) {
     extendOptions = extendOptions || {};
-    var Super = this;
+    var Super = this; // Vue 非实例
     var SuperId = Super.cid;
     var cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {});
+    // 命中缓存
     if (cachedCtors[SuperId]) {
       return cachedCtors[SuperId]
     }
@@ -5419,6 +5421,7 @@ function createPatchFunction (backend) {
   var inPre = 0;
   function createElm (vnode, insertedVnodeQueue, parentElm, refElm, nested) {
     vnode.isRootInsert = !nested; // for transition enter check
+    debugger
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }

@@ -56,6 +56,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     const prevVnode = vm._vnode
     const prevActiveInstance = activeInstance
     activeInstance = vm
+    // _vnode是一个渲染VNode
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
@@ -320,7 +321,6 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
 }
 
 export function callHook (vm: Component, hook: string) {
-  debugger
   const handlers = vm.$options[hook]
   if (handlers) {
     for (let i = 0, j = handlers.length; i < j; i++) {

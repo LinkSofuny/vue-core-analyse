@@ -6476,7 +6476,6 @@ function deactivateChildComponent (vm, direct) {
 }
 
 function callHook (vm, hook) {
-  debugger
   var handlers = vm.$options[hook];
   if (handlers) {
     for (var i = 0, j = handlers.length; i < j; i++) {
@@ -7554,17 +7553,18 @@ function createComponent (
   Ctor,
   data,
   context,
-  children,
+  children, // 子节点
   tag
 ) {
   if (isUndef(Ctor)) {
     return
   }
-
+  //  global-api 全局初始化的时候 _base 被赋值为 Vue 类
   var baseCtor = context.$options._base;
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
+    // Vue.extend
     Ctor = baseCtor.extend(Ctor);
   }
 

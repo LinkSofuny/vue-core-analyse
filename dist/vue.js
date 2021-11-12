@@ -1075,7 +1075,7 @@ function copyAugment (target, src, keys) {
 }
 
 /**
- * @description:
+ * @description: 
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
@@ -1144,7 +1144,7 @@ function defineReactive (
   var setter = property && property.set;
   // 递归，拿到属性的观察者对象
   var childOb = !shallow && observe(val);
-
+  
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -2586,6 +2586,7 @@ function lifecycleMixin (Vue) {
     var prevVnode = vm._vnode;
     var prevActiveInstance = activeInstance;
     activeInstance = vm;
+    // _vnode是一个渲染VNode
     vm._vnode = vnode;
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
@@ -4441,6 +4442,7 @@ function renderMixin (Vue) {
 
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
+    // vm.$vnode 是一个占位虚拟节点, 如组件在父组件中引用的位置
     vm.$vnode = _parentVnode;
     // render self
     var vnode;
@@ -5421,14 +5423,13 @@ function createPatchFunction (backend) {
   var inPre = 0;
   function createElm (vnode, insertedVnodeQueue, parentElm, refElm, nested) {
     vnode.isRootInsert = !nested; // for transition enter check
-    debugger
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
 
     var data = vnode.data;
     var children = vnode.children;
-    var tag = vnode.tag;
+    var tag = vnode.tag; // tag 可能是一个组件对象
     if (isDef(tag)) {
       {
         if (data && data.pre) {

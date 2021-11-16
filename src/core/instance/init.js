@@ -36,6 +36,8 @@ export function initMixin (Vue: Class<Component>) {
       initInternalComponent(vm, options)
     } else {
       vm.$options = mergeOptions(
+        // 首次执行, 其实就实例化时候的对象new Vue({ /* 这里 */ })
+        // 其他时候, 如子组件初始化的时候, 他可以是当前组件实例的options
         resolveConstructorOptions(vm.constructor),
         options || {},
         vm

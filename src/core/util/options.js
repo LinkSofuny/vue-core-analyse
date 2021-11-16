@@ -387,6 +387,7 @@ export function mergeOptions (
     }
   }
   function mergeField (key) {
+    // 策略模式
     const strat = strats[key] || defaultStrat
     options[key] = strat(parent[key], child[key], vm, key)
   }

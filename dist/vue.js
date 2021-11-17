@@ -1075,7 +1075,7 @@ function copyAugment (target, src, keys) {
 }
 
 /**
- * @description: 
+ * @description:
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
@@ -1144,7 +1144,7 @@ function defineReactive (
   var setter = property && property.set;
   // 递归，拿到属性的观察者对象
   var childOb = !shallow && observe(val);
-  
+
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -1592,6 +1592,7 @@ function mergeOptions (
   child,
   vm
 ) {
+
   {
     checkComponents(child);
   }
@@ -1622,6 +1623,7 @@ function mergeOptions (
       mergeField(key);
     }
   }
+  debugger
   function mergeField (key) {
     var strat = strats[key] || defaultStrat;
     options[key] = strat(parent[key], child[key], vm, key);
@@ -4103,6 +4105,7 @@ function createComponent (
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
     // Vue.extend
+    debugger
     Ctor = baseCtor.extend(Ctor);
   }
 
@@ -4495,7 +4498,6 @@ function initMixin (Vue) {
     var vm = this;
     // a uid
     vm._uid = uid$1++;
-
     var startTag, endTag;
     /* istanbul ignore if */
     if ("development" !== 'production' && config.performance && mark) {

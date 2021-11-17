@@ -13,7 +13,6 @@ let childDemo = {
     }
   }
 }
-
 Vue.mixin({
   created() {
     console.log('parent created')

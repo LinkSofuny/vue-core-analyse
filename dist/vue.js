@@ -1623,7 +1623,6 @@ function mergeOptions (
       mergeField(key);
     }
   }
-  debugger
   function mergeField (key) {
     var strat = strats[key] || defaultStrat;
     options[key] = strat(parent[key], child[key], vm, key);
@@ -4105,7 +4104,6 @@ function createComponent (
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
     // Vue.extend
-    debugger
     Ctor = baseCtor.extend(Ctor);
   }
 
@@ -4495,6 +4493,7 @@ var uid$1 = 0;
 
 function initMixin (Vue) {
   Vue.prototype._init = function (options) {
+    debugger
     var vm = this;
     // a uid
     vm._uid = uid$1++;

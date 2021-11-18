@@ -18,7 +18,6 @@ Vue.mixin({
     console.log('parent created')
   }
 })
-
 let app = new Vue({
   el: '#app',
   render: h => h(childDemo)

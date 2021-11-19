@@ -45,6 +45,8 @@ export function initExtend (Vue: GlobalAPI) {
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
     Sub.options = mergeOptions(
+      // 每次子组件合并配置的时候 是拿 构造函数 Vue 进行合并
+      // 而不是该组件的上一个组件实例
       Super.options,
       extendOptions
     )

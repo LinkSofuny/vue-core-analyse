@@ -13,12 +13,11 @@ let childDemo = {
     }
   }
 }
-Vue.mixin({
-  created() {
-    console.log('parent created')
-  }
-})
+
 let app = new Vue({
   el: '#app',
+  created() {
+    console.log('parent created')
+  },
   render: h => h(childDemo)
 })

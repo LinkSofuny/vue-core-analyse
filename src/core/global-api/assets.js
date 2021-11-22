@@ -7,6 +7,7 @@ import { warn, isPlainObject } from '../util/index'
 export function initAssetRegisters (Vue: GlobalAPI) {
   /**
    * Create asset registration methods.
+   * 创建一些全局下的方法, 如 Vue.component()
    */
   ASSET_TYPES.forEach(type => {
     Vue[type] = function (
@@ -25,8 +26,10 @@ export function initAssetRegisters (Vue: GlobalAPI) {
             )
           }
         }
+        // 组件类型
         if (type === 'component' && isPlainObject(definition)) {
           definition.name = definition.name || id
+          // 通过_base 也就是 Vue上的 extend 方法去创建一个 组件构造函数
           definition = this.options._base.extend(definition)
         }
         if (type === 'directive' && typeof definition === 'function') {

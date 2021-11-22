@@ -398,11 +398,12 @@ export function mergeOptions (
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 这个函数其实就是去寻找组件所在的位置
  */
 export function resolveAsset (
   options: Object,
   type: string,
-  id: string,
+  id: string, // id 其实可以使这个组件的名称
   warnMissing?: boolean
 ): any {
   /* istanbul ignore if */
@@ -411,12 +412,16 @@ export function resolveAsset (
   }
   const assets = options[type]
   // check local registration variations first
+  // 在当前实例中吗?
   if (hasOwn(assets, id)) return assets[id]
+  // 转驼峰在判断一次
   const camelizedId = camelize(id)
   if (hasOwn(assets, camelizedId)) return assets[camelizedId]
+  // 首字母大写
   const PascalCaseId = capitalize(camelizedId)
   if (hasOwn(assets, PascalCaseId)) return assets[PascalCaseId]
   // fallback to prototype chain
+  // 去原型链上查找
   const res = assets[id] || assets[camelizedId] || assets[PascalCaseId]
   if (process.env.NODE_ENV !== 'production' && warnMissing && !res) {
     warn(

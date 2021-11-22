@@ -1,4 +1,5 @@
 import Vue from '../../../dist/vue.js'
+import App from './App.vue'
 let childDemo = {
   template: '<div>{{ msg }}</div>',
   created() {
@@ -13,11 +14,10 @@ let childDemo = {
     }
   }
 }
+debugger
+Vue.component('childDemo', childDemo)
 
 let app = new Vue({
   el: '#app',
-  created() {
-    console.log('parent created')
-  },
-  render: h => h(childDemo)
+  render: h => h(App)
 })

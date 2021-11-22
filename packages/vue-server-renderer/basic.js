@@ -1745,6 +1745,7 @@ function mergeOptions (
     }
   }
   function mergeField (key) {
+    // 策略模式
     var strat = strats[key] || defaultStrat;
     options[key] = strat(parent[key], child[key], vm, key);
   }
@@ -1755,11 +1756,12 @@ function mergeOptions (
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 这个函数其实就是去寻找组件所在的位置
  */
 function resolveAsset (
   options,
   type,
-  id,
+  id, // id 其实可以使这个组件的名称
   warnMissing
 ) {
   /* istanbul ignore if */
@@ -1768,12 +1770,16 @@ function resolveAsset (
   }
   var assets = options[type];
   // check local registration variations first
+  // 在当前实例中吗?
   if (hasOwn(assets, id)) { return assets[id] }
+  // 转驼峰在判断一次
   var camelizedId = camelize(id);
   if (hasOwn(assets, camelizedId)) { return assets[camelizedId] }
+  // 首字母大写
   var PascalCaseId = capitalize(camelizedId);
   if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
   // fallback to prototype chain
+  // 去原型链上查找
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
   if ("development" !== 'production' && warnMissing && !res) {
     warn(

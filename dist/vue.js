@@ -1075,7 +1075,7 @@ function copyAugment (target, src, keys) {
 }
 
 /**
- * @description:
+ * @description: 
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
@@ -1144,7 +1144,7 @@ function defineReactive (
   var setter = property && property.set;
   // 递归，拿到属性的观察者对象
   var childOb = !shallow && observe(val);
-
+  
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -1592,7 +1592,6 @@ function mergeOptions (
   child,
   vm
 ) {
-
   {
     checkComponents(child);
   }
@@ -1624,6 +1623,7 @@ function mergeOptions (
     }
   }
   function mergeField (key) {
+    // 策略模式
     var strat = strats[key] || defaultStrat;
     options[key] = strat(parent[key], child[key], vm, key);
   }
@@ -1634,11 +1634,12 @@ function mergeOptions (
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 这个函数其实就是去寻找组件所在的位置
  */
 function resolveAsset (
   options,
   type,
-  id,
+  id, // id 其实可以使这个组件的名称
   warnMissing
 ) {
   /* istanbul ignore if */
@@ -1647,12 +1648,16 @@ function resolveAsset (
   }
   var assets = options[type];
   // check local registration variations first
+  // 在当前实例中吗?
   if (hasOwn(assets, id)) { return assets[id] }
+  // 转驼峰在判断一次
   var camelizedId = camelize(id);
   if (hasOwn(assets, camelizedId)) { return assets[camelizedId] }
+  // 首字母大写
   var PascalCaseId = capitalize(camelizedId);
   if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
   // fallback to prototype chain
+  // 去原型链上查找
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
   if ("development" !== 'production' && warnMissing && !res) {
     warn(
@@ -4493,10 +4498,10 @@ var uid$1 = 0;
 
 function initMixin (Vue) {
   Vue.prototype._init = function (options) {
-    debugger
     var vm = this;
     // a uid
     vm._uid = uid$1++;
+
     var startTag, endTag;
     /* istanbul ignore if */
     if ("development" !== 'production' && config.performance && mark) {
@@ -4515,6 +4520,8 @@ function initMixin (Vue) {
       initInternalComponent(vm, options);
     } else {
       vm.$options = mergeOptions(
+        // 首次执行, 其实就实例化时候的对象new Vue({ /* 这里 */ })
+        // 其他时候, 如子组件初始化的时候, 他可以是当前组件实例的options
         resolveConstructorOptions(vm.constructor),
         options || {},
         vm
@@ -4715,6 +4722,8 @@ function initExtend (Vue) {
     Sub.prototype.constructor = Sub;
     Sub.cid = cid++;
     Sub.options = mergeOptions(
+      // 每次子组件合并配置的时候 是拿 构造函数 Vue 进行合并
+      // 而不是该组件的上一个组件实例
       Super.options,
       extendOptions
     );
@@ -4777,7 +4786,9 @@ function initComputed$1 (Comp) {
 function initAssetRegisters (Vue) {
   /**
    * Create asset registration methods.
+   * 创建一些全局下的方法, 如 Vue.component()
    */
+  debugger
   ASSET_TYPES.forEach(function (type) {
     Vue[type] = function (
       id,
@@ -4795,8 +4806,10 @@ function initAssetRegisters (Vue) {
             );
           }
         }
+        // 组件类型
         if (type === 'component' && isPlainObject(definition)) {
           definition.name = definition.name || id;
+          // 通过_base 也就是 Vue上的 extend 方法去创建一个 组件构造函数
           definition = this.options._base.extend(definition);
         }
         if (type === 'directive' && typeof definition === 'function') {

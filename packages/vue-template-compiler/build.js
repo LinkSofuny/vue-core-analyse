@@ -1750,6 +1750,7 @@ function assertObjectType (name, value, vm) {
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 这个函数其实就是去寻找组件所在的位置
  */
 
 /*  */

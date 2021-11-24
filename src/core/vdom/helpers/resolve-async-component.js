@@ -36,7 +36,7 @@ export function createAsyncPlaceholder (
   node.asyncMeta = { data, context, children, tag }
   return node
 }
-
+// 生成异步组件
 export function resolveAsyncComponent (
   factory: Function,
   baseCtor: Class<Component>,
@@ -87,7 +87,8 @@ export function resolveAsyncComponent (
         forceRender()
       }
     })
-
+    // 执行在初始化初期, 通过 assets.js中的 component 的方法 去拿到的 ctor
+    // 这里是我们手动传入 包含 require 的一个回调函数
     const res = factory(resolve, reject)
 
     if (isObject(res)) {
@@ -133,6 +134,7 @@ export function resolveAsyncComponent (
 
     sync = false
     // return in case resolved synchronously
+    // 但是在首次执行后 resolve 方法没被执行所以不存在 resolved 属性
     return factory.loading
       ? factory.loadingComp
       : factory.resolved

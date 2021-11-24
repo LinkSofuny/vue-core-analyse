@@ -128,11 +128,14 @@ export function createComponent (
   let asyncFactory
   if (isUndef(Ctor.cid)) {
     asyncFactory = Ctor
+    // 只有经历了extend方法的子组件才会具有cid属性,
+    // 但是异步组件没有走初始化的流程
     Ctor = resolveAsyncComponent(asyncFactory, baseCtor, context)
     if (Ctor === undefined) {
       // return a placeholder node for async component, which is rendered
       // as a comment node but preserves all the raw information for the node.
       // the information will be used for async server-rendering and hydration.
+      // 没有 ctor后先返回一个异步组件需要的占位符, 内部实现就是创建一个注释节点
       return createAsyncPlaceholder(
         asyncFactory,
         data,

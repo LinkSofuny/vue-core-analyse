@@ -14,8 +14,12 @@ let childDemo = {
     }
   }
 }
-debugger
-Vue.component('childDemo', childDemo)
+Vue.component('childDemo', function (resolve) {
+  require(
+    ['./components/HelloWorld.vue'],
+    (res) => resolve(res)
+  )
+})
 
 let app = new Vue({
   el: '#app',

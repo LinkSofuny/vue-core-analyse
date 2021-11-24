@@ -163,6 +163,7 @@ function mergeAssets (
   key: string
 ): Object {
   const res = Object.create(parentVal || null)
+  // 创建对象的时候 原型链也会被继承
   if (childVal) {
     process.env.NODE_ENV !== 'production' && assertObjectType(key, childVal, vm)
     return extend(res, childVal)

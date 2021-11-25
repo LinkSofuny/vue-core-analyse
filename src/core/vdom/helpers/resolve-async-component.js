@@ -37,6 +37,9 @@ export function createAsyncPlaceholder (
   return node
 }
 // 生成异步组件
+// 首次执行会基于配置进行加工
+// 这个函数的核心在于 有没有生成 factory.resolved 有则证明执行完毕
+//
 export function resolveAsyncComponent (
   factory: Function,
   baseCtor: Class<Component>,
@@ -97,13 +100,14 @@ export function resolveAsyncComponent (
         if (isUndef(factory.resolved)) {
           res.then(resolve, reject)
         }
+      //  高阶组件 自行配置 error loading 等属性
       } else if (isDef(res.component) && typeof res.component.then === 'function') {
         res.component.then(resolve, reject)
 
         if (isDef(res.error)) {
           factory.errorComp = ensureCtor(res.error, baseCtor)
         }
-
+        // 这里仅围绕 loading 做判断 无需关心 error 和 resolved 是否存在
         if (isDef(res.loading)) {
           factory.loadingComp = ensureCtor(res.loading, baseCtor)
           if (res.delay === 0) {
@@ -117,7 +121,7 @@ export function resolveAsyncComponent (
             }, res.delay || 200)
           }
         }
-
+        // 设置超时时间
         if (isDef(res.timeout)) {
           setTimeout(() => {
             if (isUndef(factory.resolved)) {

@@ -50,9 +50,11 @@ export class Observer {
     this.vmCount = 0
     // 给当前的被观测对象定义一个属性， 该属性为一个 观察者实例
     // 相当于给当前的被观测对象打上一个标签， 避免重复操作
+    // 每次访问 __ob__ 会返回当前的观察者实例
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       // 当前被观测对象如果是一个 数组
+      // hasProto 用于判断是否兼容(可使用)__proto__
       const augment = hasProto
         ? protoAugment
         : copyAugment
@@ -118,7 +120,7 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
 }
 
 /**
- * @description: 
+ * @description:
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
@@ -135,10 +137,11 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     return
   }
   let ob: Observer | void
-  // 存在观察者实例， 返回旧的
+  // 存在观察者实例， 返回旧的 通过observe 方法 调用的 def 实现
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
+    // 是否为根节点
     observerState.shouldConvert &&
     !isServerRendering() &&
     // 数组， 扁平对象
@@ -187,7 +190,7 @@ export function defineReactive (
   const setter = property && property.set
   // 递归，拿到属性的观察者对象
   let childOb = !shallow && observe(val)
-  
+
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,

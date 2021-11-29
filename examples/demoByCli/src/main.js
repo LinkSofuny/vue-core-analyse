@@ -14,11 +14,10 @@ let childDemo = {
     }
   }
 }
-Vue.component('childDemo', function (resolve) {
-  require(
-    ['./components/HelloWorld.vue'],
-    (res) => resolve(res)
-  )
+Vue.component('childDemo', () => {
+  return {
+    component: import('./components/HelloWorld.vue')
+  }
 })
 
 let app = new Vue({

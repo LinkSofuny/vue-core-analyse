@@ -91,6 +91,8 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
+    // 这里会将当前的 watcher 实例 压入栈中
+    // 需要考虑到会有嵌套组件的情况, 子组件的 watcher 应该优先被处理 所以是栈
     pushTarget(this)
     let value
     const vm = this.vm

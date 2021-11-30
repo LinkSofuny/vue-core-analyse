@@ -16,6 +16,7 @@ export default class Dep {
 
   constructor () {
     this.id = uid++
+    // 存放 watcher 的地方
     this.subs = []
   }
 
@@ -29,6 +30,7 @@ export default class Dep {
 
   depend () {
     if (Dep.target) {
+      // watcher 上的 addDep 方法?
       Dep.target.addDep(this)
     }
   }
@@ -45,6 +47,7 @@ export default class Dep {
 // the current target watcher being evaluated.
 // this is globally unique because there could be only one
 // watcher being evaluated at any time.
+// 当前正在计算的 dep 实例
 Dep.target = null
 const targetStack = []
 
@@ -52,7 +55,7 @@ export function pushTarget (_target: Watcher) {
   if (Dep.target) targetStack.push(Dep.target)
   Dep.target = _target
 }
-
+// 弹出当前 恢复到上一个栈
 export function popTarget () {
   Dep.target = targetStack.pop()
 }

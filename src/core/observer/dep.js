@@ -30,13 +30,15 @@ export default class Dep {
 
   depend () {
     if (Dep.target) {
-      // watcher 上的 addDep 方法?
+      // watcher 上的 addDep 方法
       Dep.target.addDep(this)
     }
   }
 
   notify () {
     // stabilize the subscriber list first
+    // 通知每一个订阅者执行 update 方法
+    // 所有实际上 subs 就是存储订阅者的地方?
     const subs = this.subs.slice()
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()

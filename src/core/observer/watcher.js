@@ -122,10 +122,14 @@ export default class Watcher {
    */
   addDep (dep: Dep) {
     const id = dep.id
+    // 每次订阅完成, watcher实例有关于本次订阅的 id 组
+    // 如果发现已经存在了某个数据的 dep id 则不再进行订阅
     if (!this.newDepIds.has(id)) {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
+        // get执行的时候, 把当前的watcher
+        // 添加到数据劫持阶段创建的 dep 实例上完成订阅
         dep.addSub(this)
       }
     }
@@ -173,6 +177,7 @@ export default class Watcher {
    */
   run () {
     if (this.active) {
+      // watcher 调用 (updateComponent 重新渲染)
       const value = this.get()
       if (
         value !== this.value ||

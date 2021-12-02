@@ -18,7 +18,7 @@ function flushCallbacks () {
     copies[i]()
   }
 }
-
+// 这是最新版本的分支
 // Here we have async deferring wrappers using microtasks.
 // In 2.5 we used (macro) tasks (in combination with microtasks).
 // However, it has subtle problems when state is changed right before repaint

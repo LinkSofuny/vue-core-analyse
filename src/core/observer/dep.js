@@ -17,6 +17,7 @@ export default class Dep {
 
   constructor () {
     this.id = uid++
+    // subscribes 当前订阅者集
     this.subs = []
   }
 
@@ -30,6 +31,7 @@ export default class Dep {
 
   depend () {
     if (Dep.target) {
+      // watcher
       Dep.target.addDep(this)
     }
   }
@@ -44,6 +46,7 @@ export default class Dep {
       subs.sort((a, b) => a.id - b.id)
     }
     for (let i = 0, l = subs.length; i < l; i++) {
+      // 发布者通知 订阅者 更新
       subs[i].update()
     }
   }

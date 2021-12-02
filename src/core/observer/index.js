@@ -139,6 +139,7 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // 发布者 Publish
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)

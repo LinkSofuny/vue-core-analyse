@@ -45,13 +45,16 @@ export class Observer {
     this.vmCount = 0
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
+      // 兼容性判断
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
         copyAugment(value, arrayMethods, arrayKeys)
       }
+      // 监听数组
       this.observeArray(value)
     } else {
+      // 普通对象
       this.walk(value)
     }
   }

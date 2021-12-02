@@ -59,11 +59,15 @@ Dep.target = null
 const targetStack = []
 
 export function pushTarget (target: ?Watcher) {
+  // 将 当前 watcher 压栈
   targetStack.push(target)
+  // 标识
   Dep.target = target
 }
 
 export function popTarget () {
+  // 弹出
   targetStack.pop()
+  // 将栈顶的 watcher 标识为 target 表明为当前被激活的实例
   Dep.target = targetStack[targetStack.length - 1]
 }

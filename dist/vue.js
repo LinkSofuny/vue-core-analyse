@@ -756,12 +756,16 @@
   var targetStack = [];
 
   function pushTarget (target) {
+    // 将 当前 watcher 压栈
     targetStack.push(target);
+    // 标识
     Dep.target = target;
   }
 
   function popTarget () {
+    // 弹出
     targetStack.pop();
+    // 将栈顶的 watcher 标识为 target 表明为当前被激活的实例
     Dep.target = targetStack[targetStack.length - 1];
   }
 
@@ -928,13 +932,16 @@
     this.vmCount = 0;
     def(value, '__ob__', this);
     if (Array.isArray(value)) {
+      // 兼容性判断
       if (hasProto) {
         protoAugment(value, arrayMethods);
       } else {
         copyAugment(value, arrayMethods, arrayKeys);
       }
+      // 监听数组
       this.observeArray(value);
     } else {
+      // 普通对象
       this.walk(value);
     }
   };
@@ -4486,6 +4493,7 @@
    * Evaluate the getter, and re-collect dependencies.
    */
   Watcher.prototype.get = function get () {
+    // 用于标识 当前被激活的 wacher 实例
     pushTarget(this);
     var value;
     var vm = this.vm;

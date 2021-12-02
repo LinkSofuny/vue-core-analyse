@@ -100,6 +100,7 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
+    // 用于标识 当前被激活的 wacher 实例
     pushTarget(this)
     let value
     const vm = this.vm

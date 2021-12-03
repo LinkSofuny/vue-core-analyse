@@ -1,8 +1,8 @@
 /* @flow */
 
 import { ASSET_TYPES } from 'shared/constants'
-import { warn, extend, mergeOptions } from '../util/index'
 import { defineComputed, proxy } from '../instance/state'
+import { extend, mergeOptions, validateComponentName } from '../util/index'
 
 export function initExtend (Vue: GlobalAPI) {
   /**
@@ -15,39 +15,28 @@ export function initExtend (Vue: GlobalAPI) {
 
   /**
    * Class inheritance
-   * 类继承方法
    */
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}
-    const Super = this // Vue 非一定实例
+    const Super = this
     const SuperId = Super.cid
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
-    // 命中缓存
     if (cachedCtors[SuperId]) {
       return cachedCtors[SuperId]
     }
 
     const name = extendOptions.name || Super.options.name
-    if (process.env.NODE_ENV !== 'production') {
-      if (!/^[a-zA-Z][\w-]*$/.test(name)) {
-        warn(
-          'Invalid component name: "' + name + '". Component names ' +
-          'can only contain alphanumeric characters and the hyphen, ' +
-          'and must start with a letter.'
-        )
-      }
+    if (process.env.NODE_ENV !== 'production' && name) {
+      validateComponentName(name)
     }
 
     const Sub = function VueComponent (options) {
       this._init(options)
     }
-    // 让 Sub 的原型对象指向Vue构造函数的 (原型继承)
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
     Sub.options = mergeOptions(
-      // 每次子组件合并配置的时候 是拿 构造函数 Vue 进行合并
-      // 而不是该组件的上一个组件实例
       Super.options,
       extendOptions
     )

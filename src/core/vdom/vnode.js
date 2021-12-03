@@ -1,5 +1,5 @@
 /* @flow */
-// Virtual Dom
+
 export default class VNode {
   tag: string | void;
   data: VNodeData | void;
@@ -24,16 +24,17 @@ export default class VNode {
   asyncMeta: Object | void;
   isAsyncPlaceholder: boolean;
   ssrContext: Object | void;
-  functionalContext: Component | void; // real context vm for functional nodes
-  functionalOptions: ?ComponentOptions; // for SSR caching
-  functionalScopeId: ?string; // functioanl scope id support
+  fnContext: Component | void; // real context vm for functional nodes
+  fnOptions: ?ComponentOptions; // for SSR caching
+  devtoolsMeta: ?Object; // used to store functional render context for devtools
+  fnScopeId: ?string; // functional scope id support
 
   constructor (
-    tag?: string, // 标签
-    data?: VNodeData, // 数据?
-    children?: ?Array<VNode>, // 子节点
-    text?: string,  // 文本
-    elm?: Node,  // 节点
+    tag?: string,
+    data?: VNodeData,
+    children?: ?Array<VNode>,
+    text?: string,
+    elm?: Node,
     context?: Component,
     componentOptions?: VNodeComponentOptions,
     asyncFactory?: Function
@@ -45,9 +46,9 @@ export default class VNode {
     this.elm = elm
     this.ns = undefined
     this.context = context
-    this.functionalContext = undefined
-    this.functionalOptions = undefined
-    this.functionalScopeId = undefined
+    this.fnContext = undefined
+    this.fnOptions = undefined
+    this.fnScopeId = undefined
     this.key = data && data.key
     this.componentOptions = componentOptions
     this.componentInstance = undefined
@@ -76,7 +77,7 @@ export const createEmptyVNode = (text: string = '') => {
   node.isComment = true
   return node
 }
-// 创建一个文本节点
+
 export function createTextVNode (val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val))
 }
@@ -85,11 +86,14 @@ export function createTextVNode (val: string | number) {
 // used for static nodes and slot nodes because they may be reused across
 // multiple renders, cloning them avoids errors when DOM manipulations rely
 // on their elm reference.
-export function cloneVNode (vnode: VNode, deep?: boolean): VNode {
+export function cloneVNode (vnode: VNode): VNode {
   const cloned = new VNode(
     vnode.tag,
     vnode.data,
-    vnode.children,
+    // #7975
+    // clone children array to avoid mutating original in case of cloning
+    // a child.
+    vnode.children && vnode.children.slice(),
     vnode.text,
     vnode.elm,
     vnode.context,
@@ -100,18 +104,10 @@ export function cloneVNode (vnode: VNode, deep?: boolean): VNode {
   cloned.isStatic = vnode.isStatic
   cloned.key = vnode.key
   cloned.isComment = vnode.isComment
+  cloned.fnContext = vnode.fnContext
+  cloned.fnOptions = vnode.fnOptions
+  cloned.fnScopeId = vnode.fnScopeId
+  cloned.asyncMeta = vnode.asyncMeta
   cloned.isCloned = true
-  if (deep && vnode.children) {
-    cloned.children = cloneVNodes(vnode.children)
-  }
   return cloned
-}
-
-export function cloneVNodes (vnodes: Array<VNode>, deep?: boolean): Array<VNode> {
-  const len = vnodes.length
-  const res = new Array(len)
-  for (let i = 0; i < len; i++) {
-    res[i] = cloneVNode(vnodes[i], deep)
-  }
-  return res
 }

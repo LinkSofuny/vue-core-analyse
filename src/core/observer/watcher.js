@@ -1,18 +1,21 @@
 /* @flow */
 
-import { queueWatcher } from './scheduler'
-import Dep, { pushTarget, popTarget } from './dep'
-
 import {
   warn,
   remove,
   isObject,
   parsePath,
   _Set as Set,
-  handleError
+  handleError,
+  invokeWithErrorHandling,
+  noop
 } from '../util/index'
 
-import type { ISet } from '../util/index'
+import { traverse } from './traverse'
+import { queueWatcher } from './scheduler'
+import Dep, { pushTarget, popTarget } from './dep'
+
+import type { SimpleSet } from '../util/index'
 
 let uid = 0
 
@@ -34,18 +37,23 @@ export default class Watcher {
   active: boolean;
   deps: Array<Dep>;
   newDeps: Array<Dep>;
-  depIds: ISet;
-  newDepIds: ISet;
+  depIds: SimpleSet;
+  newDepIds: SimpleSet;
+  before: ?Function;
   getter: Function;
   value: any;
 
   constructor (
-    vm: Component, // this
-    expOrFn: string | Function, // updateComponent 更新组件
+    vm: Component,
+    expOrFn: string | Function,
     cb: Function,
-    options?: Object
+    options?: ?Object,
+    isRenderWatcher?: boolean
   ) {
     this.vm = vm
+    if (isRenderWatcher) {
+      vm._watcher = this
+    }
     vm._watchers.push(this)
     // options
     if (options) {
@@ -53,6 +61,7 @@ export default class Watcher {
       this.user = !!options.user
       this.lazy = !!options.lazy
       this.sync = !!options.sync
+      this.before = options.before
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
@@ -73,7 +82,7 @@ export default class Watcher {
     } else {
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
-        this.getter = function () {}
+        this.getter = noop
         process.env.NODE_ENV !== 'production' && warn(
           `Failed watching path: "${expOrFn}" ` +
           'Watcher only accepts simple dot-delimited paths. ' +
@@ -91,13 +100,11 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
-    // 这里会将当前的 watcher 实例 压入栈中
-    // 需要考虑到会有嵌套组件的情况, 子组件的 watcher 应该优先被处理 所以是栈
+    // 用于标识 当前被激活的 wacher 实例
     pushTarget(this)
     let value
     const vm = this.vm
     try {
-      // 在这里调用 getter => updateComponent
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -122,14 +129,11 @@ export default class Watcher {
    */
   addDep (dep: Dep) {
     const id = dep.id
-    // 每次订阅完成, watcher实例有关于本次订阅的 id 组
-    // 如果发现已经存在了某个数据的 dep id 则不再进行订阅
     if (!this.newDepIds.has(id)) {
+      // 将当前订阅对象的集合, 并且要求唯一
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
-        // get执行的时候, 把当前的watcher
-        // 添加到数据劫持阶段创建的 dep 实例上完成订阅
         dep.addSub(this)
       }
     }
@@ -177,7 +181,6 @@ export default class Watcher {
    */
   run () {
     if (this.active) {
-      // watcher 调用 (updateComponent 重新渲染)
       const value = this.get()
       if (
         value !== this.value ||
@@ -191,11 +194,8 @@ export default class Watcher {
         const oldValue = this.value
         this.value = value
         if (this.user) {
-          try {
-            this.cb.call(this.vm, value, oldValue)
-          } catch (e) {
-            handleError(e, this.vm, `callback for watcher "${this.expression}"`)
-          }
+          const info = `callback for watcher "${this.expression}"`
+          invokeWithErrorHandling(this.cb, this.vm, [value, oldValue], this.vm, info)
         } else {
           this.cb.call(this.vm, value, oldValue)
         }
@@ -239,39 +239,5 @@ export default class Watcher {
       }
       this.active = false
     }
-  }
-}
-
-/**
- * Recursively traverse an object to evoke all converted
- * getters, so that every nested property inside the object
- * is collected as a "deep" dependency.
- */
-const seenObjects = new Set()
-function traverse (val: any) {
-  seenObjects.clear()
-  _traverse(val, seenObjects)
-}
-
-function _traverse (val: any, seen: ISet) {
-  let i, keys
-  const isA = Array.isArray(val)
-  if ((!isA && !isObject(val)) || !Object.isExtensible(val)) {
-    return
-  }
-  if (val.__ob__) {
-    const depId = val.__ob__.dep.id
-    if (seen.has(depId)) {
-      return
-    }
-    seen.add(depId)
-  }
-  if (isA) {
-    i = val.length
-    while (i--) _traverse(val[i], seen)
-  } else {
-    keys = Object.keys(val)
-    i = keys.length
-    while (i--) _traverse(val[keys[i]], seen)
   }
 }

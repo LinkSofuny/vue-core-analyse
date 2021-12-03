@@ -36,8 +36,6 @@ export function initMixin (Vue: Class<Component>) {
       initInternalComponent(vm, options)
     } else {
       vm.$options = mergeOptions(
-        // 首次执行, 其实就实例化时候的对象new Vue({ /* 这里 */ })
-        // 其他时候, 如子组件初始化的时候, 他可以是当前组件实例的options
         resolveConstructorOptions(vm.constructor),
         options || {},
         vm
@@ -45,7 +43,6 @@ export function initMixin (Vue: Class<Component>) {
     }
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
-      // 开发阶段
       initProxy(vm)
     } else {
       vm._renderProxy = vm
@@ -57,7 +54,6 @@ export function initMixin (Vue: Class<Component>) {
     initRender(vm)
     callHook(vm, 'beforeCreate')
     initInjections(vm) // resolve injections before data/props
-    // 初始化状态
     initState(vm)
     initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
@@ -75,17 +71,19 @@ export function initMixin (Vue: Class<Component>) {
   }
 }
 
-function initInternalComponent (vm: Component, options: InternalComponentOptions) {
+export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
+  const parentVnode = options._parentVnode
   opts.parent = options.parent
-  opts.propsData = options.propsData
-  opts._parentVnode = options._parentVnode
-  opts._parentListeners = options._parentListeners
-  opts._renderChildren = options._renderChildren
-  opts._componentTag = options._componentTag
-  opts._parentElm = options._parentElm
-  opts._refElm = options._refElm
+  opts._parentVnode = parentVnode
+
+  const vnodeComponentOptions = parentVnode.componentOptions
+  opts.propsData = vnodeComponentOptions.propsData
+  opts._parentListeners = vnodeComponentOptions.listeners
+  opts._renderChildren = vnodeComponentOptions.children
+  opts._componentTag = vnodeComponentOptions.tag
+
   if (options.render) {
     opts.render = options.render
     opts.staticRenderFns = options.staticRenderFns
@@ -119,32 +117,12 @@ export function resolveConstructorOptions (Ctor: Class<Component>) {
 function resolveModifiedOptions (Ctor: Class<Component>): ?Object {
   let modified
   const latest = Ctor.options
-  const extended = Ctor.extendOptions
   const sealed = Ctor.sealedOptions
   for (const key in latest) {
     if (latest[key] !== sealed[key]) {
       if (!modified) modified = {}
-      modified[key] = dedupe(latest[key], extended[key], sealed[key])
+      modified[key] = latest[key]
     }
   }
   return modified
-}
-
-function dedupe (latest, extended, sealed) {
-  // compare latest and sealed to ensure lifecycle hooks won't be duplicated
-  // between merges
-  if (Array.isArray(latest)) {
-    const res = []
-    sealed = Array.isArray(sealed) ? sealed : [sealed]
-    extended = Array.isArray(extended) ? extended : [extended]
-    for (let i = 0; i < latest.length; i++) {
-      // push original options and not sealed options to exclude duplicated options
-      if (extended.indexOf(latest[i]) >= 0 || sealed.indexOf(latest[i]) < 0) {
-        res.push(latest[i])
-      }
-    }
-    return res
-  } else {
-    return latest
-  }
 }

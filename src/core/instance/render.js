@@ -11,12 +11,14 @@ import {
 import { createElement } from '../vdom/create-element'
 import { installRenderHelpers } from './render-helpers/index'
 import { resolveSlots } from './render-helpers/resolve-slots'
-import VNode, { cloneVNodes, createEmptyVNode } from '../vdom/vnode'
+import { normalizeScopedSlots } from '../vdom/helpers/normalize-scoped-slots'
+import VNode, { createEmptyVNode } from '../vdom/vnode'
 
 import { isUpdatingChildComponent } from './lifecycle'
 
 export function initRender (vm: Component) {
   vm._vnode = null // the root of the child tree
+  vm._staticTrees = null // v-once cached trees
   const options = vm.$options
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
   const renderContext = parentVnode && parentVnode.context
@@ -26,11 +28,9 @@ export function initRender (vm: Component) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
-  // 这个方法用于 由 template 模板编译而成的 render函数
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
-  // 挂载
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
   // $attrs & $listeners are exposed for easier HOC creation.
@@ -51,6 +51,13 @@ export function initRender (vm: Component) {
   }
 }
 
+export let currentRenderingInstance: Component | null = null
+
+// for testing only
+export function setCurrentRenderingInstance (vm: Component) {
+  currentRenderingInstance = vm
+}
+
 export function renderMixin (Vue: Class<Component>) {
   // install runtime convenience helpers
   installRenderHelpers(Vue.prototype)
@@ -63,52 +70,49 @@ export function renderMixin (Vue: Class<Component>) {
     const vm: Component = this
     const { render, _parentVnode } = vm.$options
 
-    if (vm._isMounted) {
-      // if the parent didn't update, the slot nodes will be the ones from
-      // last render. They need to be cloned to ensure "freshness" for this render.
-      for (const key in vm.$slots) {
-        const slot = vm.$slots[key]
-        if (slot._rendered) {
-          vm.$slots[key] = cloneVNodes(slot, true /* deep */)
-        }
-      }
+    if (_parentVnode) {
+      vm.$scopedSlots = normalizeScopedSlots(
+        _parentVnode.data.scopedSlots,
+        vm.$slots,
+        vm.$scopedSlots
+      )
     }
-
-    vm.$scopedSlots = (_parentVnode && _parentVnode.data.scopedSlots) || emptyObject
 
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
-    // vm.$vnode 是一个占位虚拟节点, 如组件在父组件中引用的位置
     vm.$vnode = _parentVnode
     // render self
     let vnode
     try {
-      // 如果 $options 的 render 存在, 尝试执行他
-      // 这里将createElement 函数传给了render 所以 我们自行定义 render 函数得时候 可以接收到这个函数
+      // There's no need to maintain a stack because all render fns are called
+      // separately from one another. Nested component's render fns are called
+      // when parent component is patched.
+      currentRenderingInstance = vm
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)
       // return error render result,
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
-      if (process.env.NODE_ENV !== 'production') {
-        if (vm.$options.renderError) {
-          try {
-            vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e)
-          } catch (e) {
-            handleError(e, vm, `renderError`)
-            vnode = vm._vnode
-          }
-        } else {
+      if (process.env.NODE_ENV !== 'production' && vm.$options.renderError) {
+        try {
+          vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e)
+        } catch (e) {
+          handleError(e, vm, `renderError`)
           vnode = vm._vnode
         }
       } else {
         vnode = vm._vnode
       }
+    } finally {
+      currentRenderingInstance = null
+    }
+    // if the returned array contains only a single node, allow it
+    if (Array.isArray(vnode) && vnode.length === 1) {
+      vnode = vnode[0]
     }
     // return empty vnode in case the render function errored out
     if (!(vnode instanceof VNode)) {
-      // 存在多个 vnode 所以是数组
       if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
         warn(
           'Multiple root nodes returned from render function. Render function ' +

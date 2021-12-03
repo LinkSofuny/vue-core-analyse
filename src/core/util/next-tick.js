@@ -60,6 +60,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   // (#6466 MutationObserver is unreliable in IE11)
   let counter = 1
   const observer = new MutationObserver(flushCallbacks)
+  // 创建一个文本节点, 给 observer去监听
   const textNode = document.createTextNode(String(counter))
   observer.observe(textNode, {
     characterData: true
@@ -84,6 +85,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 }
 
 export function nextTick (cb?: Function, ctx?: Object) {
+  // 等于一个原生的 promise resolve
   let _resolve
   callbacks.push(() => {
     if (cb) {

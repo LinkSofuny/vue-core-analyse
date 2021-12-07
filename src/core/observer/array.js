@@ -7,7 +7,7 @@ import { def } from '../util/index'
 
 const arrayProto = Array.prototype
 export const arrayMethods = Object.create(arrayProto)
-
+// 以下几种方法都被重写
 const methodsToPatch = [
   'push',
   'pop',
@@ -24,6 +24,7 @@ const methodsToPatch = [
 methodsToPatch.forEach(function (method) {
   // cache original method
   const original = arrayProto[method]
+  // 劫持arrayMethods中的方法, 默认返回加工后的函数,
   def(arrayMethods, method, function mutator (...args) {
     const result = original.apply(this, args)
     const ob = this.__ob__

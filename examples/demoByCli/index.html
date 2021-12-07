@@ -7,7 +7,26 @@
   </head>
   <body>
     <script src="../../dist/vue.js"></script>
-    <!-- built files will be auto injected -->
-    <div id="#app"></div>
+    <div id="app" ref="app">{{ msg }}</div>
+    <script>
+      new Vue({
+        el: '#app',
+        data () {
+          return {
+            msg: 'Vue'
+          }
+        },
+        mounted () {
+          this.$nextTick(() => {
+            console.log('hi' + this.$refs.app.innerText)
+          })
+          this.msg = 'World'
+          this.$nextTick(() => {
+            console.log('hi' + this.$refs.app.innerText)
+          })
+        }
+      })
+    </script>
+
   </body>
 </html>

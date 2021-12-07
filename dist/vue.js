@@ -866,7 +866,7 @@
 
   var arrayProto = Array.prototype;
   var arrayMethods = Object.create(arrayProto);
-
+  // 以下几种方法都被重写
   var methodsToPatch = [
     'push',
     'pop',
@@ -883,6 +883,7 @@
   methodsToPatch.forEach(function (method) {
     // cache original method
     var original = arrayProto[method];
+    // 劫持arrayMethods中的方法, 默认执行 mutator
     def(arrayMethods, method, function mutator () {
       var args = [], len = arguments.length;
       while ( len-- ) args[ len ] = arguments[ len ];
@@ -933,6 +934,7 @@
     def(value, '__ob__', this);
     if (Array.isArray(value)) {
       // 兼容性判断
+      // 原型链指向
       if (hasProto) {
         protoAugment(value, arrayMethods);
       } else {
@@ -1937,7 +1939,6 @@
       copies[i]();
     }
   }
-  // 这是最新版本的分支
   // Here we have async deferring wrappers using microtasks.
   // In 2.5 we used (macro) tasks (in combination with microtasks).
   // However, it has subtle problems when state is changed right before repaint
@@ -1980,6 +1981,7 @@
     // (#6466 MutationObserver is unreliable in IE11)
     var counter = 1;
     var observer = new MutationObserver(flushCallbacks);
+    // 创建一个文本节点, 给 observer去监听
     var textNode = document.createTextNode(String(counter));
     observer.observe(textNode, {
       characterData: true
@@ -2004,6 +2006,7 @@
   }
 
   function nextTick (cb, ctx) {
+    // 等于一个原生的 promise resolve
     var _resolve;
     callbacks.push(function () {
       if (cb) {
@@ -4325,7 +4328,7 @@
     for (index = 0; index < queue.length; index++) {
       watcher = queue[index];
       if (watcher.before) {
-        watcher.before();
+        watcher.before(); //- beforeUpadate
       }
       id = watcher.id;
       has[id] = null;

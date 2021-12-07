@@ -41,11 +41,13 @@ export class Observer {
 
   constructor (value: any) {
     this.value = value
-    this.dep = new Dep()
+    this.dep = new Dep()  // 观察者 本身也有一个 发布者类
     this.vmCount = 0
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       // 兼容性判断
+      // 原型链指向
+      // 在这两个函数内,
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
@@ -142,7 +144,7 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
-  // 发布者 Publish
+  // 发布者
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)

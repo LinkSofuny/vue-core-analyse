@@ -105,6 +105,11 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
+      /**
+       * 如果是计算watcher 执行这个方法计算值的时候,
+       * 会使得当前的 计算watcher 被当前值的 dep 收集
+       * 所以一旦 这个值发生变化 计算watcher 会被重新触发更新
+       */
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -167,6 +172,8 @@ export default class Watcher {
   update () {
     /* istanbul ignore else */
     if (this.lazy) {
+      // 假设当前 发布者 通知 值被重新 set
+      // 则把 dirty 设置为 true 当computed 被使用的时候 就可以重新调用计算
       this.dirty = true
     } else if (this.sync) {
       this.run()

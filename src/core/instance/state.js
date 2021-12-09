@@ -166,7 +166,7 @@ export function getData (data: Function, vm: Component): any {
 }
 
 const computedWatcherOptions = { lazy: true }
-
+// vm: 组件实例 computed 组件内的 计算属性对象
 function initComputed (vm: Component, computed: Object) {
   // $flow-disable-line
   const watchers = vm._computedWatchers = Object.create(null)
@@ -174,6 +174,7 @@ function initComputed (vm: Component, computed: Object) {
   const isSSR = isServerRendering()
 
   for (const key in computed) {
+    // 用户定义的 computed
     const userDef = computed[key]
     const getter = typeof userDef === 'function' ? userDef : userDef.get
     if (process.env.NODE_ENV !== 'production' && getter == null) {
@@ -196,6 +197,7 @@ function initComputed (vm: Component, computed: Object) {
     // component-defined computed properties are already defined on the
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
+    // 重名判断, 因为做了代理可以直接访问
     if (!(key in vm)) {
       defineComputed(vm, key, userDef)
     } else if (process.env.NODE_ENV !== 'production') {
@@ -215,6 +217,7 @@ export function defineComputed (
   key: string,
   userDef: Object | Function
 ) {
+  // 不是SSR则缓存
   const shouldCache = !isServerRendering()
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
@@ -238,14 +241,20 @@ export function defineComputed (
       )
     }
   }
+  // 当访问一次计算属性的key 就会触发一次 sharedPropertyDefinition
+  // 对computed 做了一次劫持
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
 function createComputedGetter (key) {
   return function computedGetter () {
+    // 拿到 上述 创建的 watcher 实例
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
+      // 首次执行的时候 dirty 基于 lazy 所以是true
       if (watcher.dirty) {
+        // 这个方法会执行一次计算
+        // dirty 设置为 false
         watcher.evaluate()
       }
       if (Dep.target) {

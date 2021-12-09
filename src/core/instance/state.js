@@ -255,9 +255,11 @@ function createComputedGetter (key) {
       if (watcher.dirty) {
         // 这个方法会执行一次计算
         // dirty 设置为 false
+        // 这个函数执行完毕后, 当前 计算watcher就会推出
         watcher.evaluate()
       }
       if (Dep.target) {
+        // 通知 当前 dep
         watcher.depend()
       }
       return watcher.value

@@ -90,6 +90,8 @@ function initProps (Comp) {
 function initComputed (Comp) {
   const computed = Comp.options.computed
   for (const key in computed) {
+    // 为什么是定义在原型上?
+    // 允许多组件共享 ???
     defineComputed(Comp.prototype, key, computed[key])
   }
 }

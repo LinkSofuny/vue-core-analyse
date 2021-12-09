@@ -910,7 +910,7 @@ const methodsToPatch = [
 methodsToPatch.forEach(function (method) {
   // cache original method
   const original = arrayProto[method];
-  // 劫持arrayMethods中的方法, 默认执行 mutator
+  // 劫持arrayMethods中的方法, 默认返回加工后的函数,
   def(arrayMethods, method, function mutator (...args) {
     const result = original.apply(this, args);
     const ob = this.__ob__;
@@ -958,12 +958,13 @@ class Observer {
 
   constructor (value) {
     this.value = value;
-    this.dep = new Dep();
+    this.dep = new Dep();  // 观察者 本身也有一个 发布者类
     this.vmCount = 0;
     def(value, '__ob__', this);
     if (Array.isArray(value)) {
       // 兼容性判断
       // 原型链指向
+      // 在这两个函数内,
       if (hasProto) {
         protoAugment(value, arrayMethods);
       } else {
@@ -1060,7 +1061,7 @@ function defineReactive (
   customSetter,
   shallow
 ) {
-  // 发布者 Publish
+  // 发布者
   const dep = new Dep();
 
   const property = Object.getOwnPropertyDescriptor(obj, key);
@@ -4537,6 +4538,11 @@ class Watcher {
     let value;
     const vm = this.vm;
     try {
+      /**
+       * 如果是计算watcher 执行这个方法计算值的时候,
+       * 会使得当前的 计算watcher 被当前值的 dep 收集
+       * 所以一旦 这个值发生变化 计算watcher 会被重新触发更新
+       */
       value = this.getter.call(vm, vm);
     } catch (e) {
       if (this.user) {
@@ -4599,6 +4605,8 @@ class Watcher {
   update () {
     /* istanbul ignore else */
     if (this.lazy) {
+      // 假设当前 发布者 通知 值被重新 set
+      // 则把 dirty 设置为 true 当computed 被使用的时候 就可以重新调用计算
       this.dirty = true;
     } else if (this.sync) {
       this.run();
@@ -4811,7 +4819,7 @@ function getData (data, vm) {
 }
 
 const computedWatcherOptions = { lazy: true };
-
+// vm: 组件实例 computed 组件内的 计算属性对象
 function initComputed (vm, computed) {
   // $flow-disable-line
   const watchers = vm._computedWatchers = Object.create(null);
@@ -4819,6 +4827,7 @@ function initComputed (vm, computed) {
   const isSSR = isServerRendering();
 
   for (const key in computed) {
+    // 用户定义的 computed
     const userDef = computed[key];
     const getter = typeof userDef === 'function' ? userDef : userDef.get;
     if ( getter == null) {
@@ -4841,6 +4850,7 @@ function initComputed (vm, computed) {
     // component-defined computed properties are already defined on the
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
+    // 重名判断, 因为做了代理可以直接访问
     if (!(key in vm)) {
       defineComputed(vm, key, userDef);
     } else {
@@ -4860,6 +4870,7 @@ function defineComputed (
   key,
   userDef
 ) {
+  // 不是SSR则缓存
   const shouldCache = !isServerRendering();
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
@@ -4883,14 +4894,20 @@ function defineComputed (
       );
     };
   }
+  // 当访问一次计算属性的key 就会触发一次 sharedPropertyDefinition
+  // 对computed 做了一次劫持
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
 function createComputedGetter (key) {
   return function computedGetter () {
+    // 拿到 上述 创建的 watcher 实例
     const watcher = this._computedWatchers && this._computedWatchers[key];
     if (watcher) {
+      // 首次执行的时候 dirty 基于 lazy 所以是true
       if (watcher.dirty) {
+        // 这个方法会执行一次计算
+        // dirty 设置为 false
         watcher.evaluate();
       }
       if (Dep.target) {

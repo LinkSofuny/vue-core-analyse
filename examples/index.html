@@ -6,8 +6,11 @@
     <title>demo</title>
   </head>
   <body>
-    <script src="../../dist/vue.js"></script>
-    <div id="app" ref="app">{{ msg }}</div>
+    <script src="../dist/vue.js"></script>
+    <div id="app" ref="app">
+      <p @click="changeMassage">{{ msg }}</p>
+      <p>{{ msgCmp }}</p>
+    </div>
     <script>
       new Vue({
         el: '#app',
@@ -17,13 +20,17 @@
           }
         },
         mounted () {
-          this.$nextTick(() => {
-            console.log('hi' + this.$refs.app.innerText)
-          })
-          this.msg = 'World'
-          this.$nextTick(() => {
-            console.log('hi' + this.$refs.app.innerText)
-          })
+
+        },
+        methods: {
+          changeMassage() {
+            this.msg = ' world'
+          }
+        },
+        computed: {
+          msgCmp() {
+            return this.msg + ' computed'
+          }
         }
       })
     </script>

@@ -174,6 +174,9 @@ export default class Watcher {
     if (this.lazy) {
       // 假设当前 发布者 通知 值被重新 set
       // 则把 dirty 设置为 true 当computed 被使用的时候 就可以重新调用计算
+      // 渲染wacher 执行完毕 堆出后, 会轮到当前的渲染watcher执行update
+      // 此时就回去执行queueWatcher(this), 再重新执行 组件渲染时候
+      // 会用到计算属性, 在这时因为 dirty 为 true 所以能重新求值
       this.dirty = true
     } else if (this.sync) {
       this.run()

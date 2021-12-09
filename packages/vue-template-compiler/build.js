@@ -1052,7 +1052,7 @@ var methodsToPatch = [
 methodsToPatch.forEach(function (method) {
   // cache original method
   var original = arrayProto[method];
-  // 劫持arrayMethods中的方法, 默认执行 mutator
+  // 劫持arrayMethods中的方法, 默认返回加工后的函数,
   def(arrayMethods, method, function mutator () {
     var args = [], len = arguments.length;
     while ( len-- ) args[ len ] = arguments[ len ];
@@ -1088,12 +1088,13 @@ var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
  */
 var Observer = function Observer (value) {
   this.value = value;
-  this.dep = new Dep();
+  this.dep = new Dep();// 观察者 本身也有一个 发布者类
   this.vmCount = 0;
   def(value, '__ob__', this);
   if (Array.isArray(value)) {
     // 兼容性判断
     // 原型链指向
+    // 在这两个函数内,
     if (hasProto) {
       protoAugment(value, arrayMethods);
     } else {
@@ -1189,7 +1190,7 @@ function defineReactive (
   customSetter,
   shallow
 ) {
-  // 发布者 Publish
+  // 发布者
   var dep = new Dep();
 
   var property = Object.getOwnPropertyDescriptor(obj, key);

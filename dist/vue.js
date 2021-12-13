@@ -1051,7 +1051,6 @@
       enumerable: true,
       configurable: true,
       get: function reactiveGetter () {
-        debugger
         var value = getter ? getter.call(obj) : val;
         if (Dep.target) {
           dep.depend();
@@ -1065,6 +1064,7 @@
         return value
       },
       set: function reactiveSetter (newVal) {
+        debugger
         var value = getter ? getter.call(obj) : val;
         /* eslint-disable no-self-compare */
         if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -4786,7 +4786,6 @@
 
   var computedWatcherOptions = { lazy: true };
   // vm: 组件实例 computed 组件内的 计算属性对象
-  debugger
   function initComputed (vm, computed) {
     // $flow-disable-line
     var watchers = vm._computedWatchers = Object.create(null);

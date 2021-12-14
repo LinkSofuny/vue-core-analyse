@@ -1064,7 +1064,6 @@
         return value
       },
       set: function reactiveSetter (newVal) {
-        debugger
         var value = getter ? getter.call(obj) : val;
         /* eslint-disable no-self-compare */
         if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -4499,6 +4498,7 @@
    */
   Watcher.prototype.get = function get () {
     // 用于标识 当前被激活的 wacher 实例
+    debugger
     pushTarget(this);
     var value;
     var vm = this.vm;
@@ -4869,7 +4869,6 @@
     return function computedGetter () {
       // 拿到 上述 创建的 watcher 实例
       var watcher = this._computedWatchers && this._computedWatchers[key];
-      debugger
       if (watcher) {
         // 首次执行的时候 dirty 基于 lazy 所以是true
         if (watcher.dirty) {

@@ -28,7 +28,12 @@
           }
         },
         watch: {
-
+          msg: {
+            handler() {
+              console.log('监听触发')
+            },
+            immediate: true
+          }
         },
         computed: {
           msgCmp() {

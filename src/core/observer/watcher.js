@@ -109,6 +109,9 @@ export default class Watcher {
        * 如果是计算watcher 执行这个方法计算值的时候,
        * 会使得当前的 计算watcher 被当前值的 dep 收集
        * 所以一旦 这个值发生变化 计算watcher 会被重新触发更新
+       *
+       * 如果是监听wacher (我们自己定义的watcher)
+       * 这会是一个基于 wache 的 key 构建的函数 它的作用是去 访问这个值触发依赖收集
        */
       value = this.getter.call(vm, vm)
     } catch (e) {
@@ -205,6 +208,8 @@ export default class Watcher {
         this.value = value
         if (this.user) {
           const info = `callback for watcher "${this.expression}"`
+          // 将新值和旧值传给我们定义的handler函数.
+          // 对于监听wahcer会走到这里
           invokeWithErrorHandling(this.cb, this.vm, [value, oldValue], this.vm, info)
         } else {
           this.cb.call(this.vm, value, oldValue)

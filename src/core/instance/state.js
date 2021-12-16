@@ -219,12 +219,14 @@ export function defineComputed (
 ) {
   // 不是SSR则缓存
   const shouldCache = !isServerRendering()
+  // 函数的形式
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
       ? createComputedGetter(key)
       : createGetterInvoker(userDef)
     sharedPropertyDefinition.set = noop
   } else {
+    // get / set 的形式
     sharedPropertyDefinition.get = userDef.get
       ? shouldCache && userDef.cache !== false
         ? createComputedGetter(key)
@@ -372,6 +374,7 @@ export function stateMixin (Vue: Class<Component>) {
     if (options.immediate) {
       const info = `callback for immediate watcher "${watcher.expression}"`
       pushTarget()
+      // 立即执行一次 handler
       invokeWithErrorHandling(cb, vm, [watcher.value], vm, info)
       popTarget()
     }

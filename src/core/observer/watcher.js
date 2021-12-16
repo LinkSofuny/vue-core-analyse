@@ -80,6 +80,9 @@ export default class Watcher {
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
+      // 如果是一个字符则转为一个 一个 getter 函数
+      // 这里这么做是为了通过 this.[watcherKey] 的形式
+      // 能够触发 被监听属性的 依赖收集
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
         this.getter = noop
@@ -182,6 +185,8 @@ export default class Watcher {
       // 会用到计算属性, 在这时因为 dirty 为 true 所以能重新求值
       this.dirty = true
     } else if (this.sync) {
+      // 同步执行的 watcher 函数
+      // 其他时候 watcher 的更新是异步的
       this.run()
     } else {
       queueWatcher(this)

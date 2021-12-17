@@ -4498,7 +4498,6 @@
    */
   Watcher.prototype.get = function get () {
     // 用于标识 当前被激活的 wacher 实例
-    debugger
     pushTarget(this);
     var value;
     var vm = this.vm;

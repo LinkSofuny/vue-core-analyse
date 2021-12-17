@@ -43,6 +43,12 @@ export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.set = function proxySetter (val) {
     this[sourceKey][key] = val
   }
+   /**
+   * 为什么 在其他属性里, 可以直接通过 this.message 就能拿到 data 中的值?
+   *  答案就在这里, vue 在 初始化 data 的时候会通过这个代理函数
+   *  将 data 中的 key 值直接放到 vm 实例上进行监控,然后基于上面的对象进行监控
+   *  访问 this.message 相当于访问了 this._data.message
+  */
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
@@ -145,6 +151,7 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+
       proxy(vm, `_data`, key)
     }
   }

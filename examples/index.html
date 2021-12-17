@@ -8,39 +8,27 @@
   <body>
     <script src="../dist/vue.js"></script>
     <div id="app" ref="app">
-      <p @click="changeMassage">{{ msg }}</p>
-      <p>{{ msgCmp }}</p>
+      <p>{{ msg }}</p>
+      <hello-world />
     </div>
     <script>
-      new Vue({
-        el: '#app',
-        data () {
-          return {
-            msg: 'Vue'
-          }
-        },
-        mounted () {
-
-        },
-        methods: {
-          changeMassage() {
-            this.msg = ' world'
-          }
-        },
-        watch: {
-          msg: {
-            handler() {
-              console.log('监听触发')
-            },
-            immediate: true
-          }
-        },
-        computed: {
-          msgCmp() {
-            return this.msg + ' computed'
-          }
+      Vue.component('hello-world', {
+        template: '<p>这是子组件{{ this.msg }}</p>',
+        name: 'hello-world',
+        mounted() {
+          console.log(this);
+          console.log('这是全局子组件', this.msg);
         }
       })
+      let app = new Vue({
+        el: '#app',
+        data:{
+          msg: 'parent-Vue'
+        },
+        mounted () {
+        }
+      })
+      app.$mount('#app')
     </script>
 
   </body>

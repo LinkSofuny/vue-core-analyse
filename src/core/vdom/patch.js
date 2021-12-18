@@ -34,9 +34,13 @@ const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
 
 function sameVnode (a, b) {
   return (
+    // 两个key相等也可以为一个node, 或者没有书写
     a.key === b.key &&
+    // todo asyncFactory 异步组件的一个占位符,
+    // 某一个节点下可能该组件还没有渲染, 是一个异步组件
     a.asyncFactory === b.asyncFactory && (
       (
+        // 一个注释节点
         a.tag === b.tag &&
         a.isComment === b.isComment &&
         isDef(a.data) === isDef(b.data) &&
@@ -712,6 +716,7 @@ export function createPatchFunction (backend) {
       createElm(vnode, insertedVnodeQueue)
     } else {
       const isRealElement = isDef(oldVnode.nodeType)
+      // 新旧节点相同的情况
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)

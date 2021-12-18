@@ -5882,6 +5882,7 @@ var hooks = ['create', 'activate', 'update', 'remove', 'destroy'];
 
 function sameVnode (a, b) {
   return (
+    // 平时 v-for 等书写的key值 要求两者相等, 不写也算相等 undefined === undefined
     a.key === b.key &&
     a.asyncFactory === b.asyncFactory && (
       (

@@ -186,6 +186,8 @@ export function mountComponent (
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    // 这是渲染watcher的更新函数, 首次渲染会立即执行一次
+    // 后续当被通知更新的时候, 也会触发, 主要实现是在 watcher内部的get()
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }

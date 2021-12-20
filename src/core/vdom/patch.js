@@ -546,6 +546,7 @@ export function createPatchFunction (backend) {
     let i
     const data = vnode.data
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
+      // 说明是一个组件
       i(oldVnode, vnode)
     }
 
@@ -753,6 +754,7 @@ export function createPatchFunction (backend) {
         const parentElm = nodeOps.parentNode(oldElm)
 
         // create new node
+        // 创建一个新节点
         createElm(
           vnode,
           insertedVnodeQueue,
@@ -764,8 +766,11 @@ export function createPatchFunction (backend) {
         )
 
         // update parent placeholder node element, recursively
+        //  todo 不明白是干嘛的
+        // 更新父的占位符节点
         if (isDef(vnode.parent)) {
           let ancestor = vnode.parent
+          // 当前vnode是否可挂载
           const patchable = isPatchable(vnode)
           while (ancestor) {
             for (let i = 0; i < cbs.destroy.length; ++i) {
@@ -794,6 +799,7 @@ export function createPatchFunction (backend) {
         }
 
         // destroy old node
+        // 删除旧节点
         if (isDef(parentElm)) {
           removeVnodes([oldVnode], 0, 0)
         } else if (isDef(oldVnode.tag)) {

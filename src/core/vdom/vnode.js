@@ -30,11 +30,11 @@ export default class VNode {
   fnScopeId: ?string; // functional scope id support
 
   constructor (
-    tag?: string,
+    tag?: string, // 节点名称
     data?: VNodeData,
     children?: ?Array<VNode>,
     text?: string,
-    elm?: Node,
+    elm?: Node, // 真实节点
     context?: Component,
     componentOptions?: VNodeComponentOptions,
     asyncFactory?: Function

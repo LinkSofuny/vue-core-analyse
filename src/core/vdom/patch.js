@@ -87,6 +87,7 @@ export function createPatchFunction (backend) {
   }
 
   function emptyNodeAt (elm) {
+    // 取得节点名, 以此创建一个虚拟空节点
     return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
   }
 
@@ -127,11 +128,11 @@ export function createPatchFunction (backend) {
   let creatingElmInVPre = 0
 
   function createElm (
-    vnode,
+    vnode, // 当前虚拟节点
     insertedVnodeQueue,
-    parentElm,
-    refElm,
-    nested,
+    parentElm, // 父真实节点
+    refElm, // 拿到下一个节点 (why ?) todo
+    nested, // 创建子节点的时候 这里是 true 用于判断是否是根节点
     ownerArray,
     index
   ) {
@@ -152,7 +153,7 @@ export function createPatchFunction (backend) {
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag
-    if (isDef(tag)) {
+    if (isDef(tag)) { // 注释节点或者文本节点就不会有 tag
       if (process.env.NODE_ENV !== 'production') {
         if (data && data.pre) {
           creatingElmInVPre++
@@ -192,10 +193,13 @@ export function createPatchFunction (backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
+        // 创建子节点
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
+          // render函数 会自带data 比如当前节点的 id, ref 等属性
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
+        // 插入
         insert(parentElm, vnode.elm, refElm)
       }
 
@@ -203,10 +207,13 @@ export function createPatchFunction (backend) {
         creatingElmInVPre--
       }
     } else if (isTrue(vnode.isComment)) {
+      // 注释节点
       vnode.elm = nodeOps.createComment(vnode.text)
       insert(parentElm, vnode.elm, refElm)
     } else {
+      // 文本节点
       vnode.elm = nodeOps.createTextNode(vnode.text)
+      // 父节点 - 当前虚拟节点的真实节点
       insert(parentElm, vnode.elm, refElm)
     }
   }
@@ -276,10 +283,14 @@ export function createPatchFunction (backend) {
   function insert (parent, elm, ref) {
     if (isDef(parent)) {
       if (isDef(ref)) {
+        // ref元素 存在的话, 就将其插入到 ref元素 之前
+        // 这个元素是真实节点的下一个真实兄弟节点
+        // 我猜这么做, 插入位置会更准确?
         if (nodeOps.parentNode(ref) === parent) {
           nodeOps.insertBefore(parent, elm, ref)
         }
       } else {
+        // 否则是直接添加到 父元素下
         nodeOps.appendChild(parent, elm)
       }
     }
@@ -291,6 +302,7 @@ export function createPatchFunction (backend) {
         checkDuplicateKeys(children)
       }
       for (let i = 0; i < children.length; ++i) {
+        // 递归创建子节点
         createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i)
       }
     } else if (isPrimitive(vnode.text)) {
@@ -704,6 +716,7 @@ export function createPatchFunction (backend) {
 
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
+      // 节点卸载
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
     }
@@ -713,6 +726,7 @@ export function createPatchFunction (backend) {
 
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
+      // 空挂载, 例如组件, 则创建一个新的根节点
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
@@ -720,16 +734,21 @@ export function createPatchFunction (backend) {
       // 新旧节点相同的情况
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
+        // 当前是否为相同节点
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
+        // 一个真实节点
         if (isRealElement) {
           // mounting to a real element
           // check if this is server-rendered content and if we can perform
           // a successful hydration.
+          //
+          // 是否是ssr
           if (oldVnode.nodeType === 1 && oldVnode.hasAttribute(SSR_ATTR)) {
             oldVnode.removeAttribute(SSR_ATTR)
             hydrating = true
           }
+          // todo 这里不明白是什么意思
           if (isTrue(hydrating)) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
               invokeInsertHook(vnode, insertedVnodeQueue, true)
@@ -746,6 +765,7 @@ export function createPatchFunction (backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
+          // 创建一个空节点代替
           oldVnode = emptyNodeAt(oldVnode)
         }
 
@@ -755,6 +775,7 @@ export function createPatchFunction (backend) {
 
         // create new node
         // 创建一个新节点
+        // 内部会递归调用创建子节点
         createElm(
           vnode,
           insertedVnodeQueue,
@@ -768,6 +789,7 @@ export function createPatchFunction (backend) {
         // update parent placeholder node element, recursively
         //  todo 不明白是干嘛的
         // 更新父的占位符节点
+        // diff算法就在这里😢
         if (isDef(vnode.parent)) {
           let ancestor = vnode.parent
           // 当前vnode是否可挂载
@@ -797,7 +819,14 @@ export function createPatchFunction (backend) {
             ancestor = ancestor.parent
           }
         }
-
+        // 在初次渲染节点阶段
+        /**
+         * 比如: 我们定义了一个 {{ msg }}
+         *      到这个节点的时候就会出现 下面这种情况
+         *      {{ msg }} // 旧节点
+         *      parent-Vue
+         *      这种情况, 这时候就需要删除旧的节点
+         */
         // destroy old node
         // 删除旧节点
         if (isDef(parentElm)) {
@@ -806,6 +835,22 @@ export function createPatchFunction (backend) {
           invokeDestroyHook(oldVnode)
         }
       }
+      /**
+       * note-chenyudong
+       *    初始节点, 通过$mount函数将模板转化为一个render函数
+       *    _update 负责挂载, 更新节点
+       *    render函数在内部执行, 会去创建虚拟节点 并返回
+       *    update函数内部会执行 __patch__ 方法
+       *    递归调用 createElm 函数 创建所有的节点与子节点
+       *    并自底向上插入真实节点
+       *    (如果是更新阶段, 这里还会做一次diff算法比较)
+       *    然后最后删除旧节点
+       *
+       *    为什么说 在 diff 算法是在组件内部执行的?
+       *    因为其实, 能走到这个函数的 都是在 渲染watcher 实例(也就是组件)
+       *    进行首次或者更新阶段调用的 getter 执行的.
+       *    所以实际上 vue2.x 只在组件内部做diff算法
+       */
     }
 
     invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch)

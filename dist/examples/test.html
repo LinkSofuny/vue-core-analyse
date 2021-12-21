@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>demo</title>
+  </head>
+  <body>
+    <script src="../../dist/vue.js"></script>
+    <div id="app" ref="app">{{msg}}
+    </div>
+    <script>
+      new Vue({
+        el: '#app',
+        data:{
+          msg: 'parent-Vue'
+        }
+      })
+    </script>
+
+  </body>
+</html>

@@ -27,9 +27,9 @@ const ALWAYS_NORMALIZE = 2
 // without getting yelled at by flow
 export function createElement (
   context: Component,
-  tag: any,
+  tag: any, // 标签
   data: any,
-  children: any,
+  children: any, //  complier 阶段生成的
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
@@ -45,8 +45,8 @@ export function createElement (
 }
 
 export function _createElement (
-  context: Component,
-  tag?: string | Class<Component> | Function | Object,
+  context: Component, // 当前组件实例
+  tag?: string | Class<Component> | Function | Object, // 函数 组件 标签
   data?: VNodeData,
   children?: any,
   normalizationType?: number
@@ -68,6 +68,7 @@ export function _createElement (
     return createEmptyVNode()
   }
   // warn against non-primitive key
+  // 如果将一个非原始值类型赋予给 key 则报错
   if (process.env.NODE_ENV !== 'production' &&
     isDef(data) && isDef(data.key) && !isPrimitive(data.key)
   ) {
@@ -87,12 +88,14 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
+  // 规范化操作
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns
+  // tag标签是一个字符串
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)

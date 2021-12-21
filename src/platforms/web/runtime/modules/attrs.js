@@ -31,7 +31,7 @@ function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
   const oldAttrs = oldVnode.data.attrs || {}
   let attrs: any = vnode.data.attrs || {}
   // clone observed objects, as the user probably wants to mutate it
-  if (isDef(attrs.__ob__)) {
+  if (isDef(attrs.__ob__)) { // 该属性是否为响应式
     attrs = vnode.data.attrs = extend({}, attrs)
   }
 

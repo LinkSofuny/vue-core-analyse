@@ -533,6 +533,7 @@ export function createPatchFunction (backend) {
 
     const elm = vnode.elm = oldVnode.elm
 
+    // 异步占位符, 异步组件相关
     if (isTrue(oldVnode.isAsyncPlaceholder)) {
       if (isDef(vnode.asyncFactory.resolved)) {
         hydrate(oldVnode.elm, vnode, insertedVnodeQueue)
@@ -788,7 +789,7 @@ export function createPatchFunction (backend) {
 
         // update parent placeholder node element, recursively
         //  todo 不明白是干嘛的
-        // 更新父的占位符节点
+        // 更新父的占位符节点(组件在呗插入之前 会有一个占位符节点)
         // diff算法就在这里😢
         if (isDef(vnode.parent)) {
           let ancestor = vnode.parent

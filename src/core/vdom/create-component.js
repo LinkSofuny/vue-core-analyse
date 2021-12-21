@@ -51,7 +51,7 @@ const componentVNodeHooks = {
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
-
+  //
   prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
     const options = vnode.componentOptions
     const child = vnode.componentInstance = oldVnode.componentInstance

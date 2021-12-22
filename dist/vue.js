@@ -3397,6 +3397,7 @@
     children,
     normalizationType
   ) {
+    debugger
     if (isDef(data) && isDef((data).__ob__)) {
        warn(
         "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +

@@ -437,7 +437,7 @@ export function createPatchFunction (backend) {
     if (process.env.NODE_ENV !== 'production') {
       checkDuplicateKeys(newCh)
     }
-
+    // 在不超出的情况下
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
       if (isUndef(oldStartVnode)) {
         oldStartVnode = oldCh[++oldStartIdx] // Vnode has been moved left
@@ -457,6 +457,8 @@ export function createPatchFunction (backend) {
         oldStartVnode = oldCh[++oldStartIdx]
         newEndVnode = newCh[--newEndIdx]
       } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
+        // 旧尾节点 和 新头节点 一样
+        // 递归子节点
         patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)
         canMove && nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm)
         oldEndVnode = oldCh[--oldEndIdx]
@@ -572,6 +574,7 @@ export function createPatchFunction (backend) {
     }
     if (isUndef(vnode.text)) {
       if (isDef(oldCh) && isDef(ch)) {
+        // 新旧子节点不一样 则 updateChildren (diff)
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
       } else if (isDef(ch)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -736,7 +739,7 @@ export function createPatchFunction (backend) {
       // 新旧节点相同的情况
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
-        // 当前是否为相同节点
+        // 当前为相同节点
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
         // 一个真实节点
@@ -791,7 +794,7 @@ export function createPatchFunction (backend) {
         // update parent placeholder node element, recursively
         //  todo 不明白是干嘛的
         // 更新父的占位符节点(组件在呗插入之前 会有一个占位符节点)
-        // diff算法就在这里😢
+        // diff算法就在这里
         if (isDef(vnode.parent)) {
           let ancestor = vnode.parent
           // 当前vnode是否可挂载

@@ -30,14 +30,14 @@ export default class VNode {
   fnScopeId: ?string; // functional scope id support
 
   constructor (
-    tag?: string, // 节点名称
-    data?: VNodeData,
-    children?: ?Array<VNode>,
-    text?: string,
-    elm?: Node, // 真实节点
-    context?: Component,
-    componentOptions?: VNodeComponentOptions,
-    asyncFactory?: Function
+    tag?: string,                  // 节点名称
+    data?: VNodeData,             // 当前节点属性
+    children?: ?Array<VNode>,     // 子节点
+    text?: string,                //
+    elm?: Node,                   // 真实节点
+    context?: Component,          // 实例
+    componentOptions?: VNodeComponentOptions, // todo
+    asyncFactory?: Function                   // 异步工厂函数 todo
   ) {
     this.tag = tag
     this.data = data

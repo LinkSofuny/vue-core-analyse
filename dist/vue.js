@@ -3397,7 +3397,6 @@
     children,
     normalizationType
   ) {
-    debugger
     if (isDef(data) && isDef((data).__ob__)) {
        warn(
         "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
@@ -6584,6 +6583,7 @@
           var parentElm = nodeOps.parentNode(oldElm);
 
           // create new node
+          debugger
           createElm(
             vnode,
             insertedVnodeQueue,
@@ -11972,7 +11972,6 @@
     el,
     hydrating
   ) {
-    debugger
     el = el && query(el);
 
     /* istanbul ignore if */

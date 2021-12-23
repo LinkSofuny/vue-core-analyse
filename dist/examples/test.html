@@ -7,7 +7,7 @@
   </head>
   <body>
     <script src="../../dist/vue.js"></script>
-    <div id="app" ref="app">
+    <div id="app" ref="app">{{ msg }}
     </div>
     <script>
       new Vue({
@@ -15,15 +15,6 @@
         data:{
           msg: 'parent-Vue'
         },
-        render: (h) => {
-          return h('p', {
-            attrs: {
-              id: 'foo'
-            }
-          }, [
-            h('div', '111')
-          ])
-        }
       })
     </script>
 

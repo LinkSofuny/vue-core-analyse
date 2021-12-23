@@ -49,11 +49,14 @@ function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNo
     lastIndex = res.length - 1
     last = res[lastIndex]
     //  nested
+    // 当前 c 如果是一个数组 [[]]
     if (Array.isArray(c)) {
       if (c.length > 0) {
+        // 递归
         c = normalizeArrayChildren(c, `${nestedIndex || ''}_${i}`)
-        // merge adjacent text nodes
+        // 当前节点 与 末尾节点 都是一个 文本节点
         if (isTextNode(c[0]) && isTextNode(last)) {
+          // 将其合并起来
           res[lastIndex] = createTextVNode(last.text + (c[0]: any).text)
           c.shift()
         }
@@ -64,6 +67,7 @@ function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNo
         // merge adjacent text nodes
         // this is necessary for SSR hydration because text nodes are
         // essentially merged when rendered to HTML strings
+        // 合并临近的 文本节点
         res[lastIndex] = createTextVNode(last.text + c)
       } else if (c !== '') {
         // convert primitive to vnode

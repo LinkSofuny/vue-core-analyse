@@ -128,11 +128,11 @@ export function createPatchFunction (backend) {
   let creatingElmInVPre = 0
 
   function createElm (
-    vnode, // 当前虚拟节点
+    vnode,              // 当前虚拟节点
     insertedVnodeQueue,
-    parentElm, // 父真实节点
-    refElm, // 拿到下一个节点 (why ?) todo
-    nested, // 创建子节点的时候 这里是 true 用于判断是否是根节点
+    parentElm,          // 父真实节点
+    refElm,             // 节点插入的时候要用到
+    nested,             // 创建子节点的时候 这里是 true 用于判断是否是根节点
     ownerArray,
     index
   ) {
@@ -196,7 +196,7 @@ export function createPatchFunction (backend) {
         // 创建子节点
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
-          // render函数 会自带data 比如当前节点的 id, ref 等属性
+          // render函数 data 当前节点的 id, ref 等属性
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
         // 插入
@@ -413,6 +413,7 @@ export function createPatchFunction (backend) {
         rm()
       }
     } else {
+      // 移除旧节点
       removeNode(vnode.elm)
     }
   }
@@ -714,7 +715,7 @@ export function createPatchFunction (backend) {
       return node.nodeType === (vnode.isComment ? 8 : 3)
     }
   }
-
+  // __patch__
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       // 节点卸载

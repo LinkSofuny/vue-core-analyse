@@ -33,7 +33,10 @@ export function createElement (
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
+  // 这里就是重载一下参数
   if (Array.isArray(data) || isPrimitive(data)) {
+    // 没有传当前节点的 data , 而是直接加了子节点数组
+    // 或者data就是一串字符串
     normalizationType = children
     children = data
     data = undefined
@@ -88,7 +91,7 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
-  // 规范化操作
+  // 递归子节点
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {

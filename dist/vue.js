@@ -3397,6 +3397,7 @@
     children,
     normalizationType
   ) {
+    debugger
     if (isDef(data) && isDef((data).__ob__)) {
        warn(
         "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
@@ -3579,6 +3580,7 @@
         // separately from one another. Nested component's render fns are called
         // when parent component is patched.
         currentRenderingInstance = vm;
+        debugger
         vnode = render.call(vm._renderProxy, vm.$createElement);
       } catch (e) {
         handleError(e, vm, "render");
@@ -5262,6 +5264,7 @@
         id,
         definition
       ) {
+        debugger
         if (!definition) {
           return this.options[type + 's'][id]
         } else {
@@ -6583,7 +6586,6 @@
           var parentElm = nodeOps.parentNode(oldElm);
 
           // create new node
-          debugger
           createElm(
             vnode,
             insertedVnodeQueue,

@@ -7,9 +7,19 @@
   </head>
   <body>
     <script src="../../dist/vue.js"></script>
-    <div id="app" ref="app">{{ msg }}
+    <div id="app" ref="app">
+      <hello-world />
     </div>
     <script>
+      Vue.component('HelloWorld', {
+        name: 'HelloWorld',
+        template: '<div>{{ msg }}</div>',
+        data() {
+          return {
+            msg: 'Hello-world'
+          }
+        }
+      })
       new Vue({
         el: '#app',
         data:{

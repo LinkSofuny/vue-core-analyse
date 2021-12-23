@@ -17,8 +17,9 @@ export function initExtend (Vue: GlobalAPI) {
    * Class inheritance
    */
   Vue.extend = function (extendOptions: Object): Function {
+    // 当前组件的 options
     extendOptions = extendOptions || {}
-    const Super = this
+    const Super = this // Vue = _base = this   Super 一般都是 Vue
     const SuperId = Super.cid
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
     if (cachedCtors[SuperId]) {
@@ -33,9 +34,14 @@ export function initExtend (Vue: GlobalAPI) {
     const Sub = function VueComponent (options) {
       this._init(options)
     }
+    // 原型链继承
+    // 当前组件的构造函数原型指向 Vue的原型 (表明组件构造函数 是通过 Vue 实例化的)
     Sub.prototype = Object.create(Super.prototype)
+    // 当前构造函数的原型 指向 构造函数
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
+    // 合并Vue 和 当前实例的配置.
+    // 一般全局注册的组件, 全局混入等  都是通过 这个函数合并到子组件内的
     Sub.options = mergeOptions(
       Super.options,
       extendOptions
@@ -49,6 +55,7 @@ export function initExtend (Vue: GlobalAPI) {
       initProps(Sub)
     }
     if (Sub.options.computed) {
+      // todo
       initComputed(Sub)
     }
 
@@ -90,6 +97,7 @@ function initProps (Comp) {
 function initComputed (Comp) {
   const computed = Comp.options.computed
   for (const key in computed) {
+    // todo
     // 为什么是定义在原型上?
     // 允许多组件共享 ???
     defineComputed(Comp.prototype, key, computed[key])

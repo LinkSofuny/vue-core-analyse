@@ -277,6 +277,7 @@ function checkComponents (options: Object) {
 }
 
 export function validateComponentName (name: string) {
+  // 判断是否是一个合法的组件名称
   if (!new RegExp(`^[a-zA-Z][\\-\\.0-9_${unicodeRegExp.source}]*$`).test(name)) {
     warn(
       'Invalid component name: "' + name + '". Component names ' +
@@ -438,6 +439,7 @@ export function mergeOptions (
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 这个函数主要的作用就是尝试在自己的作用域, 以及原型链上去找到组件的定义
  */
 export function resolveAsset (
   options: Object,

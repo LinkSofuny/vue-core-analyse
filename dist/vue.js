@@ -4046,6 +4046,7 @@
     el,
     hydrating
   ) {
+    debugger
     vm.$el = el;
     if (!vm.$options.render) {
       vm.$options.render = createEmptyVNode;

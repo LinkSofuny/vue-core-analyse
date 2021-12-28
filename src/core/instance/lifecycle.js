@@ -170,6 +170,7 @@ export function mountComponent (
 
   let updateComponent
   /* istanbul ignore if */
+  // 性能方面的工作 不关注
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
       const name = vm._name

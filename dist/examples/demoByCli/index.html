@@ -6,31 +6,6 @@
     <title>demo</title>
   </head>
   <body>
-    <script src="../dist/vue.js"></script>
-    <div id="app" ref="app">
-      <p>{{ msg }}</p>
-      <!-- <hello-world /> -->
-    </div>
-    <script>
-      // Vue.component('hello-world', {
-      //   template: '<p>这是子组件{{ this.msg }}</p>',
-      //   name: 'hello-world',
-      //   mounted() {
-      //     console.log(this);
-      //     console.log('这是全局子组件', this.msg);
-      //   }
-      // })
-      new Vue({
-        el: '#app',
-        data:{
-          msg: 'parent-Vue'
-        },
-        mounted () {
-          console.log(this.msg);
-          console.log(this._data.msg);
-        }
-      })
-    </script>
-
+    <div id="app"></div>
   </body>
 </html>

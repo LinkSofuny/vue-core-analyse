@@ -19,8 +19,11 @@ function createFunction (code, errors) {
 }
 
 export function createCompileToFunctionFn (compile: Function): Function {
+  // 创建了一个 缓存对象
+  // 这一层主要是用来缓存编译后的文件的
   const cache = Object.create(null)
   // 模板编译最终被执行的函数
+  // 这是 $mount 中 最终使用的函数
   return function compileToFunctions (
     template: string,
     options?: CompilerOptions,
@@ -92,6 +95,7 @@ export function createCompileToFunctionFn (compile: Function): Function {
     // turn code into functions
     const res = {}
     const fnGenErrors = []
+    // 将编译出来的 render 字符串 转为真正的函数
     res.render = createFunction(compiled.render, fnGenErrors)
     res.staticRenderFns = compiled.staticRenderFns.map(code => {
       return createFunction(code, fnGenErrors)

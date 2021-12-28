@@ -10,6 +10,7 @@ export function createCompilerCreator (baseCompile: Function): Function {
       template: string,
       options?: CompilerOptions
     ): CompiledResult {
+      // 复制一份 baseOptions
       const finalOptions = Object.create(baseOptions)
       const errors = []
       const tips = []
@@ -36,6 +37,7 @@ export function createCompilerCreator (baseCompile: Function): Function {
             (tip ? tips : errors).push(data)
           }
         }
+        // options 合并
         // merge custom modules
         if (options.modules) {
           finalOptions.modules =

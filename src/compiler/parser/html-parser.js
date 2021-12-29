@@ -65,19 +65,23 @@ export function parseHTML (html, options) {
       let textEnd = html.indexOf('<')
       if (textEnd === 0) {
         // Comment:
+        // 注释节点
         if (comment.test(html)) {
           const commentEnd = html.indexOf('-->')
 
           if (commentEnd >= 0) {
+            // 是否保留注释节点
             if (options.shouldKeepComment) {
               options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3)
             }
+            // index 前进这么多个单位 (这里就是略过注释节点)
             advance(commentEnd + 3)
             continue
           }
         }
 
         // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
+        // 一种特殊的条件注释
         if (conditionalComment.test(html)) {
           const conditionalEnd = html.indexOf(']>')
 
@@ -178,7 +182,7 @@ export function parseHTML (html, options) {
 
   // Clean up any remaining tags
   parseEndTag()
-
+  // 让当前的迭代前进
   function advance (n) {
     index += n
     html = html.substring(n)

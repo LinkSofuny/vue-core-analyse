@@ -29,6 +29,7 @@ export function initMixin (Vue: Class<Component>) {
     // a flag to avoid this being observed
     vm._isVue = true
     // merge options
+    // 进入到组件初始化(通过 内联钩子 init 函数进入的时候 isComponent 会被 置为 true)
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
@@ -70,7 +71,7 @@ export function initMixin (Vue: Class<Component>) {
     }
   }
 }
-
+// 初始化内部钩子
 export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.

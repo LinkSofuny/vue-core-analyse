@@ -33,7 +33,9 @@ import {
 } from 'weex/runtime/recycle-list/render-component-template'
 
 // inline hooks to be invoked on component VNodes during patch
+// 内联钩子, 在patch阶段 => 组件Vnode被调用
 const componentVNodeHooks = {
+  // 在 patch 阶段 组件实例化
   init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
     if (
       vnode.componentInstance &&
@@ -48,10 +50,11 @@ const componentVNodeHooks = {
         vnode,
         activeInstance
       )
+      // 在这里实现挂载, 全局下的_init 不会走到$mount
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
-  //
+  // todo
   prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
     const options = vnode.componentOptions
     const child = vnode.componentInstance = oldVnode.componentInstance
@@ -108,10 +111,11 @@ export function createComponent (
   if (isUndef(Ctor)) {
     return
   }
-
+  // baseCtor Vue构造函数
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
+  // 原型链继承
   if (isObject(Ctor)) {
     Ctor = baseCtor.extend(Ctor)
   }
@@ -183,9 +187,11 @@ export function createComponent (
   }
 
   // install component management hooks onto the placeholder node
+  // 注册一些组件管理钩子在占位符节点上
   installComponentHooks(data)
 
   // return a placeholder vnode
+  // 返回一个占位符 vnode
   const name = Ctor.options.name || tag
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
@@ -204,7 +210,7 @@ export function createComponent (
 
   return vnode
 }
-
+// 通过 Vnode 创建一个组件实例
 export function createComponentInstanceForVnode (
   // we know it's MountedComponentVNode but flow doesn't
   vnode: any,
@@ -222,6 +228,7 @@ export function createComponentInstanceForVnode (
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
+  // 组件构造方法的执行
   return new vnode.componentOptions.Ctor(options)
 }
 

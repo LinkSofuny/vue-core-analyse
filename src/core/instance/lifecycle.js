@@ -142,7 +142,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
 
 export function mountComponent (
   vm: Component,
-  el: ?Element,
+  el: ?Element, // 初始化的时候有值, 但是挂载子组件的时候 为空
   hydrating?: boolean
 ): Component {
   vm.$el = el

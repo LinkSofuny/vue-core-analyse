@@ -3397,7 +3397,6 @@
     children,
     normalizationType
   ) {
-    debugger
     if (isDef(data) && isDef((data).__ob__)) {
        warn(
         "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
@@ -3580,7 +3579,6 @@
         // separately from one another. Nested component's render fns are called
         // when parent component is patched.
         currentRenderingInstance = vm;
-        debugger
         vnode = render.call(vm._renderProxy, vm.$createElement);
       } catch (e) {
         handleError(e, vm, "render");
@@ -3969,6 +3967,7 @@
       // based on the rendering backend used.
       if (!prevVnode) {
         // initial render
+        debugger
         vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */);
       } else {
         // updates
@@ -4046,7 +4045,6 @@
     el,
     hydrating
   ) {
-    debugger
     vm.$el = el;
     if (!vm.$options.render) {
       vm.$options.render = createEmptyVNode;
@@ -5005,6 +5003,7 @@
 
   function initMixin (Vue) {
     Vue.prototype._init = function (options) {
+      debugger
       var vm = this;
       // a uid
       vm._uid = uid$2++;
@@ -6003,6 +6002,7 @@
       var data = vnode.data;
       var children = vnode.children;
       var tag = vnode.tag;
+      debugger
       if (isDef(tag)) {
         {
           if (data && data.pre) {

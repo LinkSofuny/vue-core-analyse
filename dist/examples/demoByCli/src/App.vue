@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <h1>{{ msg }}</h1>
     <HelloWorld />
   </div>
 </template>
@@ -16,9 +15,6 @@ export default {
     return {
       msg: 'abc'
     }
-  },
-  created() {
-
   }
 }
 </script>

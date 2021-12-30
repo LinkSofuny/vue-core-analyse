@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <h1>普通节点</h1>
     <HelloWorld />
   </div>
 </template>
@@ -11,11 +12,6 @@ export default {
   components: {
     HelloWorld
   },
-  data() {
-    return {
-      msg: 'abc'
-    }
-  }
 }
 </script>
 

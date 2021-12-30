@@ -116,6 +116,8 @@ export function createComponent (
 
   // plain options object: turn it into a constructor
   // 原型链继承
+  // 组件进来的时候会是一个对象, 需要重新走一遍继承
+  // 但是全局注册过得组件就不需要, 初始化的时候已经继承了
   if (isObject(Ctor)) {
     Ctor = baseCtor.extend(Ctor)
   }

@@ -194,7 +194,9 @@ function mergeAssets (
     return res
   }
 }
-
+/**
+ * components
+ */
 ASSET_TYPES.forEach(function (type) {
   strats[type + 's'] = mergeAssets
 })

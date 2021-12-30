@@ -14,11 +14,18 @@ import { isNonPhrasingTag } from 'web/compiler/util'
 import { unicodeRegExp } from 'core/util/lang'
 
 // Regular Expressions for parsing tags and attributes
+/**
+ *  attribute reg 说明
+ *  \s*([^\s"'<>\/=]+) // 匹配键
+ *  (?:\s*(=)\s*()) // 匹配 = 号
+ *  (?:"([^"]*)"+ | '([^']*)'+ | ([^\s"'=<>`]+)) 匹配 值
+ */
 const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
 const dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+?\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
 const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z${unicodeRegExp.source}]*`
 const qnameCapture = `((?:${ncname}\\:)?${ncname})`
 const startTagOpen = new RegExp(`^<${qnameCapture}`)
+// 开始标签的 尾部匹配 或者 自闭合
 const startTagClose = /^\s*(\/?)>/
 const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`)
 const doctype = /^<!DOCTYPE [^>]+>/i
@@ -99,7 +106,7 @@ export function parseHTML (html, options) {
         }
 
         // End tag:
-        const endTagMatch = html.match(endTag)
+        const endTagMatch = html.match(endTag) 
         if (endTagMatch) {
           const curIndex = index
           advance(endTagMatch[0].length)
@@ -108,6 +115,7 @@ export function parseHTML (html, options) {
         }
 
         // Start tag:
+        // 开始标签
         const startTagMatch = parseStartTag()
         if (startTagMatch) {
           handleStartTag(startTagMatch)
@@ -192,18 +200,20 @@ export function parseHTML (html, options) {
     const start = html.match(startTagOpen)
     if (start) {
       const match = {
-        tagName: start[1],
+        tagName: start[1], // 名字
         attrs: [],
         start: index
       }
       advance(start[0].length)
       let end, attr
+      // 匹配属性
       while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
         attr.start = index
         advance(attr[0].length)
         attr.end = index
         match.attrs.push(attr)
       }
+      // 结束
       if (end) {
         match.unarySlash = end[1]
         advance(end[0].length)
@@ -225,7 +235,6 @@ export function parseHTML (html, options) {
         parseEndTag(tagName)
       }
     }
-
     const unary = isUnaryTag(tagName) || !!unarySlash
 
     const l = match.attrs.length
@@ -236,6 +245,7 @@ export function parseHTML (html, options) {
       const shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
         ? options.shouldDecodeNewlinesForHref
         : options.shouldDecodeNewlines
+      // 将属性纯起来
       attrs[i] = {
         name: args[1],
         value: decodeAttr(value, shouldDecodeNewlines)

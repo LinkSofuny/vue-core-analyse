@@ -32,7 +32,7 @@ export function initAssetRegisters (Vue: GlobalAPI) {
           definition = { bind: definition, update: definition }
         }
         /**
-         * 如定义了一个 hellowWorld组件 则 => this.options.component.hellowWorld = 构造函数
+         * 如定义了一个 hellowWorld组件 则 => this.options.component.hellowWorld = 组件构造函数
          */
         this.options[type + 's'][id] = definition
         return definition

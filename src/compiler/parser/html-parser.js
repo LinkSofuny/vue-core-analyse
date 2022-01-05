@@ -70,6 +70,7 @@ export function parseHTML (html, options) {
     // Make sure we're not in a plaintext content element like script/style
     if (!lastTag || !isPlainTextElement(lastTag)) {
       let textEnd = html.indexOf('<')
+      // 在开始的位置匹配到 '<'
       if (textEnd === 0) {
         // Comment:
         // 注释节点
@@ -106,7 +107,7 @@ export function parseHTML (html, options) {
         }
 
         // End tag:
-        const endTagMatch = html.match(endTag) 
+        const endTagMatch = html.match(endTag)
         if (endTagMatch) {
           const curIndex = index
           advance(endTagMatch[0].length)
@@ -127,6 +128,7 @@ export function parseHTML (html, options) {
       }
 
       let text, rest, next
+      // 在其他位置匹配到 '<'
       if (textEnd >= 0) {
         rest = html.slice(textEnd)
         while (

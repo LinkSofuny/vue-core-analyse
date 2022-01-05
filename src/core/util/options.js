@@ -441,7 +441,7 @@ export function mergeOptions (
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
- * 这个函数主要的作用就是尝试在自己的作用域, 以及原型链上去找到组件的定义
+ * 将当前组件名转为驼峰式, 首字母大写式, 然后去查看能否匹配得上.
  */
 export function resolveAsset (
   options: Object,

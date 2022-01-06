@@ -25,6 +25,7 @@ export const onRE = /^@|^v-on:/
 export const dirRE = process.env.VBIND_PROP_SHORTHAND
   ? /^v-|^@|^:|^\.|^#/
   : /^v-|^@|^:|^#/
+
 export const forAliasRE = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/
 export const forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/
 const stripParensRE = /^\(|\)$/g
@@ -58,13 +59,13 @@ let platformGetTagNamespace
 let maybeComponent
 
 export function createASTElement (
-  tag: string,
-  attrs: Array<ASTAttr>,
-  parent: ASTElement | void
+  tag: string, // 当前标签
+  attrs: Array<ASTAttr>, // 标签属性
+  parent: ASTElement | void // AST元素
 ): ASTElement {
   return {
-    type: 1,
-    tag,
+    type: 1, // ASZ类型
+    tag, // 标签
     attrsList: attrs,
     attrsMap: makeAttrsMap(attrs),
     rawAttrsMap: {},
@@ -252,7 +253,6 @@ export function parse (
           }
         })
       }
-
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true
         process.env.NODE_ENV !== 'production' && warn(
@@ -263,11 +263,11 @@ export function parse (
         )
       }
 
-      // apply pre-transforms
+      // apply pre-transforms todo
       for (let i = 0; i < preTransforms.length; i++) {
         element = preTransforms[i](element, options) || element
       }
-
+      // 是否在 pre 环境中 ?
       if (!inVPre) {
         processPre(element)
         if (element.pre) {
@@ -281,7 +281,9 @@ export function parse (
         processRawAttrs(element)
       } else if (!element.processed) {
         // structural directives
+        // 对 v-for 做处理
         processFor(element)
+        // 对 v-if
         processIf(element)
         processOnce(element)
       }
@@ -292,7 +294,7 @@ export function parse (
           checkRootConstraints(root)
         }
       }
-
+      // 是否为一元标签
       if (!unary) {
         currentParent = element
         stack.push(element)
@@ -493,8 +495,10 @@ function processRef (el) {
 export function processFor (el: ASTElement) {
   let exp
   if ((exp = getAndRemoveAttr(el, 'v-for'))) {
+    // 解析 for
     const res = parseFor(exp)
     if (res) {
+      // 将属性集成到 el上
       extend(el, res)
     } else if (process.env.NODE_ENV !== 'production') {
       warn(
@@ -511,15 +515,19 @@ type ForParseResult = {
   iterator1?: string;
   iterator2?: string;
 };
-
+// 对 v-for 内部的值做解析
 export function parseFor (exp: string): ?ForParseResult {
+  // match in of 中间的值
   const inMatch = exp.match(forAliasRE)
   if (!inMatch) return
   const res = {}
-  res.for = inMatch[2].trim()
+  res.for = inMatch[2].trim() // in 后面部分 数组或者对象
+  // 删除 (item, index) in data 的那个括号
   const alias = inMatch[1].trim().replace(stripParensRE, '')
+  // 拿到迭代对象 item, index
   const iteratorMatch = alias.match(forIteratorRE)
   if (iteratorMatch) {
+    //
     res.alias = alias.replace(forIteratorRE, '').trim()
     res.iterator1 = iteratorMatch[1].trim()
     if (iteratorMatch[2]) {
@@ -583,7 +591,7 @@ function findPrevElement (children: Array<any>): ASTElement | void {
     }
   }
 }
-
+// 添加if 条件
 export function addIfCondition (el: ASTElement, condition: ASTIfCondition) {
   if (!el.ifConditions) {
     el.ifConditions = []

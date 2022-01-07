@@ -22,8 +22,10 @@ import { unicodeRegExp } from 'core/util/lang'
  */
 const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
 const dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+?\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
+// unicodeRegExp 生成一个 ncname
 const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z${unicodeRegExp.source}]*`
 const qnameCapture = `((?:${ncname}\\:)?${ncname})`
+// 这里看不明白为什么这样做, 但是总的来说就是通过这个匹配 例如: <ul ul
 const startTagOpen = new RegExp(`^<${qnameCapture}`)
 // 开始标签的 尾部匹配 或者 自闭合
 const startTagClose = /^\s*(\/?)>/
@@ -107,6 +109,7 @@ export function parseHTML (html, options) {
         }
 
         // End tag:
+        // 匹配末尾节点, 不过想不通为什么这个先匹配 - todo
         const endTagMatch = html.match(endTag)
         if (endTagMatch) {
           const curIndex = index
@@ -206,16 +209,20 @@ export function parseHTML (html, options) {
         attrs: [],
         start: index
       }
+      // 如果匹配的是 <ul 则前进3步, 也就是前进掉当前匹配到的开始标签
       advance(start[0].length)
       let end, attr
       // 匹配属性
+      // startTagClose 匹配是否为自闭和标签 或者 开始标签的 >
       while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
         attr.start = index
         advance(attr[0].length)
+        // 前进到attr 结束的地方
         attr.end = index
         match.attrs.push(attr)
       }
       // 结束
+      // 匹配到> 则结束
       if (end) {
         match.unarySlash = end[1]
         advance(end[0].length)

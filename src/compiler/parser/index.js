@@ -225,7 +225,7 @@ export function parse (
       if (isIE && ns === 'svg') {
         attrs = guardIESVGBug(attrs)
       }
-
+      // 创建一个 AST元素
       let element: ASTElement = createASTElement(tag, attrs, currentParent)
       if (ns) {
         element.ns = ns
@@ -253,6 +253,7 @@ export function parse (
           }
         })
       }
+      // 判断是否为禁止标签
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true
         process.env.NODE_ENV !== 'production' && warn(
@@ -263,7 +264,8 @@ export function parse (
         )
       }
 
-      // apply pre-transforms todo
+      // apply pre-transforms
+      // debugger todo
       for (let i = 0; i < preTransforms.length; i++) {
         element = preTransforms[i](element, options) || element
       }
@@ -287,14 +289,14 @@ export function parse (
         processIf(element)
         processOnce(element)
       }
-
+      // 是否存在根节点
       if (!root) {
         root = element
         if (process.env.NODE_ENV !== 'production') {
           checkRootConstraints(root)
         }
       }
-      // 是否为一元标签
+      // 是否为一元标签?
       if (!unary) {
         currentParent = element
         stack.push(element)

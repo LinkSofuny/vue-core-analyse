@@ -1,6 +1,6 @@
 /*!
  * Vue.js v2.6.14
- * (c) 2014-2021 Evan You
+ * (c) 2014-2022 Evan You
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -772,14 +772,14 @@
   /*  */
 
   var VNode = function VNode (
-    tag,
-    data,
-    children,
-    text,
-    elm,
-    context,
-    componentOptions,
-    asyncFactory
+    tag,                // 节点名称
+    data,           // 当前节点属性
+    children,   // 子节点
+    text,              //
+    elm,                 // 真实节点
+    context,        // 实例
+    componentOptions, // todo
+    asyncFactory                 // 异步工厂函数 todo
   ) {
     this.tag = tag;
     this.data = data;
@@ -1343,7 +1343,9 @@
       return res
     }
   }
-
+  /**
+   * components
+   */
   ASSET_TYPES.forEach(function (type) {
     strats[type + 's'] = mergeAssets;
   });
@@ -1426,6 +1428,7 @@
   }
 
   function validateComponentName (name) {
+    // 判断是否是一个合法的组件名称
     if (!new RegExp(("^[a-zA-Z][\\-\\.0-9_" + (unicodeRegExp.source) + "]*$")).test(name)) {
       warn(
         'Invalid component name: "' + name + '". Component names ' +
@@ -1587,6 +1590,7 @@
    * Resolve an asset.
    * This function is used because child instances need access
    * to assets defined in its ancestor chain.
+   * 将当前组件名转为驼峰式, 首字母大写式, 然后去查看能否匹配得上.
    */
   function resolveAsset (
     options,
@@ -2396,7 +2400,7 @@
   function isTextNode (node) {
     return isDef(node) && isDef(node.text) && isFalse(node.isComment)
   }
-
+  // todo
   function normalizeArrayChildren (children, nestedIndex) {
     var res = [];
     var i, c, lastIndex, last;
@@ -2406,11 +2410,14 @@
       lastIndex = res.length - 1;
       last = res[lastIndex];
       //  nested
+      // 当前 c 如果是一个数组 [[]]
       if (Array.isArray(c)) {
         if (c.length > 0) {
+          // 递归
           c = normalizeArrayChildren(c, ((nestedIndex || '') + "_" + i));
-          // merge adjacent text nodes
+          // 当前节点 与 末尾节点 都是一个 文本节点
           if (isTextNode(c[0]) && isTextNode(last)) {
+            // 将其合并起来
             res[lastIndex] = createTextVNode(last.text + (c[0]).text);
             c.shift();
           }
@@ -2421,6 +2428,7 @@
           // merge adjacent text nodes
           // this is necessary for SSR hydration because text nodes are
           // essentially merged when rendered to HTML strings
+          // 合并临近的 文本节点
           res[lastIndex] = createTextVNode(last.text + c);
         } else if (c !== '') {
           // convert primitive to vnode
@@ -3135,7 +3143,9 @@
   /*  */
 
   // inline hooks to be invoked on component VNodes during patch
+  // 内联钩子, 在patch阶段 => 组件Vnode被调用
   var componentVNodeHooks = {
+    // 在 patch 阶段 组件实例化
     init: function init (vnode, hydrating) {
       if (
         vnode.componentInstance &&
@@ -3150,10 +3160,11 @@
           vnode,
           activeInstance
         );
+        // 在这里实现挂载, 全局下的_init 不会走到$mount
         child.$mount(hydrating ? vnode.elm : undefined, hydrating);
       }
     },
-
+    // todo
     prepatch: function prepatch (oldVnode, vnode) {
       var options = vnode.componentOptions;
       var child = vnode.componentInstance = oldVnode.componentInstance;
@@ -3211,10 +3222,13 @@
     if (isUndef(Ctor)) {
       return
     }
-
+    // baseCtor Vue构造函数
     var baseCtor = context.$options._base;
 
     // plain options object: turn it into a constructor
+    // 原型链继承
+    // 组件进来的时候会是一个对象, 需要重新走一遍继承
+    // 但是全局注册过得组件就不需要, 初始化的时候已经继承了
     if (isObject(Ctor)) {
       Ctor = baseCtor.extend(Ctor);
     }
@@ -3286,9 +3300,11 @@
     }
 
     // install component management hooks onto the placeholder node
+    // 注册一些组件管理钩子在占位符节点上
     installComponentHooks(data);
 
     // return a placeholder vnode
+    // 返回一个占位符 vnode
     var name = Ctor.options.name || tag;
     var vnode = new VNode(
       ("vue-component-" + (Ctor.cid) + (name ? ("-" + name) : '')),
@@ -3299,7 +3315,7 @@
 
     return vnode
   }
-
+  // 通过 Vnode 创建一个组件实例
   function createComponentInstanceForVnode (
     // we know it's MountedComponentVNode but flow doesn't
     vnode,
@@ -3317,6 +3333,7 @@
       options.render = inlineTemplate.render;
       options.staticRenderFns = inlineTemplate.staticRenderFns;
     }
+    // 组件构造方法的执行
     return new vnode.componentOptions.Ctor(options)
   }
 
@@ -3373,13 +3390,16 @@
   // without getting yelled at by flow
   function createElement (
     context,
-    tag,
+    tag, // 标签
     data,
-    children,
+    children, //  complier 阶段生成的
     normalizationType,
     alwaysNormalize
   ) {
+    // 这里就是重载一下参数
     if (Array.isArray(data) || isPrimitive(data)) {
+      // 没有传当前节点的 data , 而是直接加了子节点数组
+      // 或者data就是一串字符串
       normalizationType = children;
       children = data;
       data = undefined;
@@ -3391,8 +3411,8 @@
   }
 
   function _createElement (
-    context,
-    tag,
+    context, // 当前组件实例
+    tag, // 函数 组件 标签
     data,
     children,
     normalizationType
@@ -3414,6 +3434,7 @@
       return createEmptyVNode()
     }
     // warn against non-primitive key
+    // 如果将一个非原始值类型赋予给 key 则报错
     if (
       isDef(data) && isDef(data.key) && !isPrimitive(data.key)
     ) {
@@ -3433,15 +3454,18 @@
       data.scopedSlots = { default: children[0] };
       children.length = 0;
     }
+    // 递归子节点
     if (normalizationType === ALWAYS_NORMALIZE) {
       children = normalizeChildren(children);
     } else if (normalizationType === SIMPLE_NORMALIZE) {
       children = simpleNormalizeChildren(children);
     }
     var vnode, ns;
+    // tag标签是一个字符串
     if (typeof tag === 'string') {
       var Ctor;
       ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
+      // 这里会判断一下 标签 是否是一个 保留标签
       if (config.isReservedTag(tag)) {
         // platform built-in elements
         if ( isDef(data) && isDef(data.nativeOn) && data.tag !== 'component') {
@@ -3456,6 +3480,7 @@
         );
       } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
         // component
+        // 项目初始化的时候 可能已经注册了他的 Ctor
         vnode = createComponent(Ctor, data, context, children, tag);
       } else {
         // unknown or unlisted namespaced elements
@@ -3528,6 +3553,7 @@
     vm._c = function (a, b, c, d) { return createElement(vm, a, b, c, d, false); };
     // normalization is always applied for the public version, used in
     // user-written render functions.
+    // 暴露出来给 用户 使用的 render函数
     vm.$createElement = function (a, b, c, d) { return createElement(vm, a, b, c, d, true); };
 
     // $attrs & $listeners are exposed for easier HOC creation.
@@ -3554,7 +3580,7 @@
     Vue.prototype.$nextTick = function (fn) {
       return nextTick(fn, this)
     };
-
+    // vm._render()
     Vue.prototype._render = function () {
       var vm = this;
       var ref = vm.$options;
@@ -3579,7 +3605,6 @@
         // separately from one another. Nested component's render fns are called
         // when parent component is patched.
         currentRenderingInstance = vm;
-        debugger
         vnode = render.call(vm._renderProxy, vm.$createElement);
       } catch (e) {
         handleError(e, vm, "render");
@@ -3960,18 +3985,19 @@
   function lifecycleMixin (Vue) {
     Vue.prototype._update = function (vnode, hydrating) {
       var vm = this;
-      var prevEl = vm.$el;
-      var prevVnode = vm._vnode;
-      var restoreActiveInstance = setActiveInstance(vm);
+      var prevEl = vm.$el; // 上个真实节点
+      var prevVnode = vm._vnode; // 取出上一个虚拟节点(上次更新), 第一次的时候这里为空
+      var restoreActiveInstance = setActiveInstance(vm); // 储存当前活跃的实例
       vm._vnode = vnode;
       // Vue.prototype.__patch__ is injected in entry points
       // based on the rendering backend used.
-      if (!prevVnode) {
+      if (!prevVnode) { // 不存在前虚拟节点证明是初始化
         // initial render
-        debugger
+        // 初始化
         vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */);
       } else {
         // updates
+        // 更新节点
         vm.$el = vm.__patch__(prevVnode, vnode);
       }
       restoreActiveInstance();
@@ -4043,7 +4069,7 @@
 
   function mountComponent (
     vm,
-    el,
+    el, // 初始化的时候有值, 但是挂载子组件的时候 为空
     hydrating
   ) {
     vm.$el = el;
@@ -4071,6 +4097,7 @@
 
     var updateComponent;
     /* istanbul ignore if */
+    // 性能方面的工作 不关注
     if ( config.performance && mark) {
       updateComponent = function () {
         var name = vm._name;
@@ -4089,6 +4116,8 @@
         measure(("vue " + name + " patch"), startTag, endTag);
       };
     } else {
+      // 这是渲染watcher的更新函数, 首次渲染会立即执行一次
+      // 后续当被通知更新的时候, 也会触发, 主要实现是在 watcher内部的get()
       updateComponent = function () {
         vm._update(vm._render(), hydrating);
       };
@@ -4479,6 +4508,9 @@
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn;
     } else {
+      // 如果是一个字符则转为一个 一个 getter 函数
+      // 这里这么做是为了通过 this.[watcherKey] 的形式
+      // 能够触发 被监听属性的 依赖收集
       this.getter = parsePath(expOrFn);
       if (!this.getter) {
         this.getter = noop;
@@ -4508,6 +4540,9 @@
        * 如果是计算watcher 执行这个方法计算值的时候,
        * 会使得当前的 计算watcher 被当前值的 dep 收集
        * 所以一旦 这个值发生变化 计算watcher 会被重新触发更新
+       *
+       * 如果是监听wacher (我们自己定义的watcher)
+       * 这会是一个基于 wache 的 key 构建的函数 它的作用是去 访问这个值触发依赖收集
        */
       value = this.getter.call(vm, vm);
     } catch (e) {
@@ -4573,8 +4608,13 @@
     if (this.lazy) {
       // 假设当前 发布者 通知 值被重新 set
       // 则把 dirty 设置为 true 当computed 被使用的时候 就可以重新调用计算
+      // 渲染wacher 执行完毕 堆出后, 会轮到当前的渲染watcher执行update
+      // 此时就会去执行queueWatcher(this), 再重新执行 组件渲染时候
+      // 会用到计算属性, 在这时因为 dirty 为 true 所以能重新求值
       this.dirty = true;
     } else if (this.sync) {
+      // 同步执行的 watcher 函数
+      // 其他时候 watcher 的更新是异步的
       this.run();
     } else {
       queueWatcher(this);
@@ -4601,6 +4641,8 @@
         this.value = value;
         if (this.user) {
           var info = "callback for watcher \"" + (this.expression) + "\"";
+          // 将新值和旧值传给我们定义的handler函数.
+          // 对于监听wahcer会走到这里
           invokeWithErrorHandling(this.cb, this.vm, [value, oldValue], this.vm, info);
         } else {
           this.cb.call(this.vm, value, oldValue);
@@ -4663,6 +4705,12 @@
     sharedPropertyDefinition.set = function proxySetter (val) {
       this[sourceKey][key] = val;
     };
+     /**
+     * 为什么 在其他属性里, 可以直接通过 this.message 就能拿到 data 中的值?
+     *  答案就在这里, vue 在 初始化 data 的时候会通过这个代理函数
+     *  将 data 中的 key 值直接放到 vm 实例上进行监控,然后基于上面的对象进行监控
+     *  访问 this.message 相当于访问了 this._data.message
+    */
     Object.defineProperty(target, key, sharedPropertyDefinition);
   }
 
@@ -4765,6 +4813,7 @@
           vm
         );
       } else if (!isReserved(key)) {
+
         proxy(vm, "_data", key);
       }
     }
@@ -4839,12 +4888,14 @@
   ) {
     // 不是SSR则缓存
     var shouldCache = !isServerRendering();
+    // 函数的形式
     if (typeof userDef === 'function') {
       sharedPropertyDefinition.get = shouldCache
         ? createComputedGetter(key)
         : createGetterInvoker(userDef);
       sharedPropertyDefinition.set = noop;
     } else {
+      // get / set 的形式
       sharedPropertyDefinition.get = userDef.get
         ? shouldCache && userDef.cache !== false
           ? createComputedGetter(key)
@@ -4875,9 +4926,11 @@
         if (watcher.dirty) {
           // 这个方法会执行一次计算
           // dirty 设置为 false
+          // 这个函数执行完毕后, 当前 计算watcher就会推出
           watcher.evaluate();
         }
         if (Dep.target) {
+          // 通知 当前 dep
           watcher.depend();
         }
         return watcher.value
@@ -4985,10 +5038,12 @@
       }
       options = options || {};
       options.user = true;
+      // 创建一个 watcher 此时的 expOrFn 是监听对象
       var watcher = new Watcher(vm, expOrFn, cb, options);
       if (options.immediate) {
         var info = "callback for immediate watcher \"" + (watcher.expression) + "\"";
         pushTarget();
+        // 立即执行一次 handler
         invokeWithErrorHandling(cb, vm, [watcher.value], vm, info);
         popTarget();
       }
@@ -5004,7 +5059,6 @@
 
   function initMixin (Vue) {
     Vue.prototype._init = function (options) {
-      debugger
       var vm = this;
       // a uid
       vm._uid = uid$2++;
@@ -5020,6 +5074,7 @@
       // a flag to avoid this being observed
       vm._isVue = true;
       // merge options
+      // 进入到组件初始化(通过 内联钩子 init 函数进入的时候 isComponent 会被 置为 true)
       if (options && options._isComponent) {
         // optimize internal component instantiation
         // since dynamic options merging is pretty slow, and none of the
@@ -5059,7 +5114,7 @@
       }
     };
   }
-
+  // 初始化内部钩子
   function initInternalComponent (vm, options) {
     var opts = vm.$options = Object.create(vm.constructor.options);
     // doing this because it's faster than dynamic enumeration.
@@ -5177,8 +5232,9 @@
      * Class inheritance
      */
     Vue.extend = function (extendOptions) {
+      // 当前组件的 options
       extendOptions = extendOptions || {};
-      var Super = this;
+      var Super = this; // Vue = _base = this   Super 一般都是 Vue
       var SuperId = Super.cid;
       var cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {});
       if (cachedCtors[SuperId]) {
@@ -5193,9 +5249,14 @@
       var Sub = function VueComponent (options) {
         this._init(options);
       };
+      // 原型链继承
+      // 当前组件的构造函数原型指向 Vue的原型 (表明组件构造函数 是通过 Vue 实例化的)
       Sub.prototype = Object.create(Super.prototype);
+      // 当前构造函数的原型 指向 构造函数
       Sub.prototype.constructor = Sub;
       Sub.cid = cid++;
+      // 合并Vue 和 当前实例的配置.
+      // 一般全局注册的组件, 全局混入等  都是通过 这个函数合并到子组件内的
       Sub.options = mergeOptions(
         Super.options,
         extendOptions
@@ -5209,6 +5270,7 @@
         initProps$1(Sub);
       }
       if (Sub.options.computed) {
+        // todo
         initComputed$1(Sub);
       }
 
@@ -5250,6 +5312,9 @@
   function initComputed$1 (Comp) {
     var computed = Comp.options.computed;
     for (var key in computed) {
+      // todo
+      // 为什么是定义在原型上?
+      // 允许多组件共享 ???
       defineComputed(Comp.prototype, key, computed[key]);
     }
   }
@@ -5259,13 +5324,16 @@
   function initAssetRegisters (Vue) {
     /**
      * Create asset registration methods.
+     * 组件函数的初始化地
      */
     ASSET_TYPES.forEach(function (type) {
+      /**
+       *  Vue.component
+       */
       Vue[type] = function (
         id,
         definition
       ) {
-        debugger
         if (!definition) {
           return this.options[type + 's'][id]
         } else {
@@ -5274,12 +5342,16 @@
             validateComponentName(id);
           }
           if (type === 'component' && isPlainObject(definition)) {
-            definition.name = definition.name || id;
+            definition.name = definition.name || id; // 赋值name
+            // 原型链继承大法
             definition = this.options._base.extend(definition);
           }
           if (type === 'directive' && typeof definition === 'function') {
             definition = { bind: definition, update: definition };
           }
+          /**
+           * 如定义了一个 hellowWorld组件 则 => this.options.component.hellowWorld = 组件构造函数
+           */
           this.options[type + 's'][id] = definition;
           return definition
         }
@@ -5888,9 +5960,13 @@
 
   function sameVnode (a, b) {
     return (
+      // 两个key相等也可以为一个node, 或者没有书写
       a.key === b.key &&
+      // todo asyncFactory 异步组件的一个占位符,
+      // 某一个节点下可能该组件还没有渲染, 是一个异步组件
       a.asyncFactory === b.asyncFactory && (
         (
+          // 一个注释节点
           a.tag === b.tag &&
           a.isComment === b.isComment &&
           isDef(a.data) === isDef(b.data) &&
@@ -5938,6 +6014,7 @@
     }
 
     function emptyNodeAt (elm) {
+      // 取得节点名, 以此创建一个虚拟空节点
       return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
     }
 
@@ -5978,11 +6055,11 @@
     var creatingElmInVPre = 0;
 
     function createElm (
-      vnode,
+      vnode,              // 当前虚拟节点
       insertedVnodeQueue,
-      parentElm,
-      refElm,
-      nested,
+      parentElm,          // 父真实节点
+      refElm,             // 节点插入的时候要用到
+      nested,             // 创建子节点的时候 这里是 true 用于判断是否是根节点
       ownerArray,
       index
     ) {
@@ -6003,8 +6080,7 @@
       var data = vnode.data;
       var children = vnode.children;
       var tag = vnode.tag;
-      debugger
-      if (isDef(tag)) {
+      if (isDef(tag)) { // 注释节点或者文本节点就不会有 tag
         {
           if (data && data.pre) {
             creatingElmInVPre++;
@@ -6026,10 +6102,13 @@
 
         /* istanbul ignore if */
         {
+          // 创建子节点
           createChildren(vnode, children, insertedVnodeQueue);
           if (isDef(data)) {
+            // render函数 data 当前节点的 id, ref 等属性
             invokeCreateHooks(vnode, insertedVnodeQueue);
           }
+          // 插入
           insert(parentElm, vnode.elm, refElm);
         }
 
@@ -6037,10 +6116,13 @@
           creatingElmInVPre--;
         }
       } else if (isTrue(vnode.isComment)) {
+        // 注释节点
         vnode.elm = nodeOps.createComment(vnode.text);
         insert(parentElm, vnode.elm, refElm);
       } else {
+        // 文本节点
         vnode.elm = nodeOps.createTextNode(vnode.text);
+        // 父节点 - 当前虚拟节点的真实节点
         insert(parentElm, vnode.elm, refElm);
       }
     }
@@ -6049,8 +6131,9 @@
       var i = vnode.data;
       if (isDef(i)) {
         var isReactivated = isDef(vnode.componentInstance) && i.keepAlive;
+        // 执行内联钩子 init
         if (isDef(i = i.hook) && isDef(i = i.init)) {
-          i(vnode, false /* hydrating */);
+          i(vnode, false /* hydrating */); // 其实就是 init 但是不知道为什么要写成这样🤔
         }
         // after calling the init hook, if the vnode is a child component
         // it should've created a child instance and mounted it. the child
@@ -6110,10 +6193,14 @@
     function insert (parent, elm, ref) {
       if (isDef(parent)) {
         if (isDef(ref)) {
+          // ref元素 存在的话, 就将其插入到 ref元素 之前
+          // 这个元素是真实节点的下一个真实兄弟节点
+          // 我猜这么做, 插入位置会更准确?
           if (nodeOps.parentNode(ref) === parent) {
             nodeOps.insertBefore(parent, elm, ref);
           }
         } else {
+          // 否则是直接添加到 父元素下
           nodeOps.appendChild(parent, elm);
         }
       }
@@ -6125,6 +6212,7 @@
           checkDuplicateKeys(children);
         }
         for (var i = 0; i < children.length; ++i) {
+          // 递归创建子节点
           createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i);
         }
       } else if (isPrimitive(vnode.text)) {
@@ -6235,6 +6323,7 @@
           rm();
         }
       } else {
+        // 移除旧节点
         removeNode(vnode.elm);
       }
     }
@@ -6258,7 +6347,7 @@
       {
         checkDuplicateKeys(newCh);
       }
-
+      // 在不超出的情况下
       while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
         if (isUndef(oldStartVnode)) {
           oldStartVnode = oldCh[++oldStartIdx]; // Vnode has been moved left
@@ -6278,6 +6367,8 @@
           oldStartVnode = oldCh[++oldStartIdx];
           newEndVnode = newCh[--newEndIdx];
         } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
+          // 旧尾节点 和 新头节点 一样
+          // 递归子节点
           patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx);
           canMove && nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
           oldEndVnode = oldCh[--oldEndIdx];
@@ -6355,6 +6446,7 @@
 
       var elm = vnode.elm = oldVnode.elm;
 
+      // 异步占位符, 异步组件相关
       if (isTrue(oldVnode.isAsyncPlaceholder)) {
         if (isDef(vnode.asyncFactory.resolved)) {
           hydrate(oldVnode.elm, vnode, insertedVnodeQueue);
@@ -6380,6 +6472,7 @@
       var i;
       var data = vnode.data;
       if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
+        // 说明是一个组件
         i(oldVnode, vnode);
       }
 
@@ -6391,6 +6484,7 @@
       }
       if (isUndef(vnode.text)) {
         if (isDef(oldCh) && isDef(ch)) {
+          // 新旧子节点不一样 则 updateChildren (diff)
           if (oldCh !== ch) { updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly); }
         } else if (isDef(ch)) {
           {
@@ -6414,6 +6508,7 @@
     function invokeInsertHook (vnode, queue, initial) {
       // delay insert hooks for component root nodes, invoke them after the
       // element is really inserted
+
       if (isTrue(initial) && isDef(vnode.parent)) {
         vnode.parent.data.pendingInsert = queue;
       } else {
@@ -6536,9 +6631,10 @@
         return node.nodeType === (vnode.isComment ? 8 : 3)
       }
     }
-
+    // __patch__ 虚拟节点挂载
     return function patch (oldVnode, vnode, hydrating, removeOnly) {
       if (isUndef(vnode)) {
+        // 节点卸载
         if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }
         return
       }
@@ -6548,22 +6644,29 @@
 
       if (isUndef(oldVnode)) {
         // empty mount (likely as component), create new root element
+        // 空挂载, 例如组件, 则创建一个新的根节点
         isInitialPatch = true;
         createElm(vnode, insertedVnodeQueue);
       } else {
         var isRealElement = isDef(oldVnode.nodeType);
+        // 新旧节点相同的情况
         if (!isRealElement && sameVnode(oldVnode, vnode)) {
           // patch existing root node
+          // 当前为相同节点
           patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly);
         } else {
+          // 一个真实节点
           if (isRealElement) {
             // mounting to a real element
             // check if this is server-rendered content and if we can perform
             // a successful hydration.
+            //
+            // 是否是ssr
             if (oldVnode.nodeType === 1 && oldVnode.hasAttribute(SSR_ATTR)) {
               oldVnode.removeAttribute(SSR_ATTR);
               hydrating = true;
             }
+            // todo 这里不明白是什么意思
             if (isTrue(hydrating)) {
               if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
                 invokeInsertHook(vnode, insertedVnodeQueue, true);
@@ -6580,6 +6683,7 @@
             }
             // either not server-rendered, or hydration failed.
             // create an empty node and replace it
+            // 创建一个空节点代替
             oldVnode = emptyNodeAt(oldVnode);
           }
 
@@ -6588,6 +6692,8 @@
           var parentElm = nodeOps.parentNode(oldElm);
 
           // create new node
+          // 创建一个新节点
+          // 内部会递归调用创建子节点
           createElm(
             vnode,
             insertedVnodeQueue,
@@ -6599,8 +6705,12 @@
           );
 
           // update parent placeholder node element, recursively
+          //  todo 不明白是干嘛的
+          // 更新父的占位符节点(组件在呗插入之前 会有一个占位符节点)
+          // diff算法就在这里
           if (isDef(vnode.parent)) {
             var ancestor = vnode.parent;
+            // 当前vnode是否可挂载
             var patchable = isPatchable(vnode);
             while (ancestor) {
               for (var i = 0; i < cbs.destroy.length; ++i) {
@@ -6627,14 +6737,38 @@
               ancestor = ancestor.parent;
             }
           }
-
+          // 在初次渲染节点阶段
+          /**
+           * 比如: 我们定义了一个 {{ msg }}
+           *      到这个节点的时候就会出现 下面这种情况
+           *      {{ msg }} // 旧节点
+           *      parent-Vue
+           *      这种情况, 这时候就需要删除旧的节点
+           */
           // destroy old node
+          // 删除旧节点
           if (isDef(parentElm)) {
             removeVnodes([oldVnode], 0, 0);
           } else if (isDef(oldVnode.tag)) {
             invokeDestroyHook(oldVnode);
           }
         }
+        /**
+         * note-chenyudong
+         *    初始节点, 通过$mount函数将模板转化为一个render函数
+         *    _update 负责挂载, 更新节点
+         *    render函数在内部执行, 会去创建虚拟节点 并返回
+         *    update函数内部会执行 __patch__ 方法
+         *    递归调用 createElm 函数 创建所有的节点与子节点
+         *    并自底向上插入真实节点
+         *    (如果是更新阶段, 这里还会做一次diff算法比较)
+         *    然后最后删除旧节点
+         *
+         *    为什么说 在 diff 算法是在组件内部执行的?
+         *    因为其实, 能走到这个函数的 都是在 渲染watcher 实例(也就是组件)
+         *    进行首次或者更新阶段调用的 getter 执行的.
+         *    所以实际上 vue2.x 只在组件内部做diff算法
+         */
       }
 
       invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch);
@@ -6779,7 +6913,7 @@
     var oldAttrs = oldVnode.data.attrs || {};
     var attrs = vnode.data.attrs || {};
     // clone observed objects, as the user probably wants to mutate it
-    if (isDef(attrs.__ob__)) {
+    if (isDef(attrs.__ob__)) { // 该属性是否为响应式
       attrs = vnode.data.attrs = extend({}, attrs);
     }
 
@@ -7181,6 +7315,7 @@
   // doesn't get processed by processAttrs.
   // By default it does NOT remove it from the map (attrsMap) because the map is
   // needed during codegen.
+  // 获取并且移除属性
   function getAndRemoveAttr (
     el,
     name,
@@ -9122,6 +9257,7 @@
   Vue.prototype.__patch__ = inBrowser ? patch : noop;
 
   // public mount method
+  // runtime only 的 $mount
   Vue.prototype.$mount = function (
     el,
     hydrating
@@ -9333,11 +9469,18 @@
    */
 
   // Regular Expressions for parsing tags and attributes
+  /**
+   *  attribute reg 说明
+   *  \s*([^\s"'<>\/=]+) // 匹配键
+   *  (?:\s*(=)\s*()) // 匹配 = 号
+   *  (?:"([^"]*)"+ | '([^']*)'+ | ([^\s"'=<>`]+)) 匹配 值
+   */
   var attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
   var dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+?\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
   var ncname = "[a-zA-Z_][\\-\\.0-9_a-zA-Z" + (unicodeRegExp.source) + "]*";
   var qnameCapture = "((?:" + ncname + "\\:)?" + ncname + ")";
   var startTagOpen = new RegExp(("^<" + qnameCapture));
+  // 开始标签的 尾部匹配 或者 自闭合
   var startTagClose = /^\s*(\/?)>/;
   var endTag = new RegExp(("^<\\/" + qnameCapture + "[^>]*>"));
   var doctype = /^<!DOCTYPE [^>]+>/i;
@@ -9382,21 +9525,26 @@
       // Make sure we're not in a plaintext content element like script/style
       if (!lastTag || !isPlainTextElement(lastTag)) {
         var textEnd = html.indexOf('<');
+        // 在开始的位置匹配到 '<'
         if (textEnd === 0) {
           // Comment:
+          // 注释节点
           if (comment.test(html)) {
             var commentEnd = html.indexOf('-->');
 
             if (commentEnd >= 0) {
+              // 是否保留注释节点
               if (options.shouldKeepComment) {
                 options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3);
               }
+              // index 前进这么多个单位 (这里就是略过注释节点)
               advance(commentEnd + 3);
               continue
             }
           }
 
           // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
+          // 一种特殊的条件注释
           if (conditionalComment.test(html)) {
             var conditionalEnd = html.indexOf(']>');
 
@@ -9423,6 +9571,7 @@
           }
 
           // Start tag:
+          // 开始标签
           var startTagMatch = parseStartTag();
           if (startTagMatch) {
             handleStartTag(startTagMatch);
@@ -9434,6 +9583,7 @@
         }
 
         var text = (void 0), rest = (void 0), next = (void 0);
+        // 在其他位置匹配到 '<'
         if (textEnd >= 0) {
           rest = html.slice(textEnd);
           while (
@@ -9497,7 +9647,7 @@
 
     // Clean up any remaining tags
     parseEndTag();
-
+    // 让当前的迭代前进
     function advance (n) {
       index += n;
       html = html.substring(n);
@@ -9507,18 +9657,20 @@
       var start = html.match(startTagOpen);
       if (start) {
         var match = {
-          tagName: start[1],
+          tagName: start[1], // 名字
           attrs: [],
           start: index
         };
         advance(start[0].length);
         var end, attr;
+        // 匹配属性
         while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
           attr.start = index;
           advance(attr[0].length);
           attr.end = index;
           match.attrs.push(attr);
         }
+        // 结束
         if (end) {
           match.unarySlash = end[1];
           advance(end[0].length);
@@ -9540,7 +9692,6 @@
           parseEndTag(tagName);
         }
       }
-
       var unary = isUnaryTag(tagName) || !!unarySlash;
 
       var l = match.attrs.length;
@@ -9551,6 +9702,7 @@
         var shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
           ? options.shouldDecodeNewlinesForHref
           : options.shouldDecodeNewlines;
+        // 将属性纯起来
         attrs[i] = {
           name: args[1],
           value: decodeAttr(value, shouldDecodeNewlines)
@@ -9628,6 +9780,7 @@
 
   var onRE = /^@|^v-on:/;
   var dirRE =  /^v-|^@|^:|^#/;
+
   var forAliasRE = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/;
   var forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
   var stripParensRE = /^\(|\)$/g;
@@ -9660,13 +9813,13 @@
   var maybeComponent;
 
   function createASTElement (
-    tag,
-    attrs,
-    parent
+    tag, // 当前标签
+    attrs, // 标签属性
+    parent // AST元素
   ) {
     return {
-      type: 1,
-      tag: tag,
+      type: 1, // ASZ类型
+      tag: tag, // 标签
       attrsList: attrs,
       attrsMap: makeAttrsMap(attrs),
       rawAttrsMap: {},
@@ -9854,7 +10007,6 @@
             }
           });
         }
-
         if (isForbiddenTag(element) && !isServerRendering()) {
           element.forbidden = true;
            warn$2(
@@ -9865,11 +10017,11 @@
           );
         }
 
-        // apply pre-transforms
+        // apply pre-transforms todo
         for (var i = 0; i < preTransforms.length; i++) {
           element = preTransforms[i](element, options) || element;
         }
-
+        // 是否在 pre 环境中 ?
         if (!inVPre) {
           processPre(element);
           if (element.pre) {
@@ -9883,7 +10035,9 @@
           processRawAttrs(element);
         } else if (!element.processed) {
           // structural directives
+          // 对 v-for 做处理
           processFor(element);
+          // 对 v-if
           processIf(element);
           processOnce(element);
         }
@@ -9894,7 +10048,7 @@
             checkRootConstraints(root);
           }
         }
-
+        // 是否为一元标签
         if (!unary) {
           currentParent = element;
           stack.push(element);
@@ -10095,8 +10249,10 @@
   function processFor (el) {
     var exp;
     if ((exp = getAndRemoveAttr(el, 'v-for'))) {
+      // 解析 for
       var res = parseFor(exp);
       if (res) {
+        // 将属性集成到 el上
         extend(el, res);
       } else {
         warn$2(
@@ -10108,15 +10264,19 @@
   }
 
 
-
+  // 对 v-for 内部的值做解析
   function parseFor (exp) {
+    // match in of 中间的值
     var inMatch = exp.match(forAliasRE);
     if (!inMatch) { return }
     var res = {};
-    res.for = inMatch[2].trim();
+    res.for = inMatch[2].trim(); // in 后面部分 数组或者对象
+    // 删除 (item, index) in data 的那个括号
     var alias = inMatch[1].trim().replace(stripParensRE, '');
+    // 拿到迭代对象 item, index
     var iteratorMatch = alias.match(forIteratorRE);
     if (iteratorMatch) {
+      //
       res.alias = alias.replace(forIteratorRE, '').trim();
       res.iterator1 = iteratorMatch[1].trim();
       if (iteratorMatch[2]) {
@@ -10180,7 +10340,7 @@
       }
     }
   }
-
+  // 添加if 条件
   function addIfCondition (el, condition) {
     if (!el.ifConditions) {
       el.ifConditions = [];
@@ -11752,8 +11912,11 @@
   }
 
   function createCompileToFunctionFn (compile) {
+    // 创建了一个 缓存对象
+    // 这一层主要是用来缓存编译后的文件的
     var cache = Object.create(null);
-
+    // 模板编译最终被执行的函数
+    // 这是 $mount 中 最终使用的函数
     return function compileToFunctions (
       template,
       options,
@@ -11782,6 +11945,7 @@
       }
 
       // check cache
+      // 缓存
       var key = options.delimiters
         ? String(options.delimiters) + template
         : template;
@@ -11790,6 +11954,7 @@
       }
 
       // compile
+      // 编译 在这里执行 createCompiler 中的 compile
       var compiled = compile(template, options);
 
       // check compilation errors/tips
@@ -11823,6 +11988,7 @@
       // turn code into functions
       var res = {};
       var fnGenErrors = [];
+      // 将编译出来的 render 字符串 转为真正的函数
       res.render = createFunction(compiled.render, fnGenErrors);
       res.staticRenderFns = compiled.staticRenderFns.map(function (code) {
         return createFunction(code, fnGenErrors)
@@ -11859,6 +12025,7 @@
         template,
         options
       ) {
+        // 复制一份 baseOptions
         var finalOptions = Object.create(baseOptions);
         var errors = [];
         var tips = [];
@@ -11885,6 +12052,7 @@
               (tip ? tips : errors).push(data);
             };
           }
+          // options 合并
           // merge custom modules
           if (options.modules) {
             finalOptions.modules =
@@ -11906,7 +12074,7 @@
         }
 
         finalOptions.warn = warn;
-
+        // 实际上 代码编译工作在这里执行
         var compiled = baseCompile(template.trim(), finalOptions);
         {
           detectErrors(compiled.ast, warn);
@@ -11932,10 +12100,12 @@
     template,
     options
   ) {
+    // 转 ast
     var ast = parse(template.trim(), options);
     if (options.optimize !== false) {
       optimize(ast, options);
     }
+    // 生成代码
     var code = generate(ast, options);
     return {
       ast: ast,
@@ -11946,6 +12116,7 @@
 
   /*  */
 
+  // 实际暴露的事 ./to-function.js的 compileToFunctions
   var ref$1 = createCompiler(baseOptions);
   var compileToFunctions = ref$1.compileToFunctions;
 
@@ -12018,7 +12189,7 @@
         if ( config.performance && mark) {
           mark('compile');
         }
-
+        debugger
         var ref = compileToFunctions(template, {
           outputSourceRange: "development" !== 'production',
           shouldDecodeNewlines: shouldDecodeNewlines,

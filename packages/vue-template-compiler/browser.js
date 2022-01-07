@@ -271,11 +271,18 @@
    */
 
   // Regular Expressions for parsing tags and attributes
+  /**
+   *  attribute reg 说明
+   *  \s*([^\s"'<>\/=]+) // 匹配键
+   *  (?:\s*(=)\s*()) // 匹配 = 号
+   *  (?:"([^"]*)"+ | '([^']*)'+ | ([^\s"'=<>`]+)) 匹配 值
+   */
   var attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
   var dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+?\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
   var ncname = "[a-zA-Z_][\\-\\.0-9_a-zA-Z" + (unicodeRegExp.source) + "]*";
   var qnameCapture = "((?:" + ncname + "\\:)?" + ncname + ")";
   var startTagOpen = new RegExp(("^<" + qnameCapture));
+  // 开始标签的 尾部匹配 或者 自闭合
   var startTagClose = /^\s*(\/?)>/;
   var endTag = new RegExp(("^<\\/" + qnameCapture + "[^>]*>"));
   var doctype = /^<!DOCTYPE [^>]+>/i;
@@ -320,21 +327,26 @@
       // Make sure we're not in a plaintext content element like script/style
       if (!lastTag || !isPlainTextElement(lastTag)) {
         var textEnd = html.indexOf('<');
+        // 在开始的位置匹配到 '<'
         if (textEnd === 0) {
           // Comment:
+          // 注释节点
           if (comment.test(html)) {
             var commentEnd = html.indexOf('-->');
 
             if (commentEnd >= 0) {
+              // 是否保留注释节点
               if (options.shouldKeepComment) {
                 options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3);
               }
+              // index 前进这么多个单位 (这里就是略过注释节点)
               advance(commentEnd + 3);
               continue
             }
           }
 
           // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
+          // 一种特殊的条件注释
           if (conditionalComment.test(html)) {
             var conditionalEnd = html.indexOf(']>');
 
@@ -361,6 +373,7 @@
           }
 
           // Start tag:
+          // 开始标签
           var startTagMatch = parseStartTag();
           if (startTagMatch) {
             handleStartTag(startTagMatch);
@@ -372,6 +385,7 @@
         }
 
         var text = (void 0), rest = (void 0), next = (void 0);
+        // 在其他位置匹配到 '<'
         if (textEnd >= 0) {
           rest = html.slice(textEnd);
           while (
@@ -435,7 +449,7 @@
 
     // Clean up any remaining tags
     parseEndTag();
-
+    // 让当前的迭代前进
     function advance (n) {
       index += n;
       html = html.substring(n);
@@ -445,18 +459,20 @@
       var start = html.match(startTagOpen);
       if (start) {
         var match = {
-          tagName: start[1],
+          tagName: start[1], // 名字
           attrs: [],
           start: index
         };
         advance(start[0].length);
         var end, attr;
+        // 匹配属性
         while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
           attr.start = index;
           advance(attr[0].length);
           attr.end = index;
           match.attrs.push(attr);
         }
+        // 结束
         if (end) {
           match.unarySlash = end[1];
           advance(end[0].length);
@@ -478,7 +494,6 @@
           parseEndTag(tagName);
         }
       }
-
       var unary = isUnaryTag(tagName) || !!unarySlash;
 
       var l = match.attrs.length;
@@ -489,6 +504,7 @@
         var shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
           ? options.shouldDecodeNewlinesForHref
           : options.shouldDecodeNewlines;
+        // 将属性纯起来
         attrs[i] = {
           name: args[1],
           value: decodeAttr(value, shouldDecodeNewlines)
@@ -1027,14 +1043,14 @@
   /*  */
 
   var VNode = function VNode (
-    tag,
-    data,
-    children,
-    text,
-    elm,
-    context,
-    componentOptions,
-    asyncFactory
+    tag,                // 节点名称
+    data,           // 当前节点属性
+    children,   // 子节点
+    text,              //
+    elm,                 // 真实节点
+    context,        // 实例
+    componentOptions, // todo
+    asyncFactory                 // 异步工厂函数 todo
   ) {
     this.tag = tag;
     this.data = data;
@@ -1514,7 +1530,9 @@
       return res
     }
   }
-
+  /**
+   * components
+   */
   ASSET_TYPES.forEach(function (type) {
     strats[type + 's'] = mergeAssets;
   });
@@ -2032,6 +2050,7 @@
   // doesn't get processed by processAttrs.
   // By default it does NOT remove it from the map (attrsMap) because the map is
   // needed during codegen.
+  // 获取并且移除属性
   function getAndRemoveAttr (
     el,
     name,
@@ -2682,6 +2701,7 @@
 
   var onRE = /^@|^v-on:/;
   var dirRE =  /^v-|^@|^:|^#/;
+
   var forAliasRE = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/;
   var forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
   var stripParensRE = /^\(|\)$/g;
@@ -2714,13 +2734,13 @@
   var maybeComponent;
 
   function createASTElement (
-    tag,
-    attrs,
-    parent
+    tag, // 当前标签
+    attrs, // 标签属性
+    parent // AST元素
   ) {
     return {
-      type: 1,
-      tag: tag,
+      type: 1, // ASZ类型
+      tag: tag, // 标签
       attrsList: attrs,
       attrsMap: makeAttrsMap(attrs),
       rawAttrsMap: {},
@@ -2908,7 +2928,6 @@
             }
           });
         }
-
         if (isForbiddenTag(element) && !isServerRendering()) {
           element.forbidden = true;
            warn$1(
@@ -2919,11 +2938,11 @@
           );
         }
 
-        // apply pre-transforms
+        // apply pre-transforms todo
         for (var i = 0; i < preTransforms.length; i++) {
           element = preTransforms[i](element, options) || element;
         }
-
+        // 是否在 pre 环境中 ?
         if (!inVPre) {
           processPre(element);
           if (element.pre) {
@@ -2937,7 +2956,9 @@
           processRawAttrs(element);
         } else if (!element.processed) {
           // structural directives
+          // 对 v-for 做处理
           processFor(element);
+          // 对 v-if
           processIf(element);
           processOnce(element);
         }
@@ -2948,7 +2969,7 @@
             checkRootConstraints(root);
           }
         }
-
+        // 是否为一元标签
         if (!unary) {
           currentParent = element;
           stack.push(element);
@@ -3149,8 +3170,10 @@
   function processFor (el) {
     var exp;
     if ((exp = getAndRemoveAttr(el, 'v-for'))) {
+      // 解析 for
       var res = parseFor(exp);
       if (res) {
+        // 将属性集成到 el上
         extend(el, res);
       } else {
         warn$1(
@@ -3162,15 +3185,19 @@
   }
 
 
-
+  // 对 v-for 内部的值做解析
   function parseFor (exp) {
+    // match in of 中间的值
     var inMatch = exp.match(forAliasRE);
     if (!inMatch) { return }
     var res = {};
-    res.for = inMatch[2].trim();
+    res.for = inMatch[2].trim(); // in 后面部分 数组或者对象
+    // 删除 (item, index) in data 的那个括号
     var alias = inMatch[1].trim().replace(stripParensRE, '');
+    // 拿到迭代对象 item, index
     var iteratorMatch = alias.match(forIteratorRE);
     if (iteratorMatch) {
+      //
       res.alias = alias.replace(forIteratorRE, '').trim();
       res.iterator1 = iteratorMatch[1].trim();
       if (iteratorMatch[2]) {
@@ -3234,7 +3261,7 @@
       }
     }
   }
-
+  // 添加if 条件
   function addIfCondition (el, condition) {
     if (!el.ifConditions) {
       el.ifConditions = [];
@@ -4980,8 +5007,11 @@
   }
 
   function createCompileToFunctionFn (compile) {
+    // 创建了一个 缓存对象
+    // 这一层主要是用来缓存编译后的文件的
     var cache = Object.create(null);
-
+    // 模板编译最终被执行的函数
+    // 这是 $mount 中 最终使用的函数
     return function compileToFunctions (
       template,
       options,
@@ -5010,6 +5040,7 @@
       }
 
       // check cache
+      // 缓存
       var key = options.delimiters
         ? String(options.delimiters) + template
         : template;
@@ -5018,6 +5049,7 @@
       }
 
       // compile
+      // 编译 在这里执行 createCompiler 中的 compile
       var compiled = compile(template, options);
 
       // check compilation errors/tips
@@ -5051,6 +5083,7 @@
       // turn code into functions
       var res = {};
       var fnGenErrors = [];
+      // 将编译出来的 render 字符串 转为真正的函数
       res.render = createFunction(compiled.render, fnGenErrors);
       res.staticRenderFns = compiled.staticRenderFns.map(function (code) {
         return createFunction(code, fnGenErrors)
@@ -5087,6 +5120,7 @@
         template,
         options
       ) {
+        // 复制一份 baseOptions
         var finalOptions = Object.create(baseOptions);
         var errors = [];
         var tips = [];
@@ -5113,6 +5147,7 @@
               (tip ? tips : errors).push(data);
             };
           }
+          // options 合并
           // merge custom modules
           if (options.modules) {
             finalOptions.modules =
@@ -5134,7 +5169,7 @@
         }
 
         finalOptions.warn = warn;
-
+        // 实际上 代码编译工作在这里执行
         var compiled = baseCompile(template.trim(), finalOptions);
         {
           detectErrors(compiled.ast, warn);
@@ -5160,10 +5195,12 @@
     template,
     options
   ) {
+    // 转 ast
     var ast = parse(template.trim(), options);
     if (options.optimize !== false) {
       optimize(ast, options);
     }
+    // 生成代码
     var code = generate(ast, options);
     return {
       ast: ast,
@@ -5174,6 +5211,7 @@
 
   /*  */
 
+  // 实际暴露的事 ./to-function.js的 compileToFunctions
   var ref = createCompiler(baseOptions);
   var compile = ref.compile;
   var compileToFunctions = ref.compileToFunctions;

@@ -8,20 +8,14 @@
   <body>
     <script src="../../dist/vue.js"></script>
     <div id="app" ref="app">
-      <hello-world />
     </div>
     <script>
-      Vue.component('HelloWorld', {
-        name: 'HelloWorld',
-        template: '<div>{{ msg }}</div>',
-        data() {
-          return {
-            msg: 'Hello-world'
-          }
-        }
-      })
       new Vue({
         el: '#app',
+        template:`
+          <ul class="ul-outter">
+            <li v-for="i in 6">{{ i }}</li>
+          </ul>`,
         data:{
           msg: 'parent-Vue'
         },

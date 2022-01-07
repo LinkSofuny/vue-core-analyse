@@ -483,14 +483,14 @@
   /*  */
 
   var VNode = function VNode (
-    tag,
-    data,
-    children,
-    text,
-    elm,
-    context,
-    componentOptions,
-    asyncFactory
+    tag,                // 节点名称
+    data,           // 当前节点属性
+    children,   // 子节点
+    text,              //
+    elm,                 // 真实节点
+    context,        // 实例
+    componentOptions, // todo
+    asyncFactory                 // 异步工厂函数 todo
   ) {
     this.tag = tag;
     this.data = data;
@@ -1456,7 +1456,9 @@
       return res
     }
   }
-
+  /**
+   * components
+   */
   ASSET_TYPES.forEach(function (type) {
     strats[type + 's'] = mergeAssets;
   });
@@ -1539,6 +1541,7 @@
   }
 
   function validateComponentName (name) {
+    // 判断是否是一个合法的组件名称
     if (!new RegExp(("^[a-zA-Z][\\-\\.0-9_" + (unicodeRegExp.source) + "]*$")).test(name)) {
       warn(
         'Invalid component name: "' + name + '". Component names ' +
@@ -1700,6 +1703,7 @@
    * Resolve an asset.
    * This function is used because child instances need access
    * to assets defined in its ancestor chain.
+   * 将当前组件名转为驼峰式, 首字母大写式, 然后去查看能否匹配得上.
    */
   function resolveAsset (
     options,
@@ -2878,6 +2882,7 @@
   // doesn't get processed by processAttrs.
   // By default it does NOT remove it from the map (attrsMap) because the map is
   // needed during codegen.
+  // 获取并且移除属性
   function getAndRemoveAttr (
     el,
     name,
@@ -3366,11 +3371,18 @@
    */
 
   // Regular Expressions for parsing tags and attributes
+  /**
+   *  attribute reg 说明
+   *  \s*([^\s"'<>\/=]+) // 匹配键
+   *  (?:\s*(=)\s*()) // 匹配 = 号
+   *  (?:"([^"]*)"+ | '([^']*)'+ | ([^\s"'=<>`]+)) 匹配 值
+   */
   var attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
   var dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+?\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
   var ncname = "[a-zA-Z_][\\-\\.0-9_a-zA-Z" + (unicodeRegExp.source) + "]*";
   var qnameCapture = "((?:" + ncname + "\\:)?" + ncname + ")";
   var startTagOpen = new RegExp(("^<" + qnameCapture));
+  // 开始标签的 尾部匹配 或者 自闭合
   var startTagClose = /^\s*(\/?)>/;
   var endTag = new RegExp(("^<\\/" + qnameCapture + "[^>]*>"));
   var doctype = /^<!DOCTYPE [^>]+>/i;
@@ -3415,21 +3427,26 @@
       // Make sure we're not in a plaintext content element like script/style
       if (!lastTag || !isPlainTextElement(lastTag)) {
         var textEnd = html.indexOf('<');
+        // 在开始的位置匹配到 '<'
         if (textEnd === 0) {
           // Comment:
+          // 注释节点
           if (comment.test(html)) {
             var commentEnd = html.indexOf('-->');
 
             if (commentEnd >= 0) {
+              // 是否保留注释节点
               if (options.shouldKeepComment) {
                 options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3);
               }
+              // index 前进这么多个单位 (这里就是略过注释节点)
               advance(commentEnd + 3);
               continue
             }
           }
 
           // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
+          // 一种特殊的条件注释
           if (conditionalComment.test(html)) {
             var conditionalEnd = html.indexOf(']>');
 
@@ -3456,6 +3473,7 @@
           }
 
           // Start tag:
+          // 开始标签
           var startTagMatch = parseStartTag();
           if (startTagMatch) {
             handleStartTag(startTagMatch);
@@ -3467,6 +3485,7 @@
         }
 
         var text = (void 0), rest = (void 0), next = (void 0);
+        // 在其他位置匹配到 '<'
         if (textEnd >= 0) {
           rest = html.slice(textEnd);
           while (
@@ -3530,7 +3549,7 @@
 
     // Clean up any remaining tags
     parseEndTag();
-
+    // 让当前的迭代前进
     function advance (n) {
       index += n;
       html = html.substring(n);
@@ -3540,18 +3559,20 @@
       var start = html.match(startTagOpen);
       if (start) {
         var match = {
-          tagName: start[1],
+          tagName: start[1], // 名字
           attrs: [],
           start: index
         };
         advance(start[0].length);
         var end, attr;
+        // 匹配属性
         while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
           attr.start = index;
           advance(attr[0].length);
           attr.end = index;
           match.attrs.push(attr);
         }
+        // 结束
         if (end) {
           match.unarySlash = end[1];
           advance(end[0].length);
@@ -3573,7 +3594,6 @@
           parseEndTag(tagName);
         }
       }
-
       var unary = isUnaryTag(tagName) || !!unarySlash;
 
       var l = match.attrs.length;
@@ -3584,6 +3604,7 @@
         var shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
           ? options.shouldDecodeNewlinesForHref
           : options.shouldDecodeNewlines;
+        // 将属性纯起来
         attrs[i] = {
           name: args[1],
           value: decodeAttr(value, shouldDecodeNewlines)
@@ -3809,6 +3830,7 @@
 
   var onRE = /^@|^v-on:/;
   var dirRE =  /^v-|^@|^:|^#/;
+
   var forAliasRE = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/;
   var forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
   var stripParensRE = /^\(|\)$/g;
@@ -3841,13 +3863,13 @@
   var maybeComponent;
 
   function createASTElement (
-    tag,
-    attrs,
-    parent
+    tag, // 当前标签
+    attrs, // 标签属性
+    parent // AST元素
   ) {
     return {
-      type: 1,
-      tag: tag,
+      type: 1, // ASZ类型
+      tag: tag, // 标签
       attrsList: attrs,
       attrsMap: makeAttrsMap(attrs),
       rawAttrsMap: {},
@@ -4035,7 +4057,6 @@
             }
           });
         }
-
         if (isForbiddenTag(element) && !isServerRendering()) {
           element.forbidden = true;
            warn$1(
@@ -4046,11 +4067,11 @@
           );
         }
 
-        // apply pre-transforms
+        // apply pre-transforms todo
         for (var i = 0; i < preTransforms.length; i++) {
           element = preTransforms[i](element, options) || element;
         }
-
+        // 是否在 pre 环境中 ?
         if (!inVPre) {
           processPre(element);
           if (element.pre) {
@@ -4064,7 +4085,9 @@
           processRawAttrs(element);
         } else if (!element.processed) {
           // structural directives
+          // 对 v-for 做处理
           processFor(element);
+          // 对 v-if
           processIf(element);
           processOnce(element);
         }
@@ -4075,7 +4098,7 @@
             checkRootConstraints(root);
           }
         }
-
+        // 是否为一元标签
         if (!unary) {
           currentParent = element;
           stack.push(element);
@@ -4276,8 +4299,10 @@
   function processFor (el) {
     var exp;
     if ((exp = getAndRemoveAttr(el, 'v-for'))) {
+      // 解析 for
       var res = parseFor(exp);
       if (res) {
+        // 将属性集成到 el上
         extend(el, res);
       } else {
         warn$1(
@@ -4289,15 +4314,19 @@
   }
 
 
-
+  // 对 v-for 内部的值做解析
   function parseFor (exp) {
+    // match in of 中间的值
     var inMatch = exp.match(forAliasRE);
     if (!inMatch) { return }
     var res = {};
-    res.for = inMatch[2].trim();
+    res.for = inMatch[2].trim(); // in 后面部分 数组或者对象
+    // 删除 (item, index) in data 的那个括号
     var alias = inMatch[1].trim().replace(stripParensRE, '');
+    // 拿到迭代对象 item, index
     var iteratorMatch = alias.match(forIteratorRE);
     if (iteratorMatch) {
+      //
       res.alias = alias.replace(forIteratorRE, '').trim();
       res.iterator1 = iteratorMatch[1].trim();
       if (iteratorMatch[2]) {
@@ -4361,7 +4390,7 @@
       }
     }
   }
-
+  // 添加if 条件
   function addIfCondition (el, condition) {
     if (!el.ifConditions) {
       el.ifConditions = [];
@@ -6451,8 +6480,11 @@
   }
 
   function createCompileToFunctionFn (compile) {
+    // 创建了一个 缓存对象
+    // 这一层主要是用来缓存编译后的文件的
     var cache = Object.create(null);
-
+    // 模板编译最终被执行的函数
+    // 这是 $mount 中 最终使用的函数
     return function compileToFunctions (
       template,
       options,
@@ -6481,6 +6513,7 @@
       }
 
       // check cache
+      // 缓存
       var key = options.delimiters
         ? String(options.delimiters) + template
         : template;
@@ -6489,6 +6522,7 @@
       }
 
       // compile
+      // 编译 在这里执行 createCompiler 中的 compile
       var compiled = compile(template, options);
 
       // check compilation errors/tips
@@ -6522,6 +6556,7 @@
       // turn code into functions
       var res = {};
       var fnGenErrors = [];
+      // 将编译出来的 render 字符串 转为真正的函数
       res.render = createFunction(compiled.render, fnGenErrors);
       res.staticRenderFns = compiled.staticRenderFns.map(function (code) {
         return createFunction(code, fnGenErrors)
@@ -6558,6 +6593,7 @@
         template,
         options
       ) {
+        // 复制一份 baseOptions
         var finalOptions = Object.create(baseOptions);
         var errors = [];
         var tips = [];
@@ -6584,6 +6620,7 @@
               (tip ? tips : errors).push(data);
             };
           }
+          // options 合并
           // merge custom modules
           if (options.modules) {
             finalOptions.modules =
@@ -6605,7 +6642,7 @@
         }
 
         finalOptions.warn = warn;
-
+        // 实际上 代码编译工作在这里执行
         var compiled = baseCompile(template.trim(), finalOptions);
         {
           detectErrors(compiled.ast, warn);
@@ -6681,7 +6718,7 @@
   function isTextNode (node) {
     return isDef(node) && isDef(node.text) && isFalse(node.isComment)
   }
-
+  // todo
   function normalizeArrayChildren (children, nestedIndex) {
     var res = [];
     var i, c, lastIndex, last;
@@ -6691,11 +6728,14 @@
       lastIndex = res.length - 1;
       last = res[lastIndex];
       //  nested
+      // 当前 c 如果是一个数组 [[]]
       if (Array.isArray(c)) {
         if (c.length > 0) {
+          // 递归
           c = normalizeArrayChildren(c, ((nestedIndex || '') + "_" + i));
-          // merge adjacent text nodes
+          // 当前节点 与 末尾节点 都是一个 文本节点
           if (isTextNode(c[0]) && isTextNode(last)) {
+            // 将其合并起来
             res[lastIndex] = createTextVNode(last.text + (c[0]).text);
             c.shift();
           }
@@ -6706,6 +6746,7 @@
           // merge adjacent text nodes
           // this is necessary for SSR hydration because text nodes are
           // essentially merged when rendered to HTML strings
+          // 合并临近的 文本节点
           res[lastIndex] = createTextVNode(last.text + c);
         } else if (c !== '') {
           // convert primitive to vnode
@@ -7083,13 +7124,16 @@
   // without getting yelled at by flow
   function createElement (
     context,
-    tag,
+    tag, // 标签
     data,
-    children,
+    children, //  complier 阶段生成的
     normalizationType,
     alwaysNormalize
   ) {
+    // 这里就是重载一下参数
     if (Array.isArray(data) || isPrimitive(data)) {
+      // 没有传当前节点的 data , 而是直接加了子节点数组
+      // 或者data就是一串字符串
       normalizationType = children;
       children = data;
       data = undefined;
@@ -7101,8 +7145,8 @@
   }
 
   function _createElement (
-    context,
-    tag,
+    context, // 当前组件实例
+    tag, // 函数 组件 标签
     data,
     children,
     normalizationType
@@ -7124,6 +7168,7 @@
       return createEmptyVNode()
     }
     // warn against non-primitive key
+    // 如果将一个非原始值类型赋予给 key 则报错
     if (
       isDef(data) && isDef(data.key) && !isPrimitive(data.key)
     ) {
@@ -7143,15 +7188,18 @@
       data.scopedSlots = { default: children[0] };
       children.length = 0;
     }
+    // 递归子节点
     if (normalizationType === ALWAYS_NORMALIZE) {
       children = normalizeChildren(children);
     } else if (normalizationType === SIMPLE_NORMALIZE) {
       children = simpleNormalizeChildren(children);
     }
     var vnode, ns;
+    // tag标签是一个字符串
     if (typeof tag === 'string') {
       var Ctor;
       ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
+      // 这里会判断一下 标签 是否是一个 保留标签
       if (config.isReservedTag(tag)) {
         // platform built-in elements
         if ( isDef(data) && isDef(data.nativeOn) && data.tag !== 'component') {
@@ -7166,6 +7214,7 @@
         );
       } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
         // component
+        // 项目初始化的时候 可能已经注册了他的 Ctor
         vnode = createComponent(Ctor, data, context, children, tag);
       } else {
         // unknown or unlisted namespaced elements
@@ -8155,7 +8204,9 @@
   /*  */
 
   // inline hooks to be invoked on component VNodes during patch
+  // 内联钩子, 在patch阶段 => 组件Vnode被调用
   var componentVNodeHooks = {
+    // 在 patch 阶段 组件实例化
     init: function init (vnode, hydrating) {
       if (
         vnode.componentInstance &&
@@ -8170,10 +8221,11 @@
           vnode,
           activeInstance
         );
+        // 在这里实现挂载, 全局下的_init 不会走到$mount
         child.$mount(hydrating ? vnode.elm : undefined, hydrating);
       }
     },
-
+    // todo
     prepatch: function prepatch (oldVnode, vnode) {
       var options = vnode.componentOptions;
       var child = vnode.componentInstance = oldVnode.componentInstance;
@@ -8231,10 +8283,13 @@
     if (isUndef(Ctor)) {
       return
     }
-
+    // baseCtor Vue构造函数
     var baseCtor = context.$options._base;
 
     // plain options object: turn it into a constructor
+    // 原型链继承
+    // 组件进来的时候会是一个对象, 需要重新走一遍继承
+    // 但是全局注册过得组件就不需要, 初始化的时候已经继承了
     if (isObject(Ctor)) {
       Ctor = baseCtor.extend(Ctor);
     }
@@ -8306,9 +8361,11 @@
     }
 
     // install component management hooks onto the placeholder node
+    // 注册一些组件管理钩子在占位符节点上
     installComponentHooks(data);
 
     // return a placeholder vnode
+    // 返回一个占位符 vnode
     var name = Ctor.options.name || tag;
     var vnode = new VNode(
       ("vue-component-" + (Ctor.cid) + (name ? ("-" + name) : '')),
@@ -8319,7 +8376,7 @@
 
     return vnode
   }
-
+  // 通过 Vnode 创建一个组件实例
   function createComponentInstanceForVnode (
     // we know it's MountedComponentVNode but flow doesn't
     vnode,
@@ -8337,6 +8394,7 @@
       options.render = inlineTemplate.render;
       options.staticRenderFns = inlineTemplate.staticRenderFns;
     }
+    // 组件构造方法的执行
     return new vnode.componentOptions.Ctor(options)
   }
 

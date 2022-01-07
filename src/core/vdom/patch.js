@@ -232,6 +232,10 @@ export function createPatchFunction (backend) {
       // in that case we can just return the element and be done.
       if (isDef(vnode.componentInstance)) {
         initComponent(vnode, insertedVnodeQueue)
+        /**
+         *  1. 组件内原生节点在 creatElm阶段的时候插入了
+         *  2. 这时候就是插入到当前组件的上级根节点
+         */
         insert(parentElm, vnode.elm, refElm)
         if (isTrue(isReactivated)) {
           reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
@@ -240,7 +244,7 @@ export function createPatchFunction (backend) {
       }
     }
   }
-
+  //
   function initComponent (vnode, insertedVnodeQueue) {
     if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert)

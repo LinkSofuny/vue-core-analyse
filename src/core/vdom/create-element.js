@@ -92,6 +92,7 @@ export function _createElement (
     children.length = 0
   }
   // 递归子节点
+  // 这里生成子节点
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {

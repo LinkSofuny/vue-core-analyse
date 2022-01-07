@@ -133,6 +133,7 @@ export function parseHTML (html, options) {
       let text, rest, next
       // 在其他位置匹配到 '<'
       if (textEnd >= 0) {
+        // 子标签 比如比如 < 前面有缩进
         rest = html.slice(textEnd)
         while (
           !endTag.test(rest) &&
@@ -141,6 +142,8 @@ export function parseHTML (html, options) {
           !conditionalComment.test(rest)
         ) {
           // < in plain text, be forgiving and treat it as text
+          // 这里的的意思应该是将<li 前面的 换行符等视为一个文本
+          // 但匹配完首标签也会出现 {{ i }} </li> 的情况这时候就需要处理这个{{}}了
           next = rest.indexOf('<', 1)
           if (next < 0) break
           textEnd += next

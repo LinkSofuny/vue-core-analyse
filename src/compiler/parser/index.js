@@ -298,6 +298,7 @@ export function parse (
       }
       // 是否为一元标签?
       if (!unary) {
+        // currentParent 在start函数的最后赋予的
         currentParent = element
         stack.push(element)
       } else {
@@ -315,8 +316,9 @@ export function parse (
       }
       closeElement(element)
     },
-
+    // 文本的处理
     chars (text: string, start: number, end: number) {
+      // currentParent 这个是根节点
       if (!currentParent) {
         if (process.env.NODE_ENV !== 'production') {
           if (text === template) {

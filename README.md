@@ -30,9 +30,9 @@
 
 [1.data属性为什么能直接通过this.访问?](https://github.com/LinkSofuny/vue-core-analyse/blob/dev/%E9%85%8D%E5%A5%97%E6%96%87%E6%A1%A3/1.data%E5%B1%9E%E6%80%A7%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E7%9B%B4%E6%8E%A5%E9%80%9A%E8%BF%87this.%E8%AE%BF%E9%97%AE%3F.md)
 
-[2.Vue是怎么初始化第一个标签的?.md](https://github.com/LinkSofuny/vue-core-analyse/blob/dev/%E9%85%8D%E5%A5%97%E6%96%87%E6%A1%A3/2.Vue%E6%98%AF%E6%80%8E%E4%B9%88%E5%88%9D%E5%A7%8B%E5%8C%96%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%A0%87%E7%AD%BE%E7%9A%84%3F.md)
+[2.Vue是怎么初始化第一个标签的?](https://github.com/LinkSofuny/vue-core-analyse/blob/dev/%E9%85%8D%E5%A5%97%E6%96%87%E6%A1%A3/2.Vue%E6%98%AF%E6%80%8E%E4%B9%88%E5%88%9D%E5%A7%8B%E5%8C%96%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%A0%87%E7%AD%BE%E7%9A%84%3F.md)
 
-[3.Vue是怎么实例化一个组件的?.md](https://github.com/LinkSofuny/vue-core-analyse/blob/dev/%E9%85%8D%E5%A5%97%E6%96%87%E6%A1%A3/3.Vue%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%B8%80%E4%B8%AA%E7%BB%84%E4%BB%B6%E7%9A%84%3F.md)
+[3.Vue是怎么实例化一个组件的?](https://github.com/LinkSofuny/vue-core-analyse/blob/dev/%E9%85%8D%E5%A5%97%E6%96%87%E6%A1%A3/3.Vue%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%B8%80%E4%B8%AA%E7%BB%84%E4%BB%B6%E7%9A%84%3F.md)
 
 
 #### 个人进度

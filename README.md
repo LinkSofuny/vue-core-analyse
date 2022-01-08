@@ -15,5 +15,6 @@
 
 
 <div align=center>
-  <img src="https://github.com/LinkSofuny/vue-core-analyse/blob/dev/%20docs/images/logo.png" width="10%">
+  <img src="./docs/images/qrcode.jpeg" width="50%">
 </div>
+

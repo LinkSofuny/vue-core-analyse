@@ -146,6 +146,7 @@ export function createPatchFunction (backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
+    // 尝试将当前VNode作为组件创建
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -167,7 +168,7 @@ export function createPatchFunction (backend) {
           )
         }
       }
-
+      // 创建原生节点
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode)
@@ -185,6 +186,7 @@ export function createPatchFunction (backend) {
           }
           insert(parentElm, vnode.elm, refElm)
         }
+        // 递归创建子节点
         createChildren(vnode, children, insertedVnodeQueue)
         if (appendAsTree) {
           if (isDef(data)) {
@@ -798,7 +800,6 @@ export function createPatchFunction (backend) {
         )
 
         // update parent placeholder node element, recursively
-        //  todo 不明白是干嘛的
         // 更新父的占位符节点(组件在呗插入之前 会有一个占位符节点)
         // diff算法就在这里
         if (isDef(vnode.parent)) {

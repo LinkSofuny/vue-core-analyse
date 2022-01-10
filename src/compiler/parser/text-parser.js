@@ -6,6 +6,7 @@ import { parseFilters } from './filter-parser'
 const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g
 const regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g
 
+// 构建一个正则表达式
 const buildRegex = cached(delimiters => {
   const open = delimiters[0].replace(regexEscapeRE, '\\$&')
   const close = delimiters[1].replace(regexEscapeRE, '\\$&')
@@ -21,6 +22,7 @@ export function parseText (
   text: string,
   delimiters?: [string, string]
 ): TextParseResult | void {
+  // 如果我们配置了delimiters 则 使用我们的 否则使用默认的 {{}}
   const tagRE = delimiters ? buildRegex(delimiters) : defaultTagRE
   if (!tagRE.test(text)) {
     return
@@ -37,6 +39,7 @@ export function parseText (
       tokens.push(JSON.stringify(tokenValue))
     }
     // tag token
+    // filters 管道函数
     const exp = parseFilters(match[1].trim())
     tokens.push(`_s(${exp})`)
     rawTokens.push({ '@binding': exp })

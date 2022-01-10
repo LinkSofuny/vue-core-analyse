@@ -367,12 +367,13 @@ export function parse (
         }
         let res
         let child: ?ASTNode
+        // 文本解析
         if (!inVPre && text !== ' ' && (res = parseText(text, delimiters))) {
           child = {
-            type: 2,
+            type: 2, // 表达式ast
             expression: res.expression,
             tokens: res.tokens,
-            text
+            text // 文本
           }
         } else if (text !== ' ' || !children.length || children[children.length - 1].text !== ' ') {
           child = {
@@ -389,6 +390,7 @@ export function parse (
         }
       }
     },
+    // 注释节点的处理
     comment (text: string, start, end) {
       // adding anything as a sibling to the root node is forbidden
       // comments should still be allowed, but ignored

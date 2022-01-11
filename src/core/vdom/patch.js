@@ -864,7 +864,6 @@ export function createPatchFunction (backend) {
        *    所以实际上 vue2.x 只在组件内部做diff算法
        */
     }
-
     invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch)
     return vnode.elm
   }

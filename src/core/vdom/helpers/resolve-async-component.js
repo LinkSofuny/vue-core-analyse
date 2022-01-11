@@ -110,7 +110,7 @@ export function resolveAsyncComponent (
         forceRender(true)
       }
     })
-
+    // 执行传进去的回调函数, 并传给他两个函数
     const res = factory(resolve, reject)
 
     if (isObject(res)) {

@@ -3676,6 +3676,7 @@
     factory,
     baseCtor
   ) {
+    debugger
     if (isTrue(factory.error) && isDef(factory.errorComp)) {
       return factory.errorComp
     }
@@ -6770,7 +6771,6 @@
          *    所以实际上 vue2.x 只在组件内部做diff算法
          */
       }
-
       invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch);
       return vnode.elm
     }

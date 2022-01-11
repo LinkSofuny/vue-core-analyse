@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <h1 @click="isShow = !isShow">普通节点</h1>
+    <HelloWorld v-if="isShow"/>
   </div>
 </template>
 
@@ -11,10 +12,7 @@ export default {
     return {
       isShow: false
     }
-  },
-  components: {
-    HelloWorld: () => import('./components/HelloWorld.vue')
-  },
+  }
 }
 </script>
 

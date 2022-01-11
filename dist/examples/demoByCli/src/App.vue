@@ -1,16 +1,29 @@
 <template>
   <div id="app">
-    <h1>普通节点</h1>
-    <HelloWorld />
+    <h1 @click="isShow = !isShow">普通节点</h1>
+    <HelloWorld v-if="isShow" title="Im 1"/>
+    <HelloWorld v-if="!isShow" title="Im 1"/>
+    <HelloWorld v-if="isShow" title="Im 1"/>
+    <HelloWorld v-if="!isShow" title="Im 1"/>
+    <HelloWorld v-if="isShow" title="Im 1"/>
+    <HelloWorld v-if="!isShow" title="Im 1"/>
+    <HelloWorld v-if="isShow" title="Im 1"/>
+    <HelloWorld v-if="!isShow" title="Im 1"/>
+    <HelloWorld v-if="isShow" title="Im 1"/>
+    <HelloWorld v-if="!isShow" title="Im 1"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 export default {
   name: 'App',
+  data() {
+    return {
+      isShow: false
+    }
+  },
   components: {
-    HelloWorld
+    HelloWorld: () => import('./components/HelloWorld.vue')
   },
 }
 </script>

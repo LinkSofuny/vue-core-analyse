@@ -3605,7 +3605,6 @@
         // separately from one another. Nested component's render fns are called
         // when parent component is patched.
         currentRenderingInstance = vm;
-        debugger
         vnode = render.call(vm._renderProxy, vm.$createElement);
       } catch (e) {
         handleError(e, vm, "render");
@@ -6134,7 +6133,6 @@
         var isReactivated = isDef(vnode.componentInstance) && i.keepAlive;
         // 执行内联钩子 init
         if (isDef(i = i.hook) && isDef(i = i.init)) {
-          debugger
           i(vnode, false /* hydrating */); // 其实就是 init 但是不知道为什么要写成这样🤔
         }
         // after calling the init hook, if the vnode is a child component
@@ -6142,7 +6140,6 @@
         // component also has set the placeholder vnode's elm.
         // in that case we can just return the element and be done.
         if (isDef(vnode.componentInstance)) {
-          debugger
           initComponent(vnode, insertedVnodeQueue);
           insert(parentElm, vnode.elm, refElm);
           if (isTrue(isReactivated)) {
@@ -6636,7 +6633,6 @@
     }
     // __patch__ 虚拟节点挂载
     return function patch (oldVnode, vnode, hydrating, removeOnly) {
-      debugger
       if (isUndef(vnode)) {
         // 节点卸载
         if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }
@@ -12193,7 +12189,6 @@
         if ( config.performance && mark) {
           mark('compile');
         }
-        debugger
         var ref = compileToFunctions(template, {
           outputSourceRange: "development" !== 'production',
           shouldDecodeNewlines: shouldDecodeNewlines,

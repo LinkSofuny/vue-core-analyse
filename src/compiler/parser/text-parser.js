@@ -35,6 +35,7 @@ export function parseText (
     index = match.index
     // push text token
     if (index > lastIndex) {
+      // 纯文本
       rawTokens.push(tokenValue = text.slice(lastIndex, index))
       tokens.push(JSON.stringify(tokenValue))
     }

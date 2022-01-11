@@ -134,12 +134,13 @@ export function parseHTML (html, options) {
       // 在其他位置匹配到 '<'
       if (textEnd >= 0) {
         // 子标签 比如比如 < 前面有缩进
+        // 或者内部值 <div>value</div>
         rest = html.slice(textEnd)
         while (
-          !endTag.test(rest) &&
+          !endTag.test(rest) && // 是不是结束标签?
           !startTagOpen.test(rest) &&
-          !comment.test(rest) &&
-          !conditionalComment.test(rest)
+          !comment.test(rest) && // 注释节点?
+          !conditionalComment.test(rest)// 条件注释节点?
         ) {
           // < in plain text, be forgiving and treat it as text
           // 这里的的意思应该是将<li 前面的 换行符等视为一个文本

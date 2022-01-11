@@ -309,7 +309,9 @@ export function parse (
     end (tag, start, end) {
       const element = stack[stack.length - 1]
       // pop stack
+      // 从栈中弹出
       stack.length -= 1
+      // 回退当前的父级
       currentParent = stack[stack.length - 1]
       if (process.env.NODE_ENV !== 'production' && options.outputSourceRange) {
         element.end = end

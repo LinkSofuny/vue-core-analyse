@@ -31,7 +31,7 @@ async function main () {
       initial: 'feat: finish'
     })
 
-    step('\n Runing push code')
+    step('\n Runing commit....')
     await runIfNotDry('git', ['add', '-A'])
     await runIfNotDry('git', ['commit', '-m', `${commit}`])
 
@@ -43,6 +43,7 @@ async function main () {
 
     if (!yes) return
 
+    step('\n Runing push....')
     await runIfNotDry('git', ['push'])
 
   } else {

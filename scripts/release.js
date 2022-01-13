@@ -20,16 +20,20 @@ const step = msg => console.log(chalk.cyan(msg))
 
 async function main () {
 
-  // await run(`yarn`, ['changelog']) aaaaa
-  console.log('isDryRun', isDryRun)
-  const commitMsg = args._[0]
-
+  // await run(`yarn`, ['changelog'])
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' })
 
   if (stdout) {
+    const { commit } = await prompt({
+      type: 'input',
+      name: 'commit',
+      message: 'Input commit messsage',
+      initial: 'feat: finish'
+    })
+
     step('\n Runing push code')
     await runIfNotDry('git', ['add', '-A'])
-    await runIfNotDry('git', ['commit', '-m', `release: ${commitMsg}`])
+    await runIfNotDry('git', ['commit', '-m', `${commit}`])
 
     const { yes } = await prompt({
       type: 'confirm',
@@ -41,6 +45,8 @@ async function main () {
 
     await runIfNotDry('git', ['push'])
 
+  } else {
+    console.log('No changes to commit.')
   }
 }
 

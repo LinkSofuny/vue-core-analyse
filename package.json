@@ -42,6 +42,7 @@
     "release:weex": "bash scripts/release-weex.sh",
     "release:note": "node scripts/gen-release-note.js",
     "commit": "git-cz",
+    "link:dry": "node scripts/release.js --dry",
     "link": "node scripts/release.js"
   },
   "gitHooks": {

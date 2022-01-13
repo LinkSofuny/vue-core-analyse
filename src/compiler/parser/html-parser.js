@@ -235,12 +235,16 @@ export function parseHTML (html, options) {
       }
     }
   }
-
+  // 处理开头标签
   function handleStartTag (match) {
     const tagName = match.tagName
     const unarySlash = match.unarySlash
 
     if (expectHTML) {
+      // 与浏览器行为保持一致的处理
+      // html5的标准
+      // Phrasing的定义为, 所有可以放在p标签内, 构成段落内容的元素均属于Phrasing元素
+      // 如把在p标签内放置一个 div 标签 这个标签会被提取出来放置在外头
       if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
         parseEndTag(lastTag)
       }
@@ -296,7 +300,6 @@ export function parseHTML (html, options) {
       // If no tag name is provided, clean shop
       pos = 0
     }
-
     if (pos >= 0) {
       // Close all the open elements, up the stack
       for (let i = stack.length - 1; i >= pos; i--) {
@@ -317,6 +320,7 @@ export function parseHTML (html, options) {
       // Remove the open elements from the stack
       stack.length = pos
       lastTag = pos && stack[pos - 1].tag
+    // 出现多标签的情况如: <div></div></p>
     } else if (lowerCasedTagName === 'br') {
       if (options.start) {
         options.start(tagName, [], true, start, end)

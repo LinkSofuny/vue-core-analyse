@@ -5,6 +5,7 @@
 const args = require('minimist')(process.argv.slice(2))
 const chalk = require('chalk')
 const execa = require('execa')
+const { prompt } = require('enquirer')
 
 const isDryRun = args.dry
 

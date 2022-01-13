@@ -20,8 +20,8 @@ const step = msg => console.log(chalk.cyan(msg))
 
 async function main () {
 
-  // await run(`yarn`, ['changelog'])
-
+  // await run(`yarn`, ['changelog']) aaaaa
+  console.log('isDryRun', isDryRun)
   const commitMsg = args._[0]
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' })

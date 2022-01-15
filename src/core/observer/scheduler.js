@@ -163,6 +163,7 @@ function callActivatedHooks (queue) {
  */
 export function queueWatcher (watcher: Watcher) {
   const id = watcher.id
+  // 是否已经已经在队列里了
   if (has[id] == null) {
     has[id] = true
     if (!flushing) {

@@ -156,6 +156,7 @@ function initData (vm: Component) {
     }
   }
   // observe data
+  // 观察 数据
   observe(data, true /* asRootData */)
 }
 

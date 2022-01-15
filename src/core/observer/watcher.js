@@ -145,6 +145,7 @@ export default class Watcher {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
+        // 添加当前 watcher
         dep.addSub(this)
       }
     }
@@ -183,6 +184,7 @@ export default class Watcher {
       // 渲染wacher 执行完毕 堆出后, 会轮到当前的渲染watcher执行update
       // 此时就会去执行queueWatcher(this), 再重新执行 组件渲染时候
       // 会用到计算属性, 在这时因为 dirty 为 true 所以能重新求值
+      // dirty就像一个阀门, 用于判断是否应该重新计算
       this.dirty = true
     } else if (this.sync) {
       // 同步执行的 watcher 函数

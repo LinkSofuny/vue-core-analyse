@@ -41,6 +41,7 @@ export class Observer {
 
   constructor (value: any) {
     this.value = value
+    // 因为我们有可能订阅当前的值
     this.dep = new Dep()  // 观察者 本身也有一个 发布者类
     this.vmCount = 0
     def(value, '__ob__', this)
@@ -69,6 +70,7 @@ export class Observer {
   walk (obj: Object) {
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
+      // 将对象每一个值都定义成响应式的
       defineReactive(obj, keys[i])
     }
   }
@@ -117,6 +119,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     return
   }
   let ob: Observer | void
+  // 如果存在 __ob__ 证明该对象已经是响应式的了
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
@@ -126,6 +129,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     Object.isExtensible(value) &&
     !value._isVue
   ) {
+    // 观察者实例
     ob = new Observer(value)
   }
   if (asRootData && ob) {
@@ -136,6 +140,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * Define a reactive property on an Object.
+ * 定义一个响应式属性在一个对象上
  */
 export function defineReactive (
   obj: Object,
@@ -158,15 +163,15 @@ export function defineReactive (
   if ((!getter || setter) && arguments.length === 2) {
     val = obj[key]
   }
-
+  // 递归子属性
   let childOb = !shallow && observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
-      if (Dep.target) {
-        dep.depend()
+      if (Dep.target) { // 当前激活的渲染 watcher
+        dep.depend() // 订阅当前 watcher
         if (childOb) {
           childOb.dep.depend()
           if (Array.isArray(value)) {
@@ -194,6 +199,7 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
+      // 通知它的订阅者更新
       dep.notify()
     }
   })

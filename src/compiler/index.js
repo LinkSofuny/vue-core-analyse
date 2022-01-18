@@ -14,6 +14,8 @@ export const createCompiler = createCompilerCreator(function baseCompile (
 ): CompiledResult {
   // 转 ast
   const ast = parse(template.trim(), options)
+
+  // 优化
   if (options.optimize !== false) {
     optimize(ast, options)
   }

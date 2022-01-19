@@ -25,6 +25,7 @@ export class CodegenState {
     this.options = options
     this.warn = options.warn || baseWarn
     this.transforms = pluckModuleFunction(options.modules, 'transformCode')
+    // 拿到模块中的genData
     this.dataGenFns = pluckModuleFunction(options.modules, 'genData')
     this.directives = extend(extend({}, baseDirectives), options.directives)
     const isReservedTag = options.isReservedTag || no
@@ -142,7 +143,7 @@ function genOnce (el: ASTElement, state: CodegenState): string {
     return genStatic(el, state)
   }
 }
-
+// 对if的处理
 export function genIf (
   el: any,
   state: CodegenState,
@@ -246,6 +247,7 @@ export function genData (el: ASTElement, state: CodegenState): string {
   }
   // module data generation functions
   for (let i = 0; i < state.dataGenFns.length; i++) {
+    // 根据不同平台拿到不同平台的 genData 函数
     data += state.dataGenFns[i](el)
   }
   // attributes

@@ -11,7 +11,7 @@ import { renderStatic, markOnce } from './render-static'
 import { bindObjectListeners } from './bind-object-listeners'
 import { resolveScopedSlots } from './resolve-scoped-slots'
 import { bindDynamicKeys, prependModifier } from './bind-dynamic-keys'
-
+//  模板编译的时候使用的方法
 export function installRenderHelpers (target: any) {
   target._o = markOnce
   target._n = toNumber

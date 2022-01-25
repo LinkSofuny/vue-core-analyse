@@ -60,6 +60,7 @@ export function genHandlers (
   let staticHandlers = ``
   let dynamicHandlers = ``
   for (const name in events) {
+    // 拿到对应事件名的 处理函数
     const handlerCode = genHandler(events[name])
     if (events[name] && events[name].dynamic) {
       dynamicHandlers += `${name},${handlerCode},`
@@ -97,15 +98,16 @@ function genHandler (handler: ASTElementHandler | Array<ASTElementHandler>): str
   if (!handler) {
     return 'function(){}'
   }
-
+  // 生成函数数组
   if (Array.isArray(handler)) {
     return `[${handler.map(handler => genHandler(handler)).join(',')}]`
   }
-
+  // 方法路径
   const isMethodPath = simplePathRE.test(handler.value)
+  // 是一个函数
   const isFunctionExpression = fnExpRE.test(handler.value)
   const isFunctionInvocation = simplePathRE.test(handler.value.replace(fnInvokeRE, ''))
-
+  // 不存在修饰符
   if (!handler.modifiers) {
     if (isMethodPath || isFunctionExpression) {
       return handler.value
@@ -121,7 +123,9 @@ function genHandler (handler: ASTElementHandler | Array<ASTElementHandler>): str
     let code = ''
     let genModifierCode = ''
     const keys = []
+    // 遍历修饰符
     for (const key in handler.modifiers) {
+      // 一个字典, 用于生成对应修饰符的代码
       if (modifierCode[key]) {
         genModifierCode += modifierCode[key]
         // left/right

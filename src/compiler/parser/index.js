@@ -461,6 +461,7 @@ export function processElement (
   for (let i = 0; i < transforms.length; i++) {
     element = transforms[i](element, options) || element
   }
+  // 属性处理
   processAttrs(element)
   return element
 }
@@ -783,8 +784,9 @@ function processAttrs (el) {
     value = list[i].value
     if (dirRE.test(name)) {
       // mark element as dynamic
+      // 动态节点
       el.hasBindings = true
-      // modifiers
+      // modifiers 修饰符
       modifiers = parseModifiers(name.replace(dirRE, ''))
       // support .foo shorthand syntax for the .prop modifier
       if (process.env.VBIND_PROP_SHORTHAND && propBindRE.test(name)) {
@@ -922,7 +924,7 @@ function checkInFor (el: ASTElement): boolean {
   }
   return false
 }
-
+// 对修饰符做处理
 function parseModifiers (name: string): Object | void {
   const match = name.match(modifierRE)
   if (match) {

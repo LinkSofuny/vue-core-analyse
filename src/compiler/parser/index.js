@@ -782,6 +782,7 @@ function processAttrs (el) {
   for (i = 0, l = list.length; i < l; i++) {
     name = rawName = list[i].name
     value = list[i].value
+    // 捕获到 v- : @ 等
     if (dirRE.test(name)) {
       // mark element as dynamic
       // 动态节点

@@ -56,6 +56,7 @@ export function genHandlers (
   events: ASTElementHandlers,
   isNative: boolean
 ): string {
+  // 这里会判断是否为原生事件
   const prefix = isNative ? 'nativeOn:' : 'on:'
   let staticHandlers = ``
   let dynamicHandlers = ``
@@ -102,7 +103,8 @@ function genHandler (handler: ASTElementHandler | Array<ASTElementHandler>): str
   if (Array.isArray(handler)) {
     return `[${handler.map(handler => genHandler(handler)).join(',')}]`
   }
-  // 方法路径
+  // clickHanlder($event) 这两种都不会命中
+  // 方法名路径
   const isMethodPath = simplePathRE.test(handler.value)
   // 是一个函数
   const isFunctionExpression = fnExpRE.test(handler.value)
@@ -116,6 +118,7 @@ function genHandler (handler: ASTElementHandler | Array<ASTElementHandler>): str
     if (__WEEX__ && handler.params) {
       return genWeexHandler(handler.params, handler.value)
     }
+    // 最终生成的代码会把$event作为参数传递
     return `function($event){${
       isFunctionInvocation ? `return ${handler.value}` : handler.value
     }}` // inline statement

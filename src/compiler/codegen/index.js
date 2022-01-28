@@ -259,9 +259,11 @@ export function genData (el: ASTElement, state: CodegenState): string {
     data += `domProps:${genProps(el.props)},`
   }
   // event handlers
+  // 事件处理
   if (el.events) {
     data += `${genHandlers(el.events, false)},`
   }
+  // 原生事件处理
   if (el.nativeEvents) {
     data += `${genHandlers(el.nativeEvents, true)},`
   }

@@ -780,6 +780,7 @@ function processAttrs (el) {
   const list = el.attrsList
   let i, l, name, rawName, value, modifiers, syncGen, isDynamic
   for (i = 0, l = list.length; i < l; i++) {
+    // @click.native.prevent - case
     name = rawName = list[i].name
     value = list[i].value
     // 捕获到 v- : @ 等
@@ -794,6 +795,7 @@ function processAttrs (el) {
         (modifiers || (modifiers = {})).prop = true
         name = `.` + name.slice(1).replace(modifierRE, '')
       } else if (modifiers) {
+        // 删除修饰符 @click
         name = name.replace(modifierRE, '')
       }
       if (bindRE.test(name)) { // v-bind

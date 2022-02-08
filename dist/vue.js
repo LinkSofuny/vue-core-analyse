@@ -3676,7 +3676,6 @@
     factory,
     baseCtor
   ) {
-    debugger
     if (isTrue(factory.error) && isDef(factory.errorComp)) {
       return factory.errorComp
     }

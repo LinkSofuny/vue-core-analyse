@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-    <h1 @click="isShow = !isShow">普通节点</h1>
     <HelloWorld v-if="isShow"/>
+    <div v-else>普通节点2</div>
+    <button  @click="isShow = !isShow" > change</button>
   </div>
 </template>
 

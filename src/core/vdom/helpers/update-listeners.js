@@ -10,7 +10,7 @@ import {
   isTrue,
   isPlainObject
 } from 'shared/util'
-
+// 解析修饰符, parse阶段 修饰符如果被匹配到会被转为一个符号, 这里通过符号找回原来的修饰符
 const normalizeEvent = cached((name: string): {
   name: string,
   once: boolean,
@@ -34,6 +34,7 @@ const normalizeEvent = cached((name: string): {
 })
 
 export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component): Function {
+  // 事件最终会执行这个  invoker
   function invoker () {
     const fns = invoker.fns
     if (Array.isArray(fns)) {
@@ -75,6 +76,7 @@ export function updateListeners (
       )
     } else if (isUndef(old)) {
       if (isUndef(cur.fns)) {
+        // 是一个函数, 匿名函数, 或者是一个数组
         cur = on[name] = createFnInvoker(cur, vm)
       }
       if (isTrue(event.once)) {

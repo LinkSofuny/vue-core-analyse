@@ -57,6 +57,7 @@ function add (
   // the solution is simple: we save the timestamp when a handler is attached,
   // and the handler would only fire if the event passed to it was fired
   // AFTER it was attached.
+  // @todo
   if (useMicrotaskFix) {
     const attachedTimestamp = currentFlushTimestamp
     const original = handler
@@ -104,6 +105,7 @@ function remove (
 }
 
 function updateDOMListeners (oldVnode: VNodeWithData, vnode: VNodeWithData) {
+  // 判断是否存在 on属性, 也就是codegen 阶段添加的事件对象
   if (isUndef(oldVnode.data.on) && isUndef(vnode.data.on)) {
     return
   }
@@ -112,7 +114,7 @@ function updateDOMListeners (oldVnode: VNodeWithData, vnode: VNodeWithData) {
   // vnode is empty when removing all listeners,
   // and use old vnode dom element
   target = vnode.elm || oldVnode.elm
-  normalizeEvents(on)
+  normalizeEvents(on) // v-model
   updateListeners(on, oldOn, add, remove, createOnceHandler, vnode.context)
   target = undefined
 }

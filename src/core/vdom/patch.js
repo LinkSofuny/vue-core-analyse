@@ -371,16 +371,16 @@ export function createPatchFunction (backend) {
     let i, j
     const data = vnode.data
     if (isDef(data)) {
-      if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode)
-      for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode)
+      if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode) // vnode.data.destroy vnode的钩子
+      for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode) // 平台钩子
     }
     if (isDef(i = vnode.children)) {
       for (j = 0; j < vnode.children.length; ++j) {
-        invokeDestroyHook(vnode.children[j])
+        invokeDestroyHook(vnode.children[j]) // 存在子节点的话, 则递归调动
       }
     }
   }
-
+  // 删除旧节点
   function removeVnodes (vnodes, startIdx, endIdx) {
     for (; startIdx <= endIdx; ++startIdx) {
       const ch = vnodes[startIdx]
@@ -394,7 +394,7 @@ export function createPatchFunction (backend) {
       }
     }
   }
-
+  // 移除并调用移除钩子
   function removeAndInvokeRemoveHook (vnode, rm) {
     if (isDef(rm) || isDef(vnode.data)) {
       let i
@@ -408,6 +408,8 @@ export function createPatchFunction (backend) {
         rm = createRmCb(vnode.elm, listeners)
       }
       // recursively invoke hooks on child component root node
+      // 递归执行removeAndInvokeRemoveHook
+      // 组件实例存在, 拿到组件实例的虚拟节点
       if (isDef(i = vnode.componentInstance) && isDef(i = i._vnode) && isDef(i.data)) {
         removeAndInvokeRemoveHook(i, rm)
       }
@@ -783,6 +785,7 @@ export function createPatchFunction (backend) {
         }
 
         // replacing existing element
+        // 如果当前是更新阶段, 则拿到旧节点的父节点
         const oldElm = oldVnode.elm
         const parentElm = nodeOps.parentNode(oldElm)
 
@@ -848,7 +851,7 @@ export function createPatchFunction (backend) {
         }
       }
       /**
-       * note-chenyudong
+       * @note
        *    初始节点, 通过$mount函数将模板转化为一个render函数
        *    _update 负责挂载, 更新节点
        *    render函数在内部执行, 会去创建虚拟节点 并返回

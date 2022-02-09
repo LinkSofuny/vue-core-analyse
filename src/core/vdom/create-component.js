@@ -36,6 +36,8 @@ import {
 // 内联钩子, 在patch阶段 => 组件Vnode被调用
 const componentVNodeHooks = {
   // 在 patch 阶段 组件实例化
+  // 这里会传进来一个vnode, 这是当前准备实例化组件的父vnode, 组件进入这个函数的时候
+  // 上此执行的必然是他的父vnode
   init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
     if (
       vnode.componentInstance &&
@@ -48,7 +50,7 @@ const componentVNodeHooks = {
     } else {
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
-        activeInstance
+        activeInstance // 这个将会是组件实例的 vnode.parent
       )
       // 在这里实现挂载, 全局下的_init 不会走到$mount
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
@@ -193,7 +195,7 @@ export function createComponent (
   installComponentHooks(data)
 
   // return a placeholder vnode
-  // 返回一个占位符 vnode
+  // 返回一个占位符 vnode 虽然叫占位符实际上是一个 vnode ?
   const name = Ctor.options.name || tag
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
@@ -222,7 +224,7 @@ export function createComponentInstanceForVnode (
   const options: InternalComponentOptions = {
     _isComponent: true,
     _parentVnode: vnode,
-    parent
+    parent // 这里传进来的明明是一个 实例 @todo???
   }
   // check inline-template render functions
   const inlineTemplate = vnode.data.inlineTemplate

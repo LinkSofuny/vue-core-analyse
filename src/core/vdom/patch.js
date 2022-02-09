@@ -584,6 +584,7 @@ export function createPatchFunction (backend) {
     if (isUndef(vnode.text)) {
       if (isDef(oldCh) && isDef(ch)) {
         // 新旧子节点不一样 则 updateChildren (diff)
+        // diff算法就在这里
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
       } else if (isDef(ch)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -730,6 +731,8 @@ export function createPatchFunction (backend) {
   }
   // __patch__ 虚拟节点挂载
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
+    // 不存在新节点, 那就是销毁旧的咯
+    // patch 过程是相较于两个组件而言的
     if (isUndef(vnode)) {
       // 节点卸载
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
@@ -804,18 +807,21 @@ export function createPatchFunction (backend) {
 
         // update parent placeholder node element, recursively
         // 更新父的占位符节点(组件在呗插入之前 会有一个占位符节点)
-        // diff算法就在这里
+        // 这个vnode.paren就是在组件实例化的时候, 通过内联钩子将上个实例挂载进去的
         if (isDef(vnode.parent)) {
           let ancestor = vnode.parent
           // 当前vnode是否可挂载
           const patchable = isPatchable(vnode)
           while (ancestor) {
             for (let i = 0; i < cbs.destroy.length; ++i) {
+              // 递归移除旧的事件监听
               cbs.destroy[i](ancestor)
             }
             ancestor.elm = vnode.elm
             if (patchable) {
               for (let i = 0; i < cbs.create.length; ++i) {
+                // 如果当前vnode可以挂载, 则为组件添加新的事件监听
+                // @todo 为什么旧的不能用???
                 cbs.create[i](emptyNode, ancestor)
               }
               // #6513

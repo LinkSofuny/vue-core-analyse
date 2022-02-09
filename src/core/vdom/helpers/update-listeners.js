@@ -60,9 +60,10 @@ export function updateListeners (
   vm: Component
 ) {
   let name, def, cur, old, event
+  // on为新节点, 如果此时为空 这里压根不会执行
   for (name in on) {
-    def = cur = on[name]
-    old = oldOn[name]
+    def = cur = on[name]// 0
+    old = oldOn[name] // 1
     event = normalizeEvent(name)
     /* istanbul ignore if */
     if (__WEEX__ && isPlainObject(def)) {
@@ -74,6 +75,7 @@ export function updateListeners (
         `Invalid handler for event "${event.name}": got ` + String(cur),
         vm
       )
+    // destroy 阶段 old 不存在
     } else if (isUndef(old)) {
       if (isUndef(cur.fns)) {
         // 是一个函数, 匿名函数, 或者是一个数组
@@ -88,9 +90,11 @@ export function updateListeners (
       on[name] = old
     }
   }
+
   for (name in oldOn) {
     if (isUndef(on[name])) {
       event = normalizeEvent(name)
+      // 移除监听器
       remove(event.name, oldOn[name], event.capture)
     }
   }

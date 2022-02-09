@@ -82,6 +82,7 @@ function add (
       }
     }
   }
+  // 原生监听事件
   target.addEventListener(
     name,
     handler,
@@ -103,12 +104,14 @@ function remove (
     capture
   )
 }
-
+// 旧有 新没有  销毁
+// 旧没有 新有 创建/更新
 function updateDOMListeners (oldVnode: VNodeWithData, vnode: VNodeWithData) {
   // 判断是否存在 on属性, 也就是codegen 阶段添加的事件对象
   if (isUndef(oldVnode.data.on) && isUndef(vnode.data.on)) {
     return
   }
+  // 事件
   const on = vnode.data.on || {}
   const oldOn = oldVnode.data.on || {}
   // vnode is empty when removing all listeners,

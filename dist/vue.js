@@ -3147,6 +3147,7 @@
   var componentVNodeHooks = {
     // 在 patch 阶段 组件实例化
     init: function init (vnode, hydrating) {
+      debugger
       if (
         vnode.componentInstance &&
         !vnode.componentInstance._isDestroyed &&
@@ -4973,7 +4974,6 @@
   }
 
   function initWatch (vm, watch) {
-    debugger
     for (var key in watch) {
       var handler = watch[key];
       if (Array.isArray(handler)) {
@@ -6634,6 +6634,7 @@
     }
     // __patch__ 虚拟节点挂载
     return function patch (oldVnode, vnode, hydrating, removeOnly) {
+      debugger
       if (isUndef(vnode)) {
         // 节点卸载
         if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }

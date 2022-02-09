@@ -1,19 +1,25 @@
 <template>
   <div id="app">
-
-    <!-- <HelloWorld v-if="isShow"/> -->
+    <HelloWorld v-if="!isShow"/>
+    <Demo v-if="isShow"/>
     <!-- <div v-else>普通节点2</div> -->
     <button  @click="isShow = !isShow" > change</button>
   </div>
 </template>
 
 <script>
+import HelloWorld from "./components/HelloWorld.vue";
+import Demo  from "./components/Demo.vue";
 export default {
   name: 'App',
   data() {
     return {
       isShow: false
     }
+  },
+  components: {
+    HelloWorld,
+    Demo
   },
   watch: {
     isShow: [

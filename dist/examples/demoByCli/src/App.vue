@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-    <HelloWorld v-if="isShow"/>
-    <div v-else>普通节点2</div>
+
+    <!-- <HelloWorld v-if="isShow"/> -->
+    <!-- <div v-else>普通节点2</div> -->
     <button  @click="isShow = !isShow" > change</button>
   </div>
 </template>
@@ -13,6 +14,19 @@ export default {
     return {
       isShow: false
     }
+  },
+  watch: {
+    isShow: [
+      function () {
+        console.log('isShow1', this.isShow)
+      },
+      function () {
+        console.log('isShow2', this.isShow)
+      },
+      function () {
+        console.log('isShow3', this.isShow)
+      }
+    ]
   }
 }
 </script>

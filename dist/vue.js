@@ -4973,6 +4973,7 @@
   }
 
   function initWatch (vm, watch) {
+    debugger
     for (var key in watch) {
       var handler = watch[key];
       if (Array.isArray(handler)) {

@@ -62,8 +62,10 @@ export function initState (vm: Component) {
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
+  // 初始化计算属性
   if (opts.computed) initComputed(vm, opts.computed)
   if (opts.watch && opts.watch !== nativeWatch) {
+    // 初始化watch
     initWatch(vm, opts.watch)
   }
 }
@@ -180,7 +182,7 @@ function initComputed (vm: Component, computed: Object) {
   const watchers = vm._computedWatchers = Object.create(null)
   // computed properties are just getters during SSR
   const isSSR = isServerRendering()
-
+  // 遍历所有的计算属性
   for (const key in computed) {
     // 用户定义的 computed
     const userDef = computed[key]
@@ -228,6 +230,7 @@ export function defineComputed (
   // 不是SSR则缓存
   const shouldCache = !isServerRendering()
   // 函数的形式
+  // 这里就是对几种写法的统一
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
       ? createComputedGetter(key)
@@ -268,8 +271,19 @@ function createComputedGetter (key) {
         // 这个函数执行完毕后, 当前 计算watcher就会推出
         watcher.evaluate()
       }
+      // 如果当前激活的渲染watcher存在
       if (Dep.target) {
-        // 通知 当前 dep
+        /**
+         * evaluate后求值的同时, 如果当前 渲染watcher 存在,
+         * 则通知当前的收集了 计算watcher 的 dep 收集当前的 渲染watcher
+         *
+         *    为什么要这么做?
+         * 假设这个计算属性是在模板中被使用的, 并且渲染watcher没有被对应的dep收集
+         * 那派发更新的时候, 计算属性依赖的值发生改变, 而当前渲染watcher不被更新
+         * 就会出现, 页面中的计算属性值没有发生改变的情况.
+         *
+         * 本质上计算属性所依赖的dep, 也可以看做这个属性值本身的dep实例.
+         */
         watcher.depend()
       }
       return watcher.value
@@ -312,6 +326,7 @@ function initMethods (vm: Component, methods: Object) {
 }
 
 function initWatch (vm: Component, watch: Object) {
+  // 遍历我们定义的wathcer
   for (const key in watch) {
     const handler = watch[key]
     if (Array.isArray(handler)) {
@@ -367,9 +382,9 @@ export function stateMixin (Vue: Class<Component>) {
   Vue.prototype.$delete = del
 
   Vue.prototype.$watch = function (
-    expOrFn: string | Function,
-    cb: any,
-    options?: Object
+    expOrFn: string | Function, // 这个可以是 key
+    cb: any, // 待执行的函数
+    options?: Object // 一些配置
   ): Function {
     const vm: Component = this
     if (isPlainObject(cb)) {

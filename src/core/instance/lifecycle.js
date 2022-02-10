@@ -216,7 +216,7 @@ export function mountComponent (
   }
   return vm
 }
-
+// 对slot props 处理
 export function updateChildComponent (
   vm: Component,
   propsData: ?Object,

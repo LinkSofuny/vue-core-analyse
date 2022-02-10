@@ -57,6 +57,7 @@ const componentVNodeHooks = {
     }
   },
   // @todo
+  // 当更新的 vnode 是一个组件 vnode 的时候，会执行 prepatch 的方法
   prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
     const options = vnode.componentOptions
     const child = vnode.componentInstance = oldVnode.componentInstance

@@ -582,22 +582,29 @@ export function createPatchFunction (backend) {
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }
     if (isUndef(vnode.text)) {
+      // 新旧子节点都存在
       if (isDef(oldCh) && isDef(ch)) {
         // 新旧子节点不一样 则 updateChildren (diff)
         // diff算法就在这里
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
       } else if (isDef(ch)) {
+        // 只存在新节点 新增
         if (process.env.NODE_ENV !== 'production') {
           checkDuplicateKeys(ch)
         }
+        // 如果老节点是一个文本节点, 删除
         if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, '')
+        // 添加新的节点
         addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue)
       } else if (isDef(oldCh)) {
+        // 只存在旧节点 删除
         removeVnodes(oldCh, 0, oldCh.length - 1)
       } else if (isDef(oldVnode.text)) {
+        // 老的文本节点 删除
         nodeOps.setTextContent(elm, '')
       }
     } else if (oldVnode.text !== vnode.text) {
+      // 说明是普通的文本节点, 替换文本节点
       nodeOps.setTextContent(elm, vnode.text)
     }
     if (isDef(data)) {
@@ -752,7 +759,7 @@ export function createPatchFunction (backend) {
       // 新旧节点相同的情况
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
-        // 当前为相同节点
+        // 新旧节点相同
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
         // 一个真实节点

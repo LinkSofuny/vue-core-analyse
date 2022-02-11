@@ -1,6 +1,10 @@
 /* @flow */
 /* globals MutationObserver */
 
+/**
+ * nextTick的理解
+ */
+
 import { noop } from 'shared/util'
 import { handleError } from './error'
 import { isIE, isIOS, isNative } from './env'
@@ -12,6 +16,9 @@ let pending = false
 
 function flushCallbacks () {
   pending = false
+  // 复制一份的原因是为了防止死循环,
+  // 如果这个nexttick函数包涵下一个nextick, 显然下一个应该在下一个callbacks
+  // 不这么做会导致循环
   const copies = callbacks.slice(0)
   callbacks.length = 0
   for (let i = 0; i < copies.length; i++) {
@@ -106,6 +113,7 @@ export function nextTick (cb?: Function, ctx?: Object) {
     timerFunc()
   }
   // $flow-disable-line
+  // 提供一个 promise 式的then调用
   if (!cb && typeof Promise !== 'undefined') {
     return new Promise(resolve => {
       _resolve = resolve

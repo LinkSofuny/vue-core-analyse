@@ -69,6 +69,7 @@ if (inBrowser && !isIE) {
  * Flush both queues and run the watchers.
  */
 function flushSchedulerQueue () {
+  // 这个函数针对的是渲染watcher
   currentFlushTimestamp = getNow()
   flushing = true
   let watcher, id
@@ -167,10 +168,12 @@ export function queueWatcher (watcher: Watcher) {
   if (has[id] == null) {
     has[id] = true
     if (!flushing) {
+      // 首次进来执行
       queue.push(watcher)
     } else {
       // if already flushing, splice the watcher based on its id
       // if already past its id, it will be run next immediately.
+      // flushSchedulerQueue 内部会将 flushing 置为 true 但是是异步的
       let i = queue.length - 1
       while (i > index && queue[i].id > watcher.id) {
         i--

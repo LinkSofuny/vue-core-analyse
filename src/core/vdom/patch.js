@@ -319,6 +319,8 @@ export function createPatchFunction (backend) {
 
   function isPatchable (vnode) {
     while (vnode.componentInstance) {
+      // 是否为组件 componentInstance
+      // 带有这个属性的事组件Vnode
       vnode = vnode.componentInstance._vnode
     }
     return isDef(vnode.tag)
@@ -581,6 +583,7 @@ export function createPatchFunction (backend) {
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }
+    //
     if (isUndef(vnode.text)) {
       // 新旧子节点都存在
       if (isDef(oldCh) && isDef(ch)) {
@@ -762,6 +765,7 @@ export function createPatchFunction (backend) {
         // 新旧节点相同
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
+        // 新旧节点不同
         // 一个真实节点
         if (isRealElement) {
           // mounting to a real element
@@ -814,9 +818,9 @@ export function createPatchFunction (backend) {
 
         // update parent placeholder node element, recursively
         // 更新父的占位符节点(组件在呗插入之前 会有一个占位符节点)
-        // 这个vnode.paren就是在组件实例化的时候, 通过内联钩子将上个实例挂载进去的
+        // 这个vnode.parent是组件内部渲染Vnode(真实DOM树Vnode) 的 占位符节点
         if (isDef(vnode.parent)) {
-          let ancestor = vnode.parent
+          let ancestor = vnode.parent // 占位符节点
           // 当前vnode是否可挂载
           const patchable = isPatchable(vnode)
           while (ancestor) {
@@ -824,6 +828,9 @@ export function createPatchFunction (backend) {
               // 递归移除旧的事件监听
               cbs.destroy[i](ancestor)
             }
+            // vnode.elm 是一个新渲染出来的组件内的真实DOM树
+            // ancestor.elm 就是上次更新时候组件内的真实DOM树
+            // 因为ancestor是组件占位符, 组件内部的真实节点就挂载在elm上
             ancestor.elm = vnode.elm
             if (patchable) {
               for (let i = 0; i < cbs.create.length; ++i) {

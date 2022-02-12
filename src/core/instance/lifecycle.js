@@ -218,7 +218,7 @@ export function mountComponent (
 }
 // 对slot props 处理
 export function updateChildComponent (
-  vm: Component,
+  vm: Component, //
   propsData: ?Object,
   listeners: ?Object,
   parentVnode: MountedComponentVNode,
@@ -274,6 +274,9 @@ export function updateChildComponent (
     for (let i = 0; i < propKeys.length; i++) {
       const key = propKeys[i]
       const propOptions: any = vm.$options.props // wtf flow?
+      // 为什么父组件更新props 会通知子组件update的点就在这里
+      // 这里修改了子组件props的值, 会触发这个值的 dep 派发更新
+      // 触发子组件的patch
       props[key] = validateProp(key, propOptions, propsData, vm)
     }
     toggleObserving(true)

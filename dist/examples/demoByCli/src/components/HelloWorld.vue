@@ -1,12 +1,17 @@
 <template>
-  <div class="hello">
-    <h1>HelloWorld</h1>
+  <div class="hello-world" >
+
   </div>
 </template>
 
 <script>
 export default {
   name: 'HelloWorld',
+  data() {
+    return {
+      isShow: true
+    }
+  }
 }
 </script>
 <style scoped>

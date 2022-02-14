@@ -60,7 +60,7 @@ function sameInputType (a, b) {
   const typeB = isDef(i = b.data) && isDef(i = i.attrs) && i.type
   return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
 }
-
+// 旧节点 key值映射
 function createKeyToOldIdx (children, beginIdx, endIdx) {
   let i, key
   const map = {}
@@ -455,50 +455,64 @@ export function createPatchFunction (backend) {
       } else if (isUndef(oldEndVnode)) {
         oldEndVnode = oldCh[--oldEndIdx]
       } else if (sameVnode(oldStartVnode, newStartVnode)) {
+        // 新旧开始节点 相等
         patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)
         oldStartVnode = oldCh[++oldStartIdx]
         newStartVnode = newCh[++newStartIdx]
       } else if (sameVnode(oldEndVnode, newEndVnode)) {
+        // 新旧结束节点 相等
         patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)
         oldEndVnode = oldCh[--oldEndIdx]
         newEndVnode = newCh[--newEndIdx]
       } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
+        // 旧开始 和 新结束 相等
         patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)
         canMove && nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm))
         oldStartVnode = oldCh[++oldStartIdx]
         newEndVnode = newCh[--newEndIdx]
       } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
-        // 旧尾节点 和 新头节点 一样
+        // 旧结束 和 新开始 相等
         // 递归子节点
         patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)
+        // 将 旧结束 插入到 旧开始 的前面
         canMove && nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm)
         oldEndVnode = oldCh[--oldEndIdx]
         newStartVnode = newCh[++newStartIdx]
       } else {
+        // 不符合上述情况
+        // 拿到旧Vnode的key值标识符
         if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx)
         idxInOld = isDef(newStartVnode.key)
-          ? oldKeyToIdx[newStartVnode.key]
+          ? oldKeyToIdx[newStartVnode.key] // 用新节点的key 尝试从旧的中拿到
+          // 如果没有key值, 只能遍历新开始节点 和旧的节点组
           : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx)
         if (isUndef(idxInOld)) { // New element
+          // 如果拿不到, 证明当前是一个新增的节点
           createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx)
         } else {
+          // 拿得到, 就证明这个节点存在, 比对这两个节点
           vnodeToMove = oldCh[idxInOld]
           if (sameVnode(vnodeToMove, newStartVnode)) {
+            // 这两个节点相同
             patchVnode(vnodeToMove, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)
-            oldCh[idxInOld] = undefined
+            oldCh[idxInOld] = undefined // 删除掉旧的节点(移除位置)
             canMove && nodeOps.insertBefore(parentElm, vnodeToMove.elm, oldStartVnode.elm)
           } else {
             // same key but different element. treat as new element
             createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx)
           }
         }
-        newStartVnode = newCh[++newStartIdx]
+        newStartVnode = newCh[++newStartIdx] // 移动新指针
       }
     }
     if (oldStartIdx > oldEndIdx) {
+      // 如果旧的开始指针越界了,
+      // 就拿到新增的节点 然后插入
       refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm
       addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue)
     } else if (newStartIdx > newEndIdx) {
+      // 如果是新的开始指针越界,
+      // 那证明存在删除的情况
       removeVnodes(oldCh, oldStartIdx, oldEndIdx)
     }
   }
@@ -520,7 +534,7 @@ export function createPatchFunction (backend) {
       }
     }
   }
-
+  // 遍历比对
   function findIdxInOld (node, oldCh, start, end) {
     for (let i = start; i < end; i++) {
       const c = oldCh[i]
@@ -587,7 +601,7 @@ export function createPatchFunction (backend) {
     if (isUndef(vnode.text)) {
       // 新旧子节点都存在
       if (isDef(oldCh) && isDef(ch)) {
-        // 新旧子节点不一样 则 updateChildren (diff)
+        // 新旧子节点diff 则 updateChildren (diff)
         // diff算法就在这里
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
       } else if (isDef(ch)) {

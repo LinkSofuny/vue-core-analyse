@@ -3147,7 +3147,6 @@
   var componentVNodeHooks = {
     // 在 patch 阶段 组件实例化
     init: function init (vnode, hydrating) {
-      debugger
       if (
         vnode.componentInstance &&
         !vnode.componentInstance._isDestroyed &&
@@ -6330,6 +6329,7 @@
     }
 
     function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
+      debugger
       var oldStartIdx = 0;
       var newStartIdx = 0;
       var oldEndIdx = oldCh.length - 1;
@@ -6634,7 +6634,6 @@
     }
     // __patch__ 虚拟节点挂载
     return function patch (oldVnode, vnode, hydrating, removeOnly) {
-      debugger
       if (isUndef(vnode)) {
         // 节点卸载
         if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }

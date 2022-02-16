@@ -176,6 +176,7 @@ export function createComponent (
 
   // extract listeners, since these needs to be treated as
   // child component listeners instead of DOM listeners
+  // 这也是为什么组件有自定义事件和原生事件两种类型的原因
   const listeners = data.on
   // replace with listeners with .native modifier
   // so it gets processed during parent component patch.

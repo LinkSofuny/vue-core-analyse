@@ -10,7 +10,8 @@ import {
   isTrue,
   isPlainObject
 } from 'shared/util'
-// 解析修饰符, parse阶段 修饰符如果被匹配到会被转为一个符号, 这里通过符号找回原来的修饰符
+// 解析修饰符, parse阶段 修饰符如果被匹配到会被转为一个符号,
+// 这里通过符号找回原来的修饰符
 const normalizeEvent = cached((name: string): {
   name: string,
   once: boolean,
@@ -50,7 +51,8 @@ export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component
   invoker.fns = fns
   return invoker
 }
-
+// 元素事件
+// 自定义事件的处理
 export function updateListeners (
   on: Object,
   oldOn: Object,
@@ -62,8 +64,8 @@ export function updateListeners (
   let name, def, cur, old, event
   // on为新节点, 如果此时为空 这里压根不会执行
   for (name in on) {
-    def = cur = on[name]// 0
-    old = oldOn[name] // 1
+    def = cur = on[name]
+    old = oldOn[name]
     event = normalizeEvent(name)
     /* istanbul ignore if */
     if (__WEEX__ && isPlainObject(def)) {
@@ -79,13 +81,18 @@ export function updateListeners (
     } else if (isUndef(old)) {
       if (isUndef(cur.fns)) {
         // 是一个函数, 匿名函数, 或者是一个数组
+        // 这个函数就是事件监听器将来执行的函数
         cur = on[name] = createFnInvoker(cur, vm)
       }
+      // 存在once修饰符
       if (isTrue(event.once)) {
         cur = on[name] = createOnceHandler(event.name, cur, event.capture)
       }
       add(event.name, cur, event.capture, event.passive, event.params)
     } else if (cur !== old) {
+      // 因为不需要在注册一次监听器
+      // 所以更新阶段仅需将 fns替换成新的
+      // invoker执行的时候 就会调用新的 fns
       old.fns = cur
       on[name] = old
     }

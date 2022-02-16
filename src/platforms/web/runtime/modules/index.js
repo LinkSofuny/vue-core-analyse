@@ -4,7 +4,7 @@ import events from './events'
 import domProps from './dom-props'
 import style from './style'
 import transition from './transition'
-
+// web
 export default [
   attrs,
   klass,

@@ -157,7 +157,7 @@ function genHandler (handler: ASTElementHandler | Array<ASTElementHandler>): str
     const handlerCode = isMethodPath
       ? `return ${handler.value}.apply(null, arguments)`
       : isFunctionExpression
-        ? `return (${handler.value}).apply(null, arguments)`
+        ? `return (${handler.value}).apply(null, arguments)` // 立即执行一次
         : isFunctionInvocation
           ? `return ${handler.value}`
           : handler.value

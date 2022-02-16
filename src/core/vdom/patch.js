@@ -76,7 +76,7 @@ export function createPatchFunction (backend) {
   const cbs = {}
 
   const { modules, nodeOps } = backend
-
+  // 拿到当前平台相关的hooks
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = []
     for (j = 0; j < modules.length; ++j) {
@@ -198,7 +198,7 @@ export function createPatchFunction (backend) {
         // 创建子节点
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
-          // render函数 data 当前节点的 id, ref 等属性
+          // render函数 data 当前节点的事件属性
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
         // 插入
@@ -254,6 +254,7 @@ export function createPatchFunction (backend) {
     }
     vnode.elm = vnode.componentInstance.$el
     if (isPatchable(vnode)) {
+      // 处理占位符节点的事件
       invokeCreateHooks(vnode, insertedVnodeQueue)
       setScope(vnode)
     } else {
@@ -594,6 +595,7 @@ export function createPatchFunction (backend) {
     const oldCh = oldVnode.children
     const ch = vnode.children
     if (isDef(data) && isPatchable(vnode)) {
+      // 调用更新钩子
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }

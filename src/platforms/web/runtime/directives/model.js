@@ -18,7 +18,7 @@ if (isIE9) {
     }
   })
 }
-
+// 指令
 const directive = {
   inserted (el, binding, vnode, oldVnode) {
     if (vnode.tag === 'select') {
@@ -34,6 +34,11 @@ const directive = {
     } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
       el._vModifiers = binding.modifiers
       if (!binding.modifiers.lazy) {
+        // @todo 给输入法用的
+        // v-model 是一个语法糖.
+        // 主要由一个 事件 和 value 值构成
+        // 但是我们自己用事件 和 value 值去模仿 vmodel 还是和它有区别的
+        // 区别就在这里
         el.addEventListener('compositionstart', onCompositionStart)
         el.addEventListener('compositionend', onCompositionEnd)
         // Safari < 10.2 & UIWebView doesn't fire compositionend when

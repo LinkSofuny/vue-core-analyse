@@ -21,6 +21,7 @@ function updateDirectives (oldVnode: VNodeWithData, vnode: VNodeWithData) {
 function _update (oldVnode, vnode) {
   const isCreate = oldVnode === emptyNode
   const isDestroy = vnode === emptyNode
+  // 规范化处理
   const oldDirs = normalizeDirectives(oldVnode.data.directives, oldVnode.context)
   const newDirs = normalizeDirectives(vnode.data.directives, vnode.context)
 
@@ -55,6 +56,7 @@ function _update (oldVnode, vnode) {
       }
     }
     if (isCreate) {
+      // 给vnode 新增一个 insert hook
       mergeVNodeHook(vnode, 'insert', callInsert)
     } else {
       callInsert()
@@ -98,6 +100,7 @@ function normalizeDirectives (
       dir.modifiers = emptyModifiers
     }
     res[getRawDirName(dir)] = dir
+    // 组件实例上的 'directives' 看看能否找到
     dir.def = resolveAsset(vm.$options, 'directives', dir.name, true)
   }
   // $flow-disable-line

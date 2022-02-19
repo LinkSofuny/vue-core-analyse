@@ -874,7 +874,7 @@ function processAttrs (el) {
         }
         addHandler(el, name, value, modifiers, false, warn, list[i], isDynamic)
       } else { // normal directives
-        // v-model
+        // v-model => model
         name = name.replace(dirRE, '')
         // parse arg
         const argMatch = name.match(argRE)
@@ -888,6 +888,7 @@ function processAttrs (el) {
           }
         }
         // 添加指令
+        // 构造成对象赋值给 el.directives
         addDirective(el, name, rawName, value, arg, isDynamic, modifiers, list[i])
         if (process.env.NODE_ENV !== 'production' && name === 'model') {
           checkForAliasModel(el, value)

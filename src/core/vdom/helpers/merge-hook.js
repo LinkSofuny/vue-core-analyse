@@ -15,11 +15,13 @@ export function mergeVNodeHook (def: Object, hookKey: string, hook: Function) {
     hook.apply(this, arguments)
     // important: remove merged hook to ensure it's called only once
     // and prevent memory leak
+    // 保证只执行一次
     remove(invoker.fns, wrappedHook)
   }
 
   if (isUndef(oldHook)) {
     // no existing hook
+    // 创建一个调用函数
     invoker = createFnInvoker([wrappedHook])
   } else {
     /* istanbul ignore if */
@@ -29,6 +31,7 @@ export function mergeVNodeHook (def: Object, hookKey: string, hook: Function) {
       invoker.fns.push(wrappedHook)
     } else {
       // existing plain hook
+      // 创建一个调用函数
       invoker = createFnInvoker([oldHook, wrappedHook])
     }
   }

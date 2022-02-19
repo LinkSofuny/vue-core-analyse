@@ -327,6 +327,7 @@ function genDirectives (el: ASTElement, state: CodegenState): string | void {
     if (gen) {
       // compile-time directive that manipulates AST.
       // returns true if it also needs a runtime counterpart.
+      // 生成代码会赋值到AST节点上
       needRuntime = !!gen(el, dir, state.warn)
     }
     if (needRuntime) {

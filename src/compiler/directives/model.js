@@ -37,6 +37,7 @@ export function genAssignmentCode (
   value: string,
   assignment: string
 ): string {
+  // 对model的值表达式做一个处理
   const res = parseModel(value)
   if (res.key === null) {
     return `${value}=${assignment}`

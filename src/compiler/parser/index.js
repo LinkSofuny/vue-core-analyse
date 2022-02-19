@@ -874,6 +874,7 @@ function processAttrs (el) {
         }
         addHandler(el, name, value, modifiers, false, warn, list[i], isDynamic)
       } else { // normal directives
+        // v-model
         name = name.replace(dirRE, '')
         // parse arg
         const argMatch = name.match(argRE)
@@ -886,6 +887,7 @@ function processAttrs (el) {
             isDynamic = true
           }
         }
+        // 添加指令
         addDirective(el, name, rawName, value, arg, isDynamic, modifiers, list[i])
         if (process.env.NODE_ENV !== 'production' && name === 'model') {
           checkForAliasModel(el, value)
@@ -981,7 +983,7 @@ function guardIESVGBug (attrs) {
   }
   return res
 }
-
+// 判断 v-for 和 v-model是否一起使用了
 function checkForAliasModel (el, value) {
   let _el = el
   while (_el) {

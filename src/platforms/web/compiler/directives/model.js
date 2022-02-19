@@ -17,7 +17,9 @@ export default function model (
   _warn: Function
 ): ?boolean {
   warn = _warn
+  // 值??
   const value = dir.value
+  // 修饰符类型
   const modifiers = dir.modifiers
   const tag = el.tag
   const type = el.attrsMap.type
@@ -33,8 +35,8 @@ export default function model (
       )
     }
   }
-
   if (el.component) {
+    // 在组件内使用
     genComponentModel(el, value, modifiers)
     // component v-model doesn't need extra runtime
     return false
@@ -45,6 +47,7 @@ export default function model (
   } else if (tag === 'input' && type === 'radio') {
     genRadioModel(el, value, modifiers)
   } else if (tag === 'input' || tag === 'textarea') {
+    // input类
     genDefaultModel(el, value, modifiers)
   } else if (!config.isReservedTag(tag)) {
     genComponentModel(el, value, modifiers)
@@ -134,6 +137,7 @@ function genDefaultModel (
   // warn if v-bind:value conflicts with v-model
   // except for inputs with v-bind:type
   if (process.env.NODE_ENV !== 'production') {
+    // 用 v-model 就不能用 value 了
     const value = el.attrsMap['v-bind:value'] || el.attrsMap[':value']
     const typeBinding = el.attrsMap['v-bind:type'] || el.attrsMap[':type']
     if (value && !typeBinding) {
@@ -153,12 +157,14 @@ function genDefaultModel (
     : type === 'range'
       ? RANGE_TOKEN
       : 'input'
-
+  // 代码表达式
   let valueExpression = '$event.target.value'
   if (trim) {
+    // 是否去空格
     valueExpression = `$event.target.value.trim()`
   }
   if (number) {
+    // 只能是数字
     valueExpression = `_n(${valueExpression})`
   }
 
@@ -166,8 +172,9 @@ function genDefaultModel (
   if (needCompositionGuard) {
     code = `if($event.target.composing)return;${code}`
   }
-
+  // 给input 添加一个 value prop
   addProp(el, 'value', `(${value})`)
+  // 添加一个事件
   addHandler(el, event, code, null, true)
   if (trim || number) {
     addHandler(el, 'blur', '$forceUpdate()')

@@ -27,6 +27,7 @@ export class CodegenState {
     this.transforms = pluckModuleFunction(options.modules, 'transformCode')
     // 拿到模块中的genData
     this.dataGenFns = pluckModuleFunction(options.modules, 'genData')
+    // 将基础配置和平台配置做一个合并
     this.directives = extend(extend({}, baseDirectives), options.directives)
     const isReservedTag = options.isReservedTag || no
     this.maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
@@ -223,6 +224,7 @@ export function genData (el: ASTElement, state: CodegenState): string {
 
   // directives first.
   // directives may mutate the el's other properties before they are generated.
+  // dirs 属性要求优先处理, 因为他可能对其他属性造成影响
   const dirs = genDirectives(el, state)
   if (dirs) data += dirs + ','
 
@@ -320,6 +322,7 @@ function genDirectives (el: ASTElement, state: CodegenState): string | void {
   for (i = 0, l = dirs.length; i < l; i++) {
     dir = dirs[i]
     needRuntime = true
+    // compiler/directives
     const gen: DirectiveFunction = state.directives[dir.name]
     if (gen) {
       // compile-time directive that manipulates AST.

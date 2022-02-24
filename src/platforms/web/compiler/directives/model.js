@@ -170,6 +170,8 @@ function genDefaultModel (
 
   let code = genAssignmentCode(value, valueExpression)
   if (needCompositionGuard) {
+    // $event.target.composing
+    // 是 vue 做的优化 用于被 compositionEnd 触发
     code = `if($event.target.composing)return;${code}`
   }
   // 给input 添加一个 value prop

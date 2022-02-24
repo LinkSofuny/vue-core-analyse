@@ -77,6 +77,9 @@ export function createPatchFunction (backend) {
 
   const { modules, nodeOps } = backend
   // 拿到当前平台相关的hooks
+  // 注意对于模块内的所有同名钩子都会被集合到 一个hooks下.
+  // 这也是为什么这些 create 钩子都是数组
+  // 并且需要遍历执行
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = []
     for (j = 0; j < modules.length; ++j) {

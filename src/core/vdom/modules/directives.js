@@ -33,6 +33,7 @@ function _update (oldVnode, vnode) {
     oldDir = oldDirs[key]
     dir = newDirs[key]
     if (!oldDir) {
+      // 首次
       // new directive, bind
       callHook(dir, 'bind', vnode, oldVnode)
       if (dir.def && dir.def.inserted) {

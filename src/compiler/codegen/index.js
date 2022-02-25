@@ -84,6 +84,7 @@ export function genElement (el: ASTElement, state: CodegenState): string {
       }
 
       const children = el.inlineTemplate ? null : genChildren(el, state, true)
+      // data最终会被作为 这个 el的实际DOM元素的属性附加进去
       code = `_c('${el.tag}'${
         data ? `,${data}` : '' // data
       }${
@@ -218,7 +219,10 @@ export function genFor (
       `return ${(altGen || genElement)(el, state)}` +
     '})'
 }
-
+/**
+ * genData 会对AST元素内部的属性做处理,并生成相应的参数属性
+ *
+ */
 export function genData (el: ASTElement, state: CodegenState): string {
   let data = '{'
 

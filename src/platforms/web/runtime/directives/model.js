@@ -142,7 +142,7 @@ function onCompositionEnd (e) {
   e.target.composing = false
   trigger(e.target, 'input')
 }
-
+// 手动触发一个input事件
 function trigger (el, type) {
   const e = document.createEvent('HTMLEvents')
   e.initEvent(type, true, true)

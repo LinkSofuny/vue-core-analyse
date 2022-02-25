@@ -51,6 +51,7 @@ function _update (oldVnode, vnode) {
   }
 
   if (dirsWithInsert.length) {
+    // dirsWithInsert 存在则将其包裹成一个函数
     const callInsert = () => {
       for (let i = 0; i < dirsWithInsert.length; i++) {
         callHook(dirsWithInsert[i], 'inserted', vnode, oldVnode)
@@ -63,7 +64,7 @@ function _update (oldVnode, vnode) {
       callInsert()
     }
   }
-
+  // 更新阶段
   if (dirsWithPostpatch.length) {
     mergeVNodeHook(vnode, 'postpatch', () => {
       for (let i = 0; i < dirsWithPostpatch.length; i++) {
@@ -88,6 +89,7 @@ function normalizeDirectives (
   dirs: ?Array<VNodeDirective>,
   vm: Component
 ): { [key: string]: VNodeDirective } {
+  // 这个函数其实就是 拿到 directives 的钩子 inserted啥的
   const res = Object.create(null)
   if (!dirs) {
     // $flow-disable-line
@@ -100,6 +102,7 @@ function normalizeDirectives (
       // $flow-disable-line
       dir.modifiers = emptyModifiers
     }
+    // 做一层映射
     res[getRawDirName(dir)] = dir
     // 组件实例上的 'directives' 看看能否找到
     dir.def = resolveAsset(vm.$options, 'directives', dir.name, true)

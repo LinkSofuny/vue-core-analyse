@@ -49,6 +49,7 @@ export function addDirective (
   modifiers: ?ASTModifiers,
   range?: Range
 ) {
+  // v-model 也是作为一个指令处理的
   (el.directives || (el.directives = [])).push(rangeSetItem({
     name,
     rawName,

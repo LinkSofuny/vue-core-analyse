@@ -1,12 +1,7 @@
 <template>
   <div id="app">
-    <ul class="hello" v-if="isShow">
-      <li key="A">A</li><li key="B">B</li><li key="C">C</li><li key="D">D</li>
-    </ul>
-    <ul class="hello" v-else>
-      <li key="B">B</li><li key="A">A</li><li key="D">D</li><li key="C">C</li>
-    </ul>
-    <button  @click="isShow = !isShow" > change</button>
+    <h1>{{ message }}</h1>
+    <input type="text" v-model="message">
   </div>
 </template>
 
@@ -16,24 +11,15 @@ export default {
   name: 'App',
   data() {
     return {
-      isShow: true
+      isShow: true,
+      message: '111'
     }
   },
   components: {
     // HelloWorld,
   },
   watch: {
-    isShow: [
-      function () {
-        console.log('isShow1', this.isShow)
-      },
-      function () {
-        console.log('isShow2', this.isShow)
-      },
-      function () {
-        console.log('isShow3', this.isShow)
-      }
-    ]
+
   }
 }
 </script>

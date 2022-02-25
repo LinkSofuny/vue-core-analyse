@@ -170,6 +170,7 @@ function genDefaultModel (
 
   let code = genAssignmentCode(value, valueExpression)
   if (needCompositionGuard) {
+    // 需要守卫, 就是用来优化输入法输入的
     // $event.target.composing
     // 是 vue 做的优化 用于被 compositionEnd 触发
     code = `if($event.target.composing)return;${code}`

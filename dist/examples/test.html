@@ -13,9 +13,11 @@
       new Vue({
         el: '#app',
         template:`
-          <ul class="ul-outter">
-            <li v-for="i in 6">{{ i }}</li>
-          </ul>`,
+          <div>
+            <h1>{{ msg }}</h1>
+            <input type="text" v-model="msg" />
+          </div>
+        `,
         data:{
           msg: 'parent-Vue'
         },

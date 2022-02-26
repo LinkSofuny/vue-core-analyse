@@ -24,25 +24,31 @@ export function validateProp (
   propsData: Object,
   vm?: Component
 ): any {
+  // props 有效性判断
   const prop = propOptions[key]
   const absent = !hasOwn(propsData, key)
   let value = propsData[key]
   // boolean casting
   const booleanIndex = getTypeIndex(Boolean, prop.type)
   if (booleanIndex > -1) {
+    // 当前 type 类型是 boolean
     if (absent && !hasOwn(prop, 'default')) {
+      // type 是 boolean 类型 并且 不存在默认值 default 则value 默认为 false类型
       value = false
     } else if (value === '' || value === hyphenate(key)) {
       // only cast empty string / same name to boolean if
       // boolean has higher priority
+      // type 为 string 类型
       const stringIndex = getTypeIndex(String, prop.type)
       if (stringIndex < 0 || booleanIndex < stringIndex) {
+        // 也就说比起 string 类型 boolean 类型有更高的优先级
         value = true
       }
     }
   }
   // check default value
   if (value === undefined) {
+    // 获取默认值
     value = getPropDefaultValue(vm, prop, key)
     // since the default value is a fresh copy,
     // make sure to observe it.
@@ -96,6 +102,7 @@ function getPropDefaultValue (vm: ?Component, prop: PropOptions, key: string): a
 
 /**
  * Assert whether a prop is valid.
+ * 断言props
  */
 function assertProp (
   prop: PropOptions,
@@ -104,6 +111,7 @@ function assertProp (
   vm: ?Component,
   absent: boolean
 ) {
+  // 定义的 required 但是没有传值
   if (prop.required && absent) {
     warn(
       'Missing required prop: "' + name + '"',
@@ -148,7 +156,7 @@ function assertProp (
 }
 
 const simpleCheckRE = /^(String|Number|Boolean|Function|Symbol|BigInt)$/
-
+// 类型校验
 function assertType (value: any, type: Function, vm: ?Component): {
   valid: boolean;
   expectedType: string;

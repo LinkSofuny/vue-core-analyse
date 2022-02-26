@@ -38,7 +38,9 @@ function createOnceHandler (event, fn) {
     }
   }
 }
-
+/**
+ *  组件实例化的时候, 在initEvents中调用该方法为对应的 事件 生成一个 $on
+ */
 export function updateComponentListeners (
   vm: Component,
   listeners: Object,

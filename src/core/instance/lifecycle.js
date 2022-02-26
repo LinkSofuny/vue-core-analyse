@@ -219,8 +219,8 @@ export function mountComponent (
 // 对slot props 处理
 export function updateChildComponent (
   vm: Component, //
-  propsData: ?Object,
-  listeners: ?Object,
+  propsData: ?Object, // 父组件的Data
+  listeners: ?Object, // 组件占位符vnode 的 自定义事件
   parentVnode: MountedComponentVNode,
   renderChildren: ?Array<VNode>
 ) {
@@ -264,12 +264,13 @@ export function updateChildComponent (
   // these are also reactive so they may trigger child update if the child
   // used them during render
   vm.$attrs = parentVnode.data.attrs || emptyObject
+  //
   vm.$listeners = listeners || emptyObject
 
   // update props
   if (propsData && vm.$options.props) {
     toggleObserving(false)
-    const props = vm._props
+    const props = vm._props // 组件自己的props
     const propKeys = vm.$options._propKeys || []
     for (let i = 0; i < propKeys.length; i++) {
       const key = propKeys[i]

@@ -64,7 +64,7 @@ const componentVNodeHooks = {
     // 这里虽然命名为 child
     // 打补丁前更新下组件的一些配置
     updateChildComponent(
-      child,
+      child, //
       options.propsData, // updated props
       options.listeners, // updated listeners
       vnode, // new parent vnode
@@ -162,6 +162,7 @@ export function createComponent (
   resolveConstructorOptions(Ctor)
 
   // transform component v-model data into props & events
+  // 将组件的 v-model 在转为 props 和 events 事件
   if (isDef(data.model)) {
     transformModel(Ctor.options, data)
   }
@@ -204,6 +205,7 @@ export function createComponent (
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data, undefined, undefined, undefined, context,
+    // 组件内部的手机用
     { Ctor, propsData, listeners, tag, children },
     asyncFactory
   )
@@ -228,7 +230,7 @@ export function createComponentInstanceForVnode (
   const options: InternalComponentOptions = {
     _isComponent: true,
     _parentVnode: vnode,
-    parent // 这里传进来的明明是一个 实例 @todo???
+    parent // 这里传进来的明明是一个
   }
   // check inline-template render functions
   const inlineTemplate = vnode.data.inlineTemplate
@@ -264,6 +266,19 @@ function mergeHook (f1: any, f2: any): Function {
 
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
+// 默认使用 value 作为 prop
+// 使用 input 作为 发送事件
+/**
+ *
+ * data.props = {
+    value: (message),
+  }
+  data.on = {
+    input: function ($$v) {
+      message=$$v
+    }
+  }
+ */
 function transformModel (options, data: any) {
   const prop = (options.model && options.model.prop) || 'value'
   const event = (options.model && options.model.event) || 'input'

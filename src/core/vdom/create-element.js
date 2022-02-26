@@ -28,7 +28,7 @@ const ALWAYS_NORMALIZE = 2
 export function createElement (
   context: Component,
   tag: any, // 标签
-  data: any,
+  data: any, // vnode节点属性
   children: any, //  complier 阶段生成的
   normalizationType: any,
   alwaysNormalize: boolean

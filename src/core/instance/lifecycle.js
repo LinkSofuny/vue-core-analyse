@@ -270,6 +270,7 @@ export function updateChildComponent (
   // update props
   if (propsData && vm.$options.props) {
     toggleObserving(false)
+    // initProps 子组件初始化的时候赋值
     const props = vm._props // 组件自己的props
     const propKeys = vm.$options._propKeys || []
     for (let i = 0; i < propKeys.length; i++) {

@@ -71,6 +71,7 @@ export function genElement (el: ASTElement, state: CodegenState): string {
   } else if (el.tag === 'template' && !el.slotTarget && !state.pre) {
     return genChildren(el, state) || 'void 0'
   } else if (el.tag === 'slot') {
+    // 如果标签是slot
     return genSlot(el, state)
   } else {
     // component or element

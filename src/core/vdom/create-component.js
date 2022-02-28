@@ -229,7 +229,7 @@ export function createComponentInstanceForVnode (
 ): Component {
   const options: InternalComponentOptions = {
     _isComponent: true,
-    _parentVnode: vnode,
+    _parentVnode: vnode, // 它的占位符节点
     parent // 这里传进来的明明是一个
   }
   // check inline-template render functions

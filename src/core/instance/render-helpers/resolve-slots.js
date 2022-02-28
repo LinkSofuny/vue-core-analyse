@@ -26,6 +26,8 @@ export function resolveSlots (
       data && data.slot != null
     ) {
       const name = data.slot
+      // 是否有定义 name  e.g slot="header"
+      // 最终会为 slots 生成一个 headet: [VNode] 的对象
       const slot = (slots[name] || (slots[name] = []))
       if (child.tag === 'template') {
         slot.push.apply(slot, child.children || [])

@@ -82,6 +82,11 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   const vnodeComponentOptions = parentVnode.componentOptions
   opts.propsData = vnodeComponentOptions.propsData
   opts._parentListeners = vnodeComponentOptions.listeners
+  /**
+   * children 是从Dom结构式的子代
+   * 一般来讲在组件结构下的 子代都是 slot 插槽类
+   * 所以在这里会赋值给 _renderChildren
+   */
   opts._renderChildren = vnodeComponentOptions.children
   opts._componentTag = vnodeComponentOptions.tag
 

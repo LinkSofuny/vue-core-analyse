@@ -648,12 +648,15 @@ function processSlotContent (el) {
   }
 
   // slot="xxx"
+  // 拿到slot标签名
   const slotTarget = getBindingAttr(el, 'slot')
   if (slotTarget) {
+    // 如果没有指定 名字 则 默认为 default
     el.slotTarget = slotTarget === '""' ? '"default"' : slotTarget
     el.slotTargetDynamic = !!(el.attrsMap[':slot'] || el.attrsMap['v-bind:slot'])
     // preserve slot as an attribute for native shadow DOM compat
     // only for non-scoped slots.
+    // attrList
     if (el.tag !== 'template' && !el.slotScope) {
       addAttr(el, 'slot', slotTarget, getRawBindingAttr(el, 'slot'))
     }
@@ -754,6 +757,7 @@ function getSlotName (binding) {
 // handle <slot/> outlets
 function processSlotOutlet (el) {
   if (el.tag === 'slot') {
+    // 添加一个 slotname
     el.slotName = getBindingAttr(el, 'name')
     if (process.env.NODE_ENV !== 'production' && el.key) {
       warn(

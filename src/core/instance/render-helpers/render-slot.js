@@ -11,6 +11,8 @@ export function renderSlot (
   props: ?Object,
   bindObject: ?Object
 ): ?Array<VNode> {
+  // 拿到parse阶段, 生成的 ast函数
+  // 这个组件如果有作用域插槽的话, 生产的时候 在data.scopedSlots 是会存放对应的插槽函数的
   const scopedSlotFn = this.$scopedSlots[name]
   let nodes
   if (scopedSlotFn) {

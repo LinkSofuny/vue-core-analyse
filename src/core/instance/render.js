@@ -73,6 +73,7 @@ export function renderMixin (Vue: Class<Component>) {
     const { render, _parentVnode } = vm.$options
 
     if (_parentVnode) {
+      // 作用域插槽赋值处
       vm.$scopedSlots = normalizeScopedSlots(
         _parentVnode.data.scopedSlots, // parse 阶段 占位符节点生成的
         vm.$slots,

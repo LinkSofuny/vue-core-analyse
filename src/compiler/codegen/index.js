@@ -422,7 +422,7 @@ function genScopedSlots (
   const generatedSlots = Object.keys(slots)
     .map(key => genScopedSlot(slots[key], state))
     .join(',')
-
+  //
   return `scopedSlots:_u([${generatedSlots}]${
     needsForceUpdate ? `,null,true` : ``
   }${
@@ -463,15 +463,18 @@ function genScopedSlot (
   const slotScope = el.slotScope === emptySlotScopeToken
     ? ``
     : String(el.slotScope)
+  // 生成一个待执行函数
   const fn = `function(${slotScope}){` +
     `return ${el.tag === 'template'
       ? el.if && isLegacySyntax
         ? `(${el.if})?${genChildren(el, state) || 'undefined'}:undefined`
+        // 由于没有 if 所以会走到这里去生成Children的逻辑
         : genChildren(el, state) || 'undefined'
       : genElement(el, state)
     }}`
   // reverse proxy v-slot without scope on this.$slots
   const reverseProxy = slotScope ? `` : `,proxy:true`
+  // 最终返回的是是 {key: defualt, fn: .....//}
   return `{key:${el.slotTarget || `"default"`},fn:${fn}${reverseProxy}}`
 }
 
@@ -499,6 +502,7 @@ export function genChildren (
     const normalizationType = checkSkip
       ? getNormalizationType(children, state.maybeComponent)
       : 0
+    // 内部递归执行 genElement 去处理子节点. 最后作为一个数组返回
     const gen = altGenNode || genNode
     return `[${children.map(c => gen(c, state)).join(',')}]${
       normalizationType ? `,${normalizationType}` : ''

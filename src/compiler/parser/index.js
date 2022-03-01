@@ -146,12 +146,14 @@ export function parse (
       } else {
         if (element.slotScope) {
           // 如果当前的 AST元素 带有 sloScope 则加入到父节点的 scopedSlots 对象下
+          // 这里的父节点是一个组件占位符节点
           // scoped slot
           // keep it in the children list so that v-else(-if) conditions can
           // find it as the prev node.
           const name = element.slotTarget || '"default"'
           ;(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element
         }
+        // 也会是会push一份到 父AST的children 中?
         currentParent.children.push(element)
         element.parent = currentParent
       }
@@ -647,6 +649,7 @@ function processSlotContent (el) {
         true
       )
     }
+    // 拿到 slot-scope="props" 👈 这个名字
     el.slotScope = slotScope
   }
 

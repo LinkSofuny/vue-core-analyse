@@ -17,6 +17,8 @@ export function resolveScopedSlots (
       if (slot.proxy) {
         slot.fn.proxy = true
       }
+      // 这里会把我们在 codeGen 生产的 对象映射到 res 中
+      // key = fns
       res[slot.key] = slot.fn
     }
   }

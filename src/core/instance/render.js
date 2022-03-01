@@ -74,9 +74,9 @@ export function renderMixin (Vue: Class<Component>) {
 
     if (_parentVnode) {
       vm.$scopedSlots = normalizeScopedSlots(
-        _parentVnode.data.scopedSlots,
+        _parentVnode.data.scopedSlots, // parse 阶段 占位符节点生成的
         vm.$slots,
-        vm.$scopedSlots
+        vm.$scopedSlots // 旧有的?
       )
     }
 

@@ -64,11 +64,11 @@ const componentVNodeHooks = {
     // 这里虽然命名为 child
     // 打补丁前更新下组件的一些配置
     updateChildComponent(
-      child, //
+      child, // 组件实例
       options.propsData, // updated props
       options.listeners, // updated listeners
       vnode, // new parent vnode
-      options.children // new children
+      options.children // new children 占位符节点 DOM结构上的子代 也就是插槽要插的内容
     )
   },
 

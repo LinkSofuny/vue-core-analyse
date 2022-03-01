@@ -145,6 +145,7 @@ export function parse (
         processIfConditions(element, currentParent)
       } else {
         if (element.slotScope) {
+          // 如果当前的 AST元素 带有 sloScope 则加入到父节点的 scopedSlots 对象下
           // scoped slot
           // keep it in the children list so that v-else(-if) conditions can
           // find it as the prev node.
@@ -619,6 +620,7 @@ function processOnce (el) {
 // e.g. <template slot="xxx">, <div slot-scope="xxx">
 function processSlotContent (el) {
   let slotScope
+  // 作用域插槽
   if (el.tag === 'template') {
     slotScope = getAndRemoveAttr(el, 'scope')
     /* istanbul ignore if */
@@ -634,6 +636,7 @@ function processSlotContent (el) {
     }
     el.slotScope = slotScope || getAndRemoveAttr(el, 'slot-scope')
   } else if ((slotScope = getAndRemoveAttr(el, 'slot-scope'))) {
+    // 新版本建议使用 slot-scope
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && el.attrsMap['v-for']) {
       warn(

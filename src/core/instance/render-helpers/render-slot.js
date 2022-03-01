@@ -14,7 +14,7 @@ export function renderSlot (
   const scopedSlotFn = this.$scopedSlots[name]
   let nodes
   if (scopedSlotFn) {
-    // scoped slot
+    // scoped slot 作用域插槽
     props = props || {}
     if (bindObject) {
       if (process.env.NODE_ENV !== 'production' && !isObject(bindObject)) {
@@ -22,6 +22,9 @@ export function renderSlot (
       }
       props = extend(extend({}, bindObject), props)
     }
+    // 作用域插槽, 为什么可以将子组件内部的参数传递给子组件外部?
+    // 因为我们在子组件的slot中定义的参数 在编译阶段会被合并成一个 props 对象
+    // 传递给 scopedSlotFn 也就是我们父组件的 插槽内容中
     nodes =
       scopedSlotFn(props) ||
       (typeof fallbackRender === 'function' ? fallbackRender() : fallbackRender)

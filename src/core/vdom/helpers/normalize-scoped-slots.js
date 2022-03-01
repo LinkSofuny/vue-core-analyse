@@ -6,9 +6,9 @@ import { emptyObject } from 'shared/util'
 import { isAsyncPlaceholder } from './is-async-placeholder'
 
 export function normalizeScopedSlots (
-  slots: { [key: string]: Function } | void,
-  normalSlots: { [key: string]: Array<VNode> },
-  prevSlots?: { [key: string]: Function } | void
+  slots: { [key: string]: Function } | void, // 占位符节点的 scopedSlots
+  normalSlots: { [key: string]: Array<VNode> }, // 普通的 slot
+  prevSlots?: { [key: string]: Function } | void // 作用域插槽属性
 ): any {
   let res
   const hasNormalSlots = Object.keys(normalSlots).length > 0

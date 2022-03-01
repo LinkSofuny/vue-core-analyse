@@ -294,6 +294,7 @@ export function updateChildComponent (
 
   // resolve slots + force update if has children
   if (needsForceUpdate) {
+    // 赋值新的 slots 并且强制更新
     vm.$slots = resolveSlots(renderChildren, parentVnode.context)
     vm.$forceUpdate()
   }

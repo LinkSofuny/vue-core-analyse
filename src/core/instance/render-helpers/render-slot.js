@@ -31,6 +31,10 @@ export function renderSlot (
       scopedSlotFn(props) ||
       (typeof fallbackRender === 'function' ? fallbackRender() : fallbackRender)
   } else {
+    // 其实就是将我们定义在 组件DOM结构下的children中
+    // 拿到 slot="xxx" 名字对应的
+    // 好比 现在_t('header')
+    // 就拿到 slot="header" 的那个tag
     nodes =
       this.$slots[name] ||
       (typeof fallbackRender === 'function' ? fallbackRender() : fallbackRender)

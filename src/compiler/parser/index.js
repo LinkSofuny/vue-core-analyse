@@ -763,7 +763,7 @@ function getSlotName (binding) {
 // handle <slot/> outlets
 function processSlotOutlet (el) {
   if (el.tag === 'slot') {
-    // 添加一个 slotname
+    // 添加一个 slotname 拿到他的 name 属性 存到 slotName中
     el.slotName = getBindingAttr(el, 'name')
     if (process.env.NODE_ENV !== 'production' && el.key) {
       warn(

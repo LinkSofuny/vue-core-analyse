@@ -10376,8 +10376,8 @@
     for (var i = 0; i < transforms.length; i++) {
       element = transforms[i](element, options) || element;
     }
-    // 属性处理
     debugger
+    // 属性处理
     processAttrs(element);
     return element
   }
@@ -11548,6 +11548,7 @@
     // directives first.
     // directives may mutate the el's other properties before they are generated.
     // dirs 属性要求优先处理, 因为他可能对其他属性造成影响
+    debugger
     var dirs = genDirectives(el, state);
     if (dirs) { data += dirs + ','; }
 

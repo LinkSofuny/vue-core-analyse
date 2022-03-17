@@ -120,6 +120,7 @@ function initProps (vm: Component, propsOptions: Object) {
 
 function initData (vm: Component) {
   let data = vm.$options.data
+  // 对象作为引用类型, 如果这个位置直接赋予一个对象的话, 就会导致所有的组件实例都共用一个对象, 数据可能会起冲突
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {}

@@ -23,6 +23,7 @@ const methodsToPatch = [
  */
 methodsToPatch.forEach(function (method) {
   // cache original method
+  // 原生数组方法
   const original = arrayProto[method]
   // 劫持arrayMethods中的方法, 默认返回加工后的函数,
   def(arrayMethods, method, function mutator (...args) {
@@ -30,10 +31,12 @@ methodsToPatch.forEach(function (method) {
     const ob = this.__ob__
     let inserted
     switch (method) {
+      // 新增的元素加入 劫持
       case 'push':
       case 'unshift':
         inserted = args
         break
+      // 如果插入新元素的话, 则劫持
       case 'splice':
         inserted = args.slice(2)
         break

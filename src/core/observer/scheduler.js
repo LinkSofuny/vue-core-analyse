@@ -116,7 +116,7 @@ function flushSchedulerQueue () {
   const updatedQueue = queue.slice()
 
   resetSchedulerState()
-
+  // 父 beforeUpdate->子 beforeUpdate->子 updated->父 updated ? 为什么
   // call component updated and activated hooks
   callActivatedHooks(activatedQueue)
   callUpdatedHooks(updatedQueue)

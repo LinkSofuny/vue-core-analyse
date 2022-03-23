@@ -554,6 +554,10 @@ export function createPatchFunction (backend) {
     index,
     removeOnly
   ) {
+    // 在patch vode 的时候 因为新旧节点相同,
+    // 假设这个位置是一个组件节点
+    // update 前后 仍然是相同的
+    // 就会跳过执行
     if (oldVnode === vnode) {
       return
     }
@@ -602,7 +606,7 @@ export function createPatchFunction (backend) {
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }
-    //
+    // text 证明为 非文本节点
     if (isUndef(vnode.text)) {
       // 新旧子节点都存在
       if (isDef(oldCh) && isDef(ch)) {

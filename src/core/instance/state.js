@@ -81,6 +81,7 @@ function initProps (vm: Component, propsOptions: Object) {
   if (!isRoot) {
     toggleObserving(false)
   }
+  // props: ['value']
   for (const key in propsOptions) {
     keys.push(key)
     const value = validateProp(key, propsOptions, propsData, vm)
@@ -106,6 +107,7 @@ function initProps (vm: Component, propsOptions: Object) {
         }
       })
     } else {
+      // 劫持props
       defineReactive(props, key, value)
     }
     // static props are already proxied on the component's prototype

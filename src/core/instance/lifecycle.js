@@ -34,6 +34,7 @@ export function initLifecycle (vm: Component) {
 
   // locate first non-abstract parent
   let parent = options.parent
+  // 如果是抽象组件则不会构建到 节点树上, 会直接跳过
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
@@ -295,6 +296,8 @@ export function updateChildComponent (
   // resolve slots + force update if has children
   if (needsForceUpdate) {
     // 赋值新的 slots 并且强制更新
+    // 比如 keep-alive内部的内容发生了改变,
+    // 就会被强制刷新
     vm.$slots = resolveSlots(renderChildren, parentVnode.context)
     vm.$forceUpdate()
   }

@@ -35,6 +35,7 @@ export function initExtend (Vue: GlobalAPI) {
       this._init(options)
     }
     // 原型链继承
+    // 寄生组合式继承
     // 当前组件的构造函数原型指向 Vue的原型 (表明组件构造函数 是通过 Vue 实例化的)
     Sub.prototype = Object.create(Super.prototype)
     // 当前构造函数的原型 指向 构造函数

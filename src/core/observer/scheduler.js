@@ -116,7 +116,6 @@ function flushSchedulerQueue () {
   const updatedQueue = queue.slice()
 
   resetSchedulerState()
-  // 父 beforeUpdate->子 beforeUpdate->子 updated->父 updated ? 为什么
   // call component updated and activated hooks
   callActivatedHooks(activatedQueue)
   callUpdatedHooks(updatedQueue)
@@ -130,6 +129,8 @@ function flushSchedulerQueue () {
 
 function callUpdatedHooks (queue) {
   let i = queue.length
+  // 父 beforeUpdate->子 beforeUpdate->子 updated->父 updated ? 为什么
+  // 很简单.. 因为这里updated就是倒过来执行的...
   while (i--) {
     const watcher = queue[i]
     const vm = watcher.vm

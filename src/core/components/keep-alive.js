@@ -16,11 +16,15 @@ function getComponentName (opts: ?VNodeComponentOptions): ?string {
 }
 
 function matches (pattern: string | RegExp | Array<string>, name: string): boolean {
+  // exclude include 允许多种传参
   if (Array.isArray(pattern)) {
+    // 数组
     return pattern.indexOf(name) > -1
   } else if (typeof pattern === 'string') {
+    // 字符串逗号隔开
     return pattern.split(',').indexOf(name) > -1
   } else if (isRegExp(pattern)) {
+    // 正则表达式
     return pattern.test(name)
   }
   /* istanbul ignore next */
@@ -33,6 +37,7 @@ function pruneCache (keepAliveInstance: any, filter: Function) {
     const entry: ?CacheEntry = cache[key]
     if (entry) {
       const name: ?string = entry.name
+      // 如果不存在于我们规定的 include 中 则删除
       if (name && !filter(name)) {
         pruneCacheEntry(cache, key, keys, _vnode)
       }
@@ -47,6 +52,8 @@ function pruneCacheEntry (
   current?: VNode
 ) {
   const entry: ?CacheEntry = cache[key]
+  // 删除最老的元素
+  // current 不存在? @todo
   if (entry && (!current || entry.tag !== current.tag)) {
     entry.componentInstance.$destroy()
   }
@@ -76,9 +83,11 @@ export default {
           tag,
           componentInstance,
         }
+        // 新的总在最后头
         keys.push(keyToCache)
         // prune oldest entry
         if (this.max && keys.length > parseInt(this.max)) {
+          // _vnode是节点本身的Vnode
           pruneCacheEntry(cache, keys[0], keys, this._vnode)
         }
         this.vnodeToCache = null
@@ -98,7 +107,9 @@ export default {
   },
 
   mounted () {
+    // 直到 mounted 的时候, 才真正将其存储到 cache数组中
     this.cacheVNode()
+    // 包含与不报站的情况
     this.$watch('include', val => {
       pruneCache(this, name => matches(val, name))
     })
@@ -112,11 +123,14 @@ export default {
   },
 
   render () {
+    //
     const slot = this.$slots.default
+    // 找到第一个组件节点
     const vnode: VNode = getFirstComponentChild(slot)
     const componentOptions: ?VNodeComponentOptions = vnode && vnode.componentOptions
     if (componentOptions) {
       // check pattern
+      // 拿到名字
       const name: ?string = getComponentName(componentOptions)
       const { include, exclude } = this
       if (
@@ -141,10 +155,11 @@ export default {
         keys.push(key)
       } else {
         // delay setting the cache until update
+        // 第一次渲染的时候, 仅是保存一个指向
         this.vnodeToCache = vnode
         this.keyToCache = key
       }
-
+      // 这是作用在 包括在keepalive组件内部的的组件
       vnode.data.keepAlive = true
     }
     return vnode || (slot && slot[0])

@@ -226,6 +226,7 @@ export function createPatchFunction (backend) {
   function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
     if (isDef(i)) {
+      // 是否存在 keepAlive
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
       // 执行内联钩子 init
       if (isDef(i = i.hook) && isDef(i = i.init)) {

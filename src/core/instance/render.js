@@ -91,6 +91,9 @@ export function renderMixin (Vue: Class<Component>) {
       // separately from one another. Nested component's render fns are called
       // when parent component is patched.
       currentRenderingInstance = vm
+      // 这里值得注意的是, 如果当前渲染的组件是 keepalive 实际上返回的
+      // 是keepalive dom结构上的子节点 而不是 keepalive 本身
+      // keepalive不会渲染为一个真实节点
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)
